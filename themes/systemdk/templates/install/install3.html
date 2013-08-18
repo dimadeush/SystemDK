@@ -1,0 +1,278 @@
+{config_load file="ru/install/install.conf"}
+{include file='install/header.html'}
+<center><img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_INSTALLBEGINTITLE#}</span></center><br>
+&nbsp;<span class="textbig">{#_INSTALLBEGINNOTES#}</span><br><br>
+<center>
+<form action="index.php" method="POST">
+<table width="99%" border="0" cellspacing="2" cellpadding="1">
+<tr>
+<td colspan="2" style="background-image: url(../{#bgimage12#})" align="center"><img src="../{#bgimage22#}" alt="" border="0"> <span class="title">{#_INSTALLBEGINTITLE2#}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE4#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES4#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_id" size="35" class="formenter" maxlength="10"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE1#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES1#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_name" size="35" class="formenter" maxlength="100"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE2#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES2#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_url" size="35" class="formenter" maxlength="100"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALL_MOD_REWRITE#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALL_MOD_REWRITE_NOTES#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="mod_rewrite" class="formenter"><option selected="selected">yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE3#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES3#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="admin_email" size="35" class="formenter" maxlength="100"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE30#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES30#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_dir" size="35" class="formenter" maxlength="100"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE29#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES29#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="admin_dir" size="35" class="formenter" maxlength="100" value="systemadmin/"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE12#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES12#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="smarty_debugging" class="formenter"><option>yes</option><option selected="selected">no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE12B#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES12B#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="adodb_debugging" class="formenter"><option>yes</option><option selected="selected">no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE13#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES13#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="gzip" class="formenter"><option selected="selected">yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE9#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES9#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="smarty_caching" class="formenter"><option selected="selected">yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE10#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES10#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="cache_lifetime" size="35" class="formenter" maxlength="10" value="3600"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE11#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES11#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="cookie_live" size="35" class="formenter" maxlength="10" value="3600"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE5#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES5#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_logo" size="35" class="formenter" maxlength="100"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE6#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES6#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_charset" size="35" class="formenter" maxlength="40" value="windows-1251"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE7#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES7#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_keywords" size="35" maxlength="100" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE8#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES8#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_description" size="35" maxlength="100" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE14#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES14#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="site_status" class="formenter"><option>on</option><option selected="selected">off</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE41#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES41#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><textarea name="site_status_notes" rows="4" cols="45" class="formenter">Проводятся технические работы. Приносим Вам свои извинения за доставленные неудобства.</textarea></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE15#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES15#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="site_theme" class="formenter">{foreach $themelist as $themelist_tpl}<option {if $themelist_tpl eq "systemdk"}selected="selected"{/if}>{$themelist_tpl}</option>{/foreach}</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE16#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES16#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="language" class="formenter">{if $languagelist ne "no"}{foreach $languagelist as $languagelist_tpl}<option {if $languagelist_tpl.name eq "ru"}selected{/if}>{$languagelist_tpl.name}</option>{/foreach}{else} <option selected>ru</option>{/if}</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE17#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES17#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="Home_Module" class="formenter"><option value="">no</option>{foreach $modulelist as $modulelist_tpl}{if $modulelist_tpl != 'main_pages'}<option>{$modulelist_tpl}</option>{/if}{/foreach}</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE18#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES18#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="enter_check" class="formenter"><option selected="selected">yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE19#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES19#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="display_admin_graphic" class="formenter"><option selected="selected">yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE42#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES42#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="systemdk_adminrows_perpage" size="10" class="formenter" maxlength="3" value="30"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE43#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES43#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_statistics" class="formenter"><option selected="selected">yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE51#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES51#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_ipantispam" class="formenter"><option selected="selected">yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE52#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES52#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="systemdk_ipantispam_num" value="10" size="10" maxlength="5" class="formenter"></td>
+</tr>
+
+<tr>
+<td colspan="2" style="background-image: url(../{#bgimage12#})" align="center"><img src="../{#bgimage22#}" alt="" border="0"> <span class="title">{#_INSTALLLANGUAGETITLE#}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLINSTALLSITELANGUAGE#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLINSTALLSITELANGUAGENOTES#}</span></td>
+<td bgcolor="{#color10#}" class="td2"> {if $languagelist ne "no"}{foreach $languagelist as $languagelist_tpl}{$languagelist_tpl.name}: <input name="systemdk_install_lang[]" value="{$languagelist_tpl.name}" type="checkbox" {if $languagelist_tpl.name eq "ru"}checked{/if} class="formenter"> {/foreach}{else}{/if}</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLSITELANGUAGE#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLSITELANGUAGENOTES#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_site_lang" class="formenter"><option selected>no</option><option>yes</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLADMINSITELANGUAGE#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLADMINSITELANGUAGENOTES#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_admin_site_lang" class="formenter"><option selected>no</option><option>yes</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLINTERFACELANGUAGE#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLINTERFACELANGUAGENOTES#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_interface_lang" class="formenter"><option selected>no</option><option>yes</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLADMININTERFACELANGUAGE#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLADMININTERFACELANGUAGENOTES#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_admin_interface_lang" class="formenter"><option selected>no</option><option>yes</option></select></td>
+</tr>
+
+<tr>
+<td colspan="2" style="background-image: url(../{#bgimage12#})" align="center"><img src="../{#bgimage22#}" alt="" border="0"> <span class="title">{#_INSTALLBEGINTITLE4#}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE31#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES31#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_mail_method" class="formenter"><option selected>php</option><option>smtp</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE32#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES32#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="systemdk_smtp_host" size="35" maxlength="50" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE33#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES33#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="systemdk_smtp_port" size="10" maxlength="5" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE34#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES34#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="systemdk_smtp_user" size="35" maxlength="50" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE35#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES35#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="systemdk_smtp_pass" size="35" maxlength="50" class="formenter"></td>
+</tr>
+
+<tr>
+<td colspan="2" style="background-image: url(../{#bgimage12#})" align="center"><img src="../{#bgimage22#}" alt="" border="0"> <span class="title">{#_INSTALLBEGINTITLE5#}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE36#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES36#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_account_registration" class="formenter"><option selected>yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE37#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES37#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_account_activation" class="formenter"><option selected>yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE38#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES38#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_account_rules" class="formenter"><option selected>yes</option><option>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE39#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES39#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="systemdk_account_maxusers" value="0" size="10" maxlength="7" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE40#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES40#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="systemdk_account_maxactivationdays" value="31" size="10" maxlength="5" class="formenter"></td>
+</tr>
+
+<tr>
+<td colspan="2" style="background-image: url(../{#bgimage12#})" align="center"><img src="../{#bgimage22#}" alt="" border="0"> <span class="title">{#_INSTALLBEGINTITLE6#}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE44#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES44#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_player_autoplay" class="formenter"><option>yes</option><option selected>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE46#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES46#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_player_autobuffer" class="formenter"><option>yes</option><option selected>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE47#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES47#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_player_controls" class="formenter"><option>yes</option><option selected>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE48#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES48#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_player_audioautoplay" class="formenter"><option>yes</option><option selected>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE49#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES49#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_player_audioautobuffer" class="formenter"><option>yes</option><option selected>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALL_AUDIO_CONTROL#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALL_AUDIO_CONTROL_NOTES#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_player_audio_controls" class="formenter"><option>yes</option><option selected>no</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALL_PLAYER_RATIO#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALL_PLAYER_RATIO_NOTES#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="systemdk_player_ratio" size="10" maxlength="5" value="0.417" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE50#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES50#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="systemdk_player_skin" class="formenter"><option value="minimalist">minimalist</option><option value="functional" selected>functional</option><option value="playful">playful</option></select></td>
+</tr>
+
+<tr>
+<td colspan="2" style="background-image: url(../{#bgimage12#})" align="center"><img src="../{#bgimage22#}" alt="" border="0"> <span class="title">{#_INSTALLBEGINTITLE3#}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE20#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES20#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="db_host" size="35" class="formenter" maxlength="100"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE20B#}:</span><span class="errorsmall">**</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES20B#} (<a href="http://phplens.com/adodb/supported.databases.html" target="_blank" class="link">{#_INSTALLCONFIGURATION5#}</a>). {if $select_db_type eq "oci8"}{#_INSTALLTITLENOTES20C#}{/if}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="db_type" class="formenter">{if $select_db_type eq "mysql"}<option selected="selected">mysqli</option><option>pdo</option><!--<option>mysqlt</option><option>maxsql</option><option>mysql</option>-->{elseif $select_db_type eq "oci8"}<option value="oci8">oracle(oci8)</option>{/if}<!--<option>mssql</option><option>ado_mssql</option><option>odbc_mssql</option><option>postgres</option><option>postgres8</option><option>postgres7</option><option>postgres64</option><option>vfp</option>--> <!--<option>sqlite</option><option>access</option>--></select>&nbsp;&nbsp;{if $select_db_type eq "oci8"}<span class="tablenamecenterblock">{#_INSTALLPORTDATABASETYPE#}:</span> <input type="text" name="db_port" size="4" class="formenter" maxlength="4">{else}<input type="hidden" name="db_port" size="4" class="formenter" maxlength="4" value="0">{/if}</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE21#} {if $select_db_type eq "oci8"}(SID){/if}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES21#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="db_name" size="35" class="formenter" maxlength="100"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE22#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES22#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="db_user_name" size="35" class="formenter" maxlength="100"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE23#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES23#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="db_password" size="35" class="formenter" maxlength="100"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE24#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {if $select_db_type eq "oci8"}{#_INSTALLTITLENOTES24a#}{else}{#_INSTALLTITLENOTES24#}{/if}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="prefix" size="35" class="formenter" maxlength="15"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE25#}:</span>{if $select_db_type ne "mssql"}<span class="errorsmall">*</span>{/if}<br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES25#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="db_character" size="35" class="formenter" maxlength="100" {if $select_db_type eq "oci8"} value="CL8MSWIN1251"{elseif $select_db_type eq "mysql"} value="cp1251"{/if}></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE28#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES28#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><select name="db_persistency" class="formenter"><option selected="selected">yes</option><option>no</option></select></td>
+</tr>
+<tr>
+<td colspan="2" style="background-image: url(../{#bgimage12#})" align="center">&nbsp;</td>
+</tr>
+</table><br>
+<input type="hidden" name="func" value="step4">
+<input type="submit" value="{#_INSTALLBUTTONNEXT#}">
+</form>
+</center>
+&nbsp;<img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_INSTALLNOTES#}: {#_INSTALLNOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_INSTALLNOTES2#}</span><br>
+&nbsp;<img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_INSTALLNOTES#}:</span>&nbsp;<span class="errorsmall">**</span>&nbsp;<span class="text">{#_INSTALLNOTES3#}</span>
+<br><br><br>
+{include file='install/footer.html'}

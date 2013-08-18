@@ -1,0 +1,66 @@
+{config_load file="$language/systemadmin/modules/messages/messages.conf"}
+{#_MESSAGE#}</span></center>
+</div>
+<center>
+<br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_MESSAGEADDTITLE#}</span><br><br>
+<form action="index.php?path=admin_messages&amp;func=message_add_inbase&amp;lang={$site_language}" method="POST">
+<table border="0" cellspacing="2"  cellpadding="0">
+ <tr align="left">
+ <td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MESSAGEAUTHOR#}:</span></td><td bgcolor="{#color7#}" class="td2"> <span class="formentername">{nocache}{$message_author}{/nocache}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MESSAGETITLE#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="message_title" size="130" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MESSAGECONTENT#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"> <textarea id="message_content" name="message_content" rows="20" cols="130" class="formenter"></textarea>
+<script type="text/javascript">
+var ckeditor1 = CKEDITOR.replace( 'message_content',
+{
+language: '{$language}'
+});
+    DjenxExplorer.init({
+      returnTo: ckeditor1,
+      path: '/ckeditor/Djenx.Explorer/',
+      lang: '{$language}',
+      post: {
+          'PHPSESSID': {nocache}'{$session_id}'{/nocache}
+            }
+    });
+</script>
+<br>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MESSAGENOTES#}:</span></td><td bgcolor="{#color7#}" class="td2"> <textarea name="message_notes" rows="3" cols="130" class="formenter"></textarea></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MESSAGESTATUS#}:</span></td><td bgcolor="{#color7#}" class="td2"> <select name="message_status" class="formenter">
+<option value="1">{#_MESSAGEACTIVE#}</option>
+<option value="0">{#_MESSAGENOTACTIVE#}</option>
+</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MESSAGETERMEXPIRE#}:</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="message_termexpire" size="4" maxlength="3" value="0" class="formenter"> <span class="formentername">{#_MESSAGETERMEXPIREDAY#}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MESSAGETERMEXPIREACTION#}:</span></td><td bgcolor="{#color7#}" class="td2"> <select name="message_termexpireaction" class="formenter">
+<option value="off" selected>{#_MESSAGEFUNCTIONOFF#}</option>
+<option value="delete">{#_MESSAGEFUNCTIONDELETE#}</option>
+</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MESSAGEWHOVIEW#}:</span></td><td bgcolor="{#color7#}" class="td2"> <select name="message_valueview" class="formenter">
+<option value="0" selected>{#_MESSAGEALLVISITORS#}</option>
+<option value="1">{#_MESSAGEONLYUSERS#}</option>
+<option value="2">{#_MESSAGEONLYADMINS#}</option>
+<option value="3">{#_MESSAGEONLYGUESTS#}</option>
+</select>
+</td>
+</tr>
+</table><br>
+<input type="submit" value="{#_MESSAGEBUTTONADD#}" class="button">
+</form>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</center><br>

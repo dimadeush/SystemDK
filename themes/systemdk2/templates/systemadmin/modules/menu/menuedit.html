@@ -1,0 +1,70 @@
+{nocache}
+{config_load file="$language/systemadmin/modules/menu/menu.conf"}
+{#_MENU#}</span></center>
+</div>
+<center>
+<br>
+{foreach $menu_all as $menu_all_tpl}
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_MENUEDITTITLE#} "{$menu_all_tpl.mainmenu_name}"</span><br><br>
+<form action="index.php?path=admin_menu&amp;func=menu_edit_inbase&amp;lang={$site_language}" method="POST">
+<table border="0" cellspacing="2"  cellpadding="0">
+ <tr align="left">
+  <td bgcolor="{#color7#}" class="td1">
+  <input type="hidden" name="mainmenu_id" value="{$menu_all_tpl.mainmenu_id}">
+  <img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MENUELEMENTNAME#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="mainmenu_name" size="30" maxlength="25" value="{$menu_all_tpl.mainmenu_name}" class="formenter"></td>
+ </tr>
+ <tr align="left">
+ <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MENUELEMENTOBJECT#}:</span></td><td bgcolor="{#color7#}" class="td2">
+ <select name="menu_object" class="formenter">
+<option value="parent" {if $menu_all_tpl.mainmenu_module ne ""}selected{/if}>{#_MENUELEMENTPARENT#}</option>
+<option value="children" {if $menu_all_tpl.mainmenu_submodule ne ""}selected{/if}>{#_MENUELEMENTCHILDREN#}</option>
+</select>
+</td>
+ </tr>
+<tr align="left">
+ <td bgcolor="{#color7#}" class="td1">
+{if $menu_type eq "module"}
+<input type="hidden" name="menu_type" value="module">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MENUELEMENTMODULE#}:</span></td><td bgcolor="{#color7#}" class="td2">
+<select name="mainmenu_module" class="formenter">
+{foreach $module_name as $module_name_tpl}
+<option value="{$module_name_tpl.module_name}" {if $menu_all_tpl.mainmenu_module eq $module_name_tpl.module_name or $menu_all_tpl.mainmenu_submodule eq $module_name_tpl.module_name}selected{/if}>{$module_name_tpl.module_name}</option>
+{/foreach}
+</select>
+{elseif $menu_type eq "main_page"}
+<input type="hidden" name="menu_type" value="main_page">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MENUELEMENTMAINPAGE#}:</span></td><td bgcolor="{#color7#}" class="td2">
+<select name="mainmenu_module" class="formenter">
+{foreach $page_all as $page_all_tpl}
+<option value="{$page_all_tpl.mainpage_id}" {if $menu_all_tpl.mainmenu_module eq $page_all_tpl.mainpage_id or $menu_all_tpl.mainmenu_submodule eq $page_all_tpl.mainpage_id} selected{/if}>{$page_all_tpl.mainpage_title|truncate:40:"...":true}</option>
+{/foreach}
+</select>
+{elseif $menu_type eq "other"}
+<input type="hidden" name="menu_type" value="other">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MENUOTHER#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="mainmenu_module" size="30" maxlength="250" {if $menu_all_tpl.mainmenu_module ne "" and $menu_all_tpl.mainmenu_submodule eq ""}value="{$menu_all_tpl.mainmenu_module}"{elseif $menu_all_tpl.mainmenu_module eq "" and $menu_all_tpl.mainmenu_submodule ne ""} value="{$menu_all_tpl.mainmenu_submodule}"{/if} class="formenter">
+{/if}
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MENUELEMENTWINDOW#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="mainmenu_target" class="formenter">
+<option value="_parent" {if $menu_all_tpl.mainmenu_target eq "_parent"}selected{/if}>{#_MENUELEMENTCURRENTWINDOW#}</option>
+<option value="_blank" {if $menu_all_tpl.mainmenu_target eq "_blank"}selected{/if}>{#_MENUELEMENTNEWWINDOW#}</option>
+</select>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MENUELEMENTVISIBLE#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="mainmenu_inmenu" class="formenter">
+<option value="1" {if $menu_all_tpl.mainmenu_inmenu eq "1"}selected{/if}>{#_MENUELEMENTACTIVE#}</option>
+<option value="0" {if $menu_all_tpl.mainmenu_inmenu eq "0"}selected{/if}>{#_MENUELEMENTNOTACTIVE#}</option>
+</select>
+</td>
+</tr>
+</table><br>
+<input type="submit" value="{#_MENUBUTTONSAVE#}" class="button">
+</form>
+{/foreach}
+{/nocache}
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</center>

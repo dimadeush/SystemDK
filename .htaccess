@@ -1,0 +1,96 @@
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# Select site language
+RewriteRule ^lang/([^/]+)(/?)+$ index.php?lang=$1 [L]
+# Select site interface language
+RewriteRule ^lang/([^/]+)/ilang/([^/]+)(/?)+$ index.php?lang=$1&ilang=$2 [L]
+# account
+RewriteCond %{REQUEST_URI} !/modules/account
+RewriteCond %{REQUEST_URI} !/blocks/account
+RewriteRule ^([^/]+)/account(/?)+$ index.php?path=account&lang=$1 [L]
+RewriteRule ^([^/]+)/account/account_newpassconf/([^/]+)(/?)+$ index.php?path=account&func=account_newpassconf&act_code=$2&lang=$1 [L]
+RewriteRule ^([^/]+)/account/account_add_confirm/([^/]+)(/?)+$ index.php?path=account&func=account_add_confirm&act_code=$2&lang=$1 [L]
+RewriteRule ^([^/]+)/account/account_register/1(/?)+$ index.php?path=account&func=account_register&rules=1&lang=$1 [L]
+RewriteCond %{REQUEST_URI} !/modules/account
+RewriteCond %{REQUEST_URI} !/blocks/account
+RewriteRule ^([^/]+)/account/([^/]+)(/?)+$ index.php?path=account&func=$2&lang=$1 [L]
+# feedback
+RewriteCond %{REQUEST_URI} !/modules/feedback
+RewriteRule ^([^/]+)/feedback(/?)+$ index.php?path=feedback&lang=$1 [L]
+# guestbook
+RewriteCond %{REQUEST_URI} !/modules/guestbook
+RewriteRule ^([^/]+)/guestbook(/?)+$ index.php?path=guestbook&lang=$1 [L]
+RewriteRule ^([^/]+)/guestbook/page/([0-9]+)(/?)+$ index.php?path=guestbook&num_page=$2&lang=$1 [L]
+RewriteCond %{REQUEST_URI} !/modules/guestbook
+RewriteRule ^([^/]+)/guestbook/([^/]+)(/?)+$ index.php?path=guestbook&func=$2&lang=$1 [L]
+# main pages
+RewriteRule ^([^/]+)/main_pages/([0-9]+)(/?)+$ index.php?path=main_pages&main_pageid=$2&lang=$1 [L]
+RewriteRule ^([^/]+)/main_pages/([0-9]+)/page/([0-9]+)(/?)+$ index.php?path=main_pages&main_pageid=$2&num_page=$3&lang=$1 [L]
+# news
+RewriteCond %{REQUEST_URI} !/modules/news
+RewriteCond %{REQUEST_URI} !/userfiles/news
+RewriteRule ^([^/]+)/news(/?)+$ index.php?path=news&lang=$1 [L]
+RewriteRule ^([^/]+)/news/([0-9]+)(/?)+$ index.php?path=news&func=newsread&news_id=$2&lang=$1 [L]
+RewriteRule ^([^/]+)/news/([0-9]+)/page/([^/]+)(/?)+$ index.php?path=news&func=newsread&news_id=$2&num_page=$3&lang=$1 [L]
+RewriteRule ^([^/]+)/news/cat/([0-9]+)(/?)+$ index.php?path=news&cat_id=$2&lang=$1 [L]
+RewriteRule ^([^/]+)/news/page/([0-9]+)(/?)+$ index.php?path=news&num_page=$2&lang=$1 [L]
+RewriteRule ^([^/]+)/news/cat/([0-9]+)/page/([^/]+)(/?)+$ index.php?path=news&cat_id=$2&num_page=$3&lang=$1 [L]
+# shop
+RewriteCond %{REQUEST_URI} !/modules/shop
+RewriteCond %{REQUEST_URI} !/userfiles/shop
+RewriteRule ^([^/]+)/shop(/?)+$ index.php?path=shop&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/item/([0-9]+)(/?)+$ index.php?path=shop&func=item&item_id=$2&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/item/([0-9]+)/page/([0-9]+)(/?)+$ index.php?path=shop&func=item&item_id=$2&num_page=$3&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/item/cat/([0-9]+)/([0-9]+)(/?)+$ index.php?path=shop&func=item&cat_id=$2&item_id=$3&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/item/cat/([0-9]+)/([0-9]+)/page/([0-9]+)(/?)+$ index.php?path=shop&func=item&cat_id=$2&item_id=$3&num_page=$4&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/item/cat/([0-9]+)/categ/([0-9]+)/([0-9]+)(/?)+$ index.php?path=shop&func=item&cat_id=$2&categ_id=$3&item_id=$4&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/item/cat/([0-9]+)/categ/([0-9]+)/([0-9]+)/page/([0-9]+)(/?)+$ index.php?path=shop&func=item&cat_id=$2&categ_id=$3&item_id=$4&num_page=$5&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/item/cat/([0-9]+)/categ/([0-9]+)/subcateg/([0-9]+)/([0-9]+)(/?)+$ index.php?path=shop&func=item&cat_id=$2&categ_id=$3&subcateg_id=$4&item_id=$5&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/item/cat/([0-9]+)/categ/([0-9]+)/subcateg/([0-9]+)/([0-9]+)/page/([0-9]+)(/?)+$ index.php?path=shop&func=item&cat_id=$2&categ_id=$3&subcateg_id=$4&item_id=$5&num_page=$6&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/categs/([0-9]+)(/?)+$ index.php?path=shop&func=categs&cat_id=$2&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/categs/([0-9]+)/page/([0-9]+)(/?)+$ index.php?path=shop&func=categs&cat_id=$2&num_page=$3&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/subcategs/([0-9]+)/([0-9]+)(/?)+$ index.php?path=shop&func=subcategs&cat_id=$2&categ_id=$3&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/subcategs/([0-9]+)/([0-9]+)/page/([0-9]+)(/?)+$ index.php?path=shop&func=subcategs&cat_id=$2&categ_id=$3&num_page=$4&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/items/cat/([0-9]+)/categ/([0-9]+)/subcateg/([0-9]+)(/?)+$ index.php?path=shop&func=items&cat_id=$2&categ_id=$3&subcateg_id=$4&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/items/cat/([0-9]+)/categ/([0-9]+)/subcateg/([0-9]+)/page/([0-9]+)(/?)+$ index.php?path=shop&func=items&cat_id=$2&categ_id=$3&subcateg_id=$4&num_page=$5&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/page/([0-9]+)(/?)+$ index.php?path=shop&num_page=$2&lang=$1 [L]
+RewriteCond %{REQUEST_URI} !/modules/shop
+RewriteCond %{REQUEST_URI} !/userfiles/shop
+RewriteRule ^([^/]+)/shop/([^/]+)(/?)+$ index.php?path=shop&func=$2&lang=$1 [L]
+# hide content of some directories
+RewriteRule ^adodb(/?)+$ index.php [L]
+RewriteRule ^adodb/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^adodb/([^/]+)/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^adodb/([^/]+)/([^/]+)/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^adodb/([^/]+)/([^/]+)/([^/]+)/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^blocks(/?)+$ index.php [L]
+RewriteRule ^blocks/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^blocks/([^/]+)/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^ckeditor(/?)+$ index.php [L]
+RewriteRule ^includes(/?)+$ index.php [L]
+RewriteRule ^includes/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^modules(/?)+$ index.php [L]
+RewriteRule ^modules/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^modules/([^/]+)/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^smarty(/?)+$ index.php [L]
+RewriteRule ^smarty/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^smarty/([^/]+)/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^systemadmin/modules(/?)+$ index.php [L]
+RewriteRule ^systemadmin/modules/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^systemadmin/modules/([^/]+)/([^/]+)(/?)+$ index.php [L]
+RewriteRule ^themes(/?)+$ index.php [L]
+RewriteRule ^userfiles(/?)+$ index.php [L]
+RewriteRule ^userfiles/_thumbs(/?)+$ index.php [L]
+RewriteRule ^userfiles/file(/?)+$ index.php [L]
+RewriteRule ^userfiles/flash(/?)+$ index.php [L]
+RewriteRule ^userfiles/image(/?)+$ index.php [L]
+RewriteRule ^userfiles/media(/?)+$ index.php [L]
+RewriteRule ^userfiles/news(/?)+$ index.php [L]
+RewriteRule ^userfiles/shop(/?)+$ index.php [L]
+RewriteRule ^userfiles/shop/items(/?)+$ index.php [L]
+# One entering point
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+#RewriteRule .* index.php [L]
+RewriteRule ^(.*)$ index.php?%{REQUEST_URI} [QSA,L]

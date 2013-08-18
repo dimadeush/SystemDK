@@ -1,0 +1,55 @@
+<br><br>
+{literal}
+<script type="text/javascript">
+function image_reload()
+ {
+   document.images['captcha'].src='/{/literal}{$system_dir}{literal}captcha/index.php?rnd='+Math.round(Math.random(0)*1000);
+
+ }
+</script>
+{/literal}
+<center><img src="/{$system_dir}{#bgimage18#}" alt=""> <span class="title">{#_FEEDBACKMODULETITLE#}</span><br><br><br>
+<form action="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/feedback/{else}/{$system_dir}index.php?path=feedback&amp;lang={$site_language}{/if}" method="post">
+<table border="0" cellspacing="2"  cellpadding="0" width="30%">
+ {nocache}
+ <tr align="left">
+  <td bgcolor="{#color7#}" class="td1" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_FEEDBACKUSERNAME#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap><input type="text" name="feedback_user_name" {if $modules_feedback_sendername ne 'no'}value="{$modules_feedback_sendername}" readonly{/if} size="45" maxlength="35" class="formenter"> <input type="hidden" name="feedback_user_id" value="{$modules_feedback_senderid}"></td>
+ </tr>
+ <tr align="left">
+  <td bgcolor="{#color7#}" class="td1" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_FEEDBACKUSEREMAIL#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap> <input type="text" name="feedback_user_email" {if $modules_feedback_senderemail ne 'no'}value="{$modules_feedback_senderemail}" readonly{/if} size="45" maxlength="60" class="formenter"></td>
+ </tr>
+ {/nocache}
+ {if $receivers_all ne 'default'}
+ <tr align="left">
+  <td bgcolor="{#color7#}" class="td1" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_FEEDBACKTOWHOM#}:</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap>
+   <select name="feedback_towhom" class="formenter">
+    {foreach $receivers_all as $receivers_all_tpl}
+    <option value="{$receivers_all_tpl.receiver_id}">{$receivers_all_tpl.receiver_name}</option>
+    {/foreach}
+   </select>
+  </td>
+ </tr>
+ {/if}
+ <tr align="left">
+  <td bgcolor="{#color7#}" class="td1" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_FEEDBACKSUBJECT#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap> <input type="text" name="feedback_subject" size="60" maxlength="45" class="formenter"></td>
+ </tr>
+ <tr align="left">
+  <td bgcolor="{#color7#}" class="td1" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_FEEDBACKMESSAGE#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap> <textarea name="feedback_message" rows="12" cols="75" class="formenter"></textarea></td>
+ </tr>
+{nocache}
+{if $enter_check ne "no"}
+ <tr align="left">
+  <td bgcolor="{#color7#}" class="td1" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_FEEDBACKSECRETNUM2#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap>
+   <img src="/{$system_dir}captcha/index.php" border='1' alt="" id="captcha"> &nbsp;<a href="javascript:image_reload();" class="link">{#_FEEDBACKCAPTCHAUPDATE#}</a><br>
+   <input type="text" name="captcha" size="11" maxlength="6" class="formenter">
+  </td>
+ </tr>
+{/if}
+{/nocache}
+</table><br>
+   <input type="hidden" name="func" value="feedback_send">
+   <center><input type="submit" value="{#_FEEDBACKSENDBUTTON#}" class="button"></center>
+</form>
+</center><br><br>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="/{$system_dir}{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+<br><br><br>

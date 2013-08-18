@@ -1,0 +1,64 @@
+<center><table width="99%" cellpadding="0" cellspacing="0" border="0"><tr><td align="left"><a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/{else}/{$system_dir}index.php?path=shop&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_MAINPAGETITLE#}</a> <span class="textlinkbig"><b>&rarr;</b></span> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/categs/{$shop_catalog_id}/{else}/{$system_dir}index.php?path=shop&amp;func=categs&amp;cat_id={$shop_catalog_id}&amp;lang={$site_language}{/if}" class="link">{$shop_catalog_name}</a> <span class="textlinkbig"><b>&rarr;</b></span> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/subcategs/{$shop_catalog_id}/{$shop_category_id}/{else}/{$system_dir}index.php?path=shop&amp;func=subcategs&amp;cat_id={$shop_catalog_id}&amp;categ_id={$shop_category_id}&amp;lang={$site_language}{/if}" class="link">{$shop_category_name}</a> <span class="textlinkbig"><b>&rarr;</b></span> <span class="textlink">{$shop_subcategory_name}</span></td><td align="right">{if $shop_carttotal_display ne "no"}<a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/cart/{else}/{$system_dir}index.php?path=shop&amp;func=cart&amp;lang={$site_language}{/if}" class="linkbig">{#_SHOP_MODULE_TOTALITEMS1#} {nocache}{$shop_carttotal_items}{/nocache} {#_SHOP_MODULE_TOTALITEMS2#}</a><br><span class="tablecenterblocktext2">{#_SHOP_MODULE_TOTALPRICE1#}</span> {nocache}{$shop_carttotal_price}{/nocache} <span class="tablecenterblocktext2">{$systemdk_shop_valuta}</span><br><a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/checkout/{else}/{$system_dir}index.php?path=shop&amp;func=checkout&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_PROCESSORDER#}</a>{else}<br><a href="/{$system_dir}{$admin_folder}index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP_MODULE_ADMINMENU#}</a><br>{/if}</td></tr>
+<tr><td colspan="2"><span class="textbig"><b>{$shop_subcategory_name}</b></span><br><span class="text">{#_SHOP_TOTALITEMS#}: {$shop_total_items}</span><br><br></td></tr>
+<tr><td colspan="2" bgcolor="{#color9#}" height="1"></td></tr>
+</table>
+{if $shop_subcategory_description ne ""}<br><table width="99%" cellpadding="0" cellspacing="0" border="0"><tr><td align="left" class="textbig">{$shop_subcategory_description}</td></tr></table>{/if}
+</center>
+<br>
+{if $shop_items_all ne "no"}
+<center>
+<img src="/{$system_dir}{#bgimage18#}" alt=""> <span class="title">{#_SHOP_MODULE_ITEMS#}</span>
+{foreach $shop_items_all as $shop_items_all_tpl}
+<br><br>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+ <tr bgcolor="{#color7#}">
+  <td width="100%" height="17" align="left"><img src="/{$system_dir}{#bgimage14#}" border="0" width="14" height="14" alt=""><span class="tablenamecenterblock"> {$shop_items_all_tpl.item_name}</span></td><td align="right" nowrap>{if $admin eq "yes"}<span class="leftrightblocktext">{#_SHOP_MODULE_ITEMDATE#}: [{$shop_items_all_tpl.item_date}]</span>{/if}</td>
+ </tr>
+ <tr>
+  <td colspan="2">
+   <table width="100%" cellpadding="2" cellspacing="2" border="0">
+    <tr>
+     {if $shop_items_all_tpl.item_img ne "no"}
+      <td align="left" class="textbig">
+       <div style="valign:top" align="{$systemdk_shop_itemimage_position}"><img src="/{$system_dir}{$systemdk_shop_itemimage_path}/{$shop_items_all_tpl.item_img}" border="0" width="{$systemdk_shop_itemimage_width}" style="float:{$systemdk_shop_itemimage_position}" alt=""></div>
+      </td>
+     {/if}
+      <td width="100%" align="left" class="textbig">
+       {if $shop_items_all_tpl.item_quantity_param eq 3} <span class="text"> {#_SHOP_MODULE_ITEMACTION#}</span><br>{/if}
+       <span class="text">{#_SHOP_MODULE_ITEMCODE#}: {$shop_items_all_tpl.item_id}</span>
+       {if $shop_items_all_tpl.item_subcategory_id > 0}<br><span class="text">{#_SHOP_MODULE_SUBCATEGORY#}:</span> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/items/cat/{$shop_items_all_tpl.item_subcateg_cat_id}/categ/{$shop_items_all_tpl.item_subcateg_categ_id}/subcateg/{$shop_items_all_tpl.item_subcategory_id}/{else}/{$system_dir}index.php?path=shop&amp;func=items&amp;cat_id={$shop_items_all_tpl.item_subcateg_cat_id}&amp;categ_id={$shop_items_all_tpl.item_subcateg_categ_id}&amp;subcateg_id={$shop_items_all_tpl.item_subcategory_id}&amp;lang={$site_language}{/if}" class="link">{$shop_items_all_tpl.item_subcategory_name}</a>{/if}
+       <br><br>
+       {$shop_items_all_tpl.item_short_description}<br><br>{if $shop_items_all_tpl.item_quantity_unlim eq 1} {#_SHOP_MODULE_ITEMQUANTITYUNLIM#}{elseif $shop_items_all_tpl.item_quantity gt 0} {#_SHOP_MODULE_ITEMQUANTITYYES#}{elseif $shop_items_all_tpl.item_quantity_param eq 1} {#_SHOP_MODULE_ITEMQUANTITYWAIT#} {elseif $shop_items_all_tpl.item_quantity_param eq 2} {#_SHOP_MODULE_ITEMQUANTITYWITHDRAWN#}{else}{#_SHOP_MODULE_ITEMQUANTITYNO#}{/if}<br>{if $shop_items_all_tpl.item_price_discounted > 0}<s>{$shop_items_all_tpl.item_price}</s> {$systemdk_shop_valuta}<br>{#_SHOP_MODULE_PRICEDISCOUNTED#}: {$shop_items_all_tpl.item_price_discounted}{else}{$shop_items_all_tpl.item_price}{/if} {$systemdk_shop_valuta}
+       {if $shop_items_all_tpl.item_quantity_unlim eq 1 or $shop_items_all_tpl.item_quantity gt 0}
+         <form action="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/cart/{else}/{$system_dir}index.php?path=shop&amp;func=cart&amp;lang={$site_language}{/if}" method="post">
+         <input type="hidden" name="shop_new" value="{$shop_items_all_tpl.item_id}">
+         <input type="submit" value="{#_SHOP_MODULE_BUYBUTTON#}" class="button">
+         </form>
+       {/if}
+      </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+ <tr bgcolor="{#color7#}">
+  <td width="100%" height="17" align="left" nowrap><a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/item/{if $shop_items_all_tpl.item_subcategory_id > 0}cat/{$shop_items_all_tpl.item_subcateg_cat_id}/categ/{$shop_items_all_tpl.item_subcateg_categ_id}/subcateg/{$shop_items_all_tpl.item_subcategory_id}/{/if}{$shop_items_all_tpl.item_id}/{else}/{$system_dir}index.php?path=shop&amp;func=item{if $shop_items_all_tpl.item_subcategory_id > 0}&amp;cat_id={$shop_items_all_tpl.item_subcateg_cat_id}&amp;categ_id={$shop_items_all_tpl.item_subcateg_categ_id}&amp;subcateg_id={$shop_items_all_tpl.item_subcategory_id}{/if}&amp;item_id={$shop_items_all_tpl.item_id}&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_ITEMDETAILLINK#}</a></td><td align="right" nowrap>{if $admin eq "yes"}<a href="/{$system_dir}{$admin_folder}index.php?path=admin_shop&amp;func=shop_edit_item{if $shop_items_all_tpl.item_subcategory_id > 0}&amp;cat={$shop_items_all_tpl.item_subcateg_cat_id}&amp;categ={$shop_items_all_tpl.item_subcateg_categ_id}&amp;subcateg={$shop_items_all_tpl.item_subcategory_id}{/if}&amp;item_id={$shop_items_all_tpl.item_id}&amp;lang={$site_language}" target="_blank" class="link">{#_SHOP_MODULE_ITEMEDIT#}</a>{/if}</td>
+ </tr>
+</table>
+{/foreach}
+</center>
+{else}
+<br><center><img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SHOP_MODULE_NOITEMS#}</span></center>
+{/if}
+<br><br>
+{if $html ne "no"}
+<table width="100%" cellpadding="0" cellspacing="2" border="0">
+ <tr>
+  <td><center><span class="tablecenterblocktext2">{#_SHOP_TOTALITEMS#}:{$shop_total_items} ({#_SHOP_TOTALCATALOGSPAGES#}:{$num_pages})</span></center></td>
+ </tr>
+</table>
+<center>{if $prevpage ne "no"}<a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/items/cat/{$shop_catalog_id}/categ/{$shop_category_id}/subcateg/{$shop_subcategory_id}/page/{$prevpage}/{else}/{$system_dir}index.php?path=shop&amp;func=items&amp;cat_id={$shop_catalog_id}&amp;categ_id={$shop_category_id}&amp;subcateg_id={$shop_subcategory_id}&amp;num_page={$prevpage}&amp;lang={$site_language}{/if}" title="{#_SHOP_PREVPAGE#}" class="link"><img src="/{$system_dir}{#bgimage19#}" border="0" alt="{#_SHOP_PREVPAGE#}"></a> {/if}
+{foreach $html as $html_tpl}
+{if $html_tpl.param1 eq "1"} <span class="tablecenterblocktext2">[{$html_tpl.number}]</span> {elseif $html_tpl.param1 eq "2"} <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/items/cat/{$shop_catalog_id}/categ/{$shop_category_id}/subcateg/{$shop_subcategory_id}/page/{$html_tpl.number}/{else}/{$system_dir}index.php?path=shop&amp;func=items&amp;cat_id={$shop_catalog_id}&amp;categ_id={$shop_category_id}&amp;subcateg_id={$shop_subcategory_id}&amp;num_page={$html_tpl.number}&amp;lang={$site_language}{/if}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "3"} ...<a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/items/cat/{$shop_catalog_id}/categ/{$shop_category_id}/subcateg/{$shop_subcategory_id}/page/{$html_tpl.number}/{else}/{$system_dir}index.php?path=shop&amp;func=items&amp;cat_id={$shop_catalog_id}&amp;categ_id={$shop_category_id}&amp;subcateg_id={$shop_subcategory_id}&amp;num_page={$html_tpl.number}&amp;lang={$site_language}{/if}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "4"} <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/items/cat/{$shop_catalog_id}/categ/{$shop_category_id}/subcateg/{$shop_subcategory_id}/page/{$html_tpl.number}/{else}/{$system_dir}index.php?path=shop&amp;func=items&amp;cat_id={$shop_catalog_id}&amp;categ_id={$shop_category_id}&amp;subcateg_id={$shop_subcategory_id}&amp;num_page={$html_tpl.number}&amp;lang={$site_language}{/if}" class="link">[{$html_tpl.number}]</a>... {/if}
+{/foreach}
+{if $nextpage ne "no"} <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/items/cat/{$shop_catalog_id}/categ/{$shop_category_id}/subcateg/{$shop_subcategory_id}/page/{$nextpage}/{else}/{$system_dir}index.php?path=shop&amp;func=items&amp;cat_id={$shop_catalog_id}&amp;categ_id={$shop_category_id}&amp;subcateg_id={$shop_subcategory_id}&amp;num_page={$nextpage}&amp;lang={$site_language}{/if}" title="{#_SHOP_NEXTPAGE#}" class="link"><img src="/{$system_dir}{#bgimage20#}" border="0" alt="{#_SHOP_NEXTPAGE#}"></a>{/if}</center>
+{/if}<br>

@@ -1,0 +1,22 @@
+{if $include_header}
+{include file=$include_header}
+{/if}
+
+{if $include_center_up}
+{include file=$include_center_up}
+{/if}
+
+{if $include_center and $include_center ne "no"}
+{include file=$include_center}
+{/if}
+
+{if $include_center_down}
+{include file=$include_center_down}
+{/if}
+
+{if $include_footer}
+{include file=$include_footer}
+{/if}
+
+</body>
+</html>

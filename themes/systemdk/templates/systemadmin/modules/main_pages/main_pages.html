@@ -1,0 +1,42 @@
+{config_load file="$language/systemadmin/modules/main_pages/main_pages.conf"}
+{#_MAINPAGE#}</span></center>
+</div>
+<center>
+<br>
+<a href="index.php?path=admin_main_pages&amp;func=mainpage_add&amp;lang={$site_language}" class="link">{#_MAINPAGEADD#}</a>
+<br><br>
+<form action="index.php?path=admin_main_pages&amp;func=mainpage_status&amp;lang={$site_language}" method="POST">
+<table border="0" width="99%" cellspacing="2"  cellpadding="0">
+<tr align="center">
+<td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MAINPAGETITLE#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MAINPAGEAUTHOR#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MAINPAGEWHOVIEW#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MAINPAGESTATUS#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MAINPAGETERMEXPIRE#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MAINPAGEFUNCTION#}</span></td>
+</tr>
+{if $mainpage_all ne "no"}
+{foreach $mainpage_all as $mainpage_all_tpl}
+<tr>
+<td width="1%" bgcolor="{#color7#}" nowrap><img src="../{#bgimage15#}" border="0" alt=""></td><td width="1%" bgcolor="{#color7#}"><center><input type="checkbox" name="mainpage_id[]" value="{$mainpage_all_tpl.mainpage_id}" class="formenter"></center></td><td width="16%" bgcolor="{#color7#}" class="td1" nowrap align="left"><span class="tablecenterblocktext2"> {$mainpage_all_tpl.mainpage_title|truncate:30:"...":true}</span></td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$mainpage_all_tpl.mainpage_author}</span></td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap>{if $mainpage_all_tpl.mainpage_valueview eq "0"} <span class="tablecenterblocktext2">{#_MAINPAGEALLVISITORS#}</span>{elseif $mainpage_all_tpl.mainpage_valueview eq "1"} <span class="tablecenterblocktext2">{#_MAINPAGEONLYUSERS#}</span>{elseif $mainpage_all_tpl.mainpage_valueview eq "2"} <span class="tablecenterblocktext2">{#_MAINPAGEONLYADMINS#}</span>{elseif $mainpage_all_tpl.mainpage_valueview eq "3"}<span class="tablecenterblocktext2">{#_MAINPAGEONLYGUESTS#}</span>{/if}</td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap>{if $mainpage_all_tpl.mainpage_status eq "1"}<span class="tablecenterblocktext2">{#_MAINPAGEACTIVE#}</span>{elseif $mainpage_all_tpl.mainpage_status eq "0"}<span class="tablecenterblocktext2">{#_MAINPAGENOTACTIVE#}</span>{/if}</td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap>{if $mainpage_all_tpl.mainpage_termexpire eq "notunlim"}<span class="tablecenterblocktext2">{#_MAINPAGELIMTIME#}</span>{else}<span class="tablecenterblocktext2">{#_MAINPAGEUNLIMTIME#}</span>{/if}</td><td width="16%" bgcolor="{#color7#}" class="td2" nowrap><a href="index.php?path=admin_main_pages&amp;func=mainpage_edit&amp;mainpage_id={$mainpage_all_tpl.mainpage_id}&amp;lang={$site_language}" class="link">{#_MAINPAGEFUNCTIONEDIT#}</a><span class="tablecenterblocktext2">|</span>{if $mainpage_all_tpl.mainpage_status eq "1"}<a href="index.php?path=admin_main_pages&amp;func=mainpage_status&amp;action=off&amp;mainpage_id={$mainpage_all_tpl.mainpage_id}&amp;lang={$site_language}" class="link">{#_MAINPAGEFUNCTIONOFF#}</a>{elseif $mainpage_all_tpl.mainpage_status eq "0"}<a href="index.php?path=admin_main_pages&amp;func=mainpage_status&amp;action=on&amp;mainpage_id={$mainpage_all_tpl.mainpage_id}&amp;lang={$site_language}" class="link">{#_MAINPAGEFUNCTIONON#}</a>{/if}<span class="tablecenterblocktext2">|</span><a href="index.php?path=admin_main_pages&amp;func=mainpage_status&amp;action=delete&amp;mainpage_id={$mainpage_all_tpl.mainpage_id}&amp;lang={$site_language}" class="link">{#_MAINPAGEFUNCTIONDELETE#}</a></td>
+</tr>
+{/foreach}
+{else}
+<tr>
+<td width="100%" colspan="8" align="center" bgcolor="{#color7#}"><span class="tablecenterblocktext2">{#_MAINPAGENOPAGES#}</span></td>
+</tr>
+{/if}
+</table>
+{if $mainpage_all ne "no"}
+ <table border="0" width="99%" cellspacing="2"  cellpadding="0"><tr align="right"><td><span class="tablecenterblocktext2">{#_MAINPAGEACTIONWITHSELECTED#}:</span> <select name="action" class="formenter"> <option value="off">{#_MAINPAGEFUNCTIONOFF#}</option><option value="on">{#_MAINPAGEFUNCTIONON#}</option><option value="delete">{#_MAINPAGEFUNCTIONDELETE#}</option></select> <input type="submit" value="{#_MAINPAGEBUTTONDONE#}" class="button"></td></tr></table>
+{/if}
+</form>
+</center>
+<br><br>
+{if $html ne "no"}
+<table width="100%" cellpadding="0" cellspacing="2" border="0">
+ <tr>
+  <td><center><span class="tablecenterblocktext2">{#_MAINPAGECOUNTTOTAL#}:{$totalmainpages} ({#_MAINPAGEPAGECOUNTTOTAL#}:{$num_pages})</span></center></td>
+ </tr>
+</table>
+<center>{if $prevpage ne "no"}<a href="index.php?path=admin_main_pages&amp;func=index&amp;num_page={$prevpage}&amp;lang={$site_language}" title="{#_MAINPAGEPREVPAGE#}" class="link"><img src="../{#bgimage19#}" border="0" alt="{#_MAINPAGEPREVPAGE#}"></a> {/if}
+{foreach $html as $html_tpl}
+{if $html_tpl.param1 eq "1"} <span class="tablecenterblocktext2">[{$html_tpl.number}]</span> {elseif $html_tpl.param1 eq "2"} <a href="index.php?path=admin_main_pages&amp;func=index&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "3"} ...<a href="index.php?path=admin_main_pages&amp;func=index&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "4"} <a href="index.php?path=admin_main_pages&amp;func=index&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a>... {/if}
+{/foreach}
+{if $nextpage ne "no"} <a href="index.php?path=admin_main_pages&amp;func=index&amp;num_page={$nextpage}&amp;lang={$site_language}" title="{#_MAINPAGENEXTPAGE#}" class="link"><img src="../{#bgimage20#}" border="0" alt="{#_MAINPAGENEXTPAGE#}"></a>{/if}</center>
+{/if}<br><br>

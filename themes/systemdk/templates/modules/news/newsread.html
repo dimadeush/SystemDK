@@ -1,0 +1,39 @@
+{config_load file="$language/modules/news/news.conf"}
+{if $news_all eq "notselectnews"}
+<br><br><center><img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_NEWSNOTSELECT#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_NEWSGOBACK#}</a></center><br><br>
+{elseif $news_all eq "notactivnews"}
+<br><br><center><img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_NEWSNOTACTIVE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_NEWSGOBACK#}</a></center><br><br>
+{elseif $news_all eq "notfindnews"}
+<br><br><center><img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_NEWSNOTFIND#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_NEWSGOBACK#}</a></center><br><br>
+{else}
+{foreach $news_all as $news_all_tpl}
+{if $news_all_tpl.news_valueview ne "no" or $news_admin eq "yes"}
+<br><br>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+ <tr bgcolor="{#color7#}">
+  <td width="100%" height="17" nowrap><img src="/{$system_dir}{#bgimage14#}" border="0" width="14" height="14" alt=""><span class="tablenamecenterblock"> {$news_all_tpl.news_title}</span></td><td align="right" nowrap><span class="leftrightblocktext">{#_NEWSDATEWRITE#}: [{$news_all_tpl.news_date}]</span></td>
+ </tr>
+ <tr>
+  <td colspan="2" class="textbig">{if $news_all_tpl.news_images ne "no"}<div style="valign:top" align="{$image_position}"><a href="/{$system_dir}{$image_path}/{$news_all_tpl.news_images}" target="_blank"><img src="/{$system_dir}{$image_path}/{$news_all_tpl.news_images}" border="0" width="{$image_width2}" style="float:{$image_position}"></a></div>{/if}{$news_all_tpl.news_content}{if $news_all_tpl.news_notes ne "no"}<br><span class="textbig">{#_NEWSNOTES#}: {$news_all_tpl.news_notes}</span>{/if}{if $news_all_tpl.news_category_name ne "no"}<br><span class="text">{#_NEWSCATEGORY#}:</span> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/news/cat/{$news_all_tpl.news_category_id}/{else}/{$system_dir}index.php?path=news&amp;cat_id={$news_all_tpl.news_category_id}&amp;lang={$site_language}{/if}" class="link">{$news_all_tpl.news_category_name}</a>{/if}</td>
+ </tr>
+ {if isset($pages_menu) and $pages_menu ne "no"}
+  <tr>
+  <td colspan="2">
+  <center>
+  {foreach $pages_menu as $pages_menu_tpl}
+  {if $pages_menu_tpl.prev_page ne "no"}<a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/news/{$news_all_tpl.news_id}/page/{$pages_menu_tpl.prev_page}/{else}/{$system_dir}index.php?path=news&amp;func=newsread&amp;news_id={$news_all_tpl.news_id}&amp;num_page={$pages_menu_tpl.prev_page}&amp;lang={$site_language}{/if}" title="{#_NEWSPREVPAGE#}" class="link">{#_NEWSPREVPAGE#}</a> <span class="tablecenterblocktext2">|</span>{/if} <span class="tablecenterblocktext2">{#_NEWSPAGECURRENT#} {$pages_menu_tpl.current_page} {#_NEWSPAGEFROM#} {$pages_menu_tpl.count_num_pages}</span> {if $pages_menu_tpl.next_page ne "no"}<span class="tablecenterblocktext2">|</span> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/news/{$news_all_tpl.news_id}/page/{$pages_menu_tpl.next_page}/{else}/{$system_dir}index.php?path=news&amp;func=newsread&amp;news_id={$news_all_tpl.news_id}&amp;num_page={$pages_menu_tpl.next_page}&amp;lang={$site_language}{/if}" title="{#_NEWSNEXTPAGE#}" class="link">{#_NEWSNEXTPAGE#}</a>{/if}
+  {/foreach}
+  </center>
+  </td>
+  </tr>
+ {/if}
+ <tr bgcolor="{#color7#}">
+  <td width="100%" height="17" nowrap>{if $news_admin eq "yes"}<span class="leftrightblocktext">{#_NEWSWRITE#}: {$news_all_tpl.news_author} {if $news_all_tpl.news_link ne "no"}|{/if}</span>{/if}{if $news_all_tpl.news_link ne "no"} <a href="{$news_all_tpl.news_link}" target="_blank" class="link">{#_NEWSLINK#}</a>{/if}</td><td align="right" nowrap>{if $news_admin eq "yes"}<span class="leftrightblocktext">{if $news_all_tpl.news_termexpire ne "no"}{#_NEWSTERMEXPIRE#}: [{$news_all_tpl.news_termexpire}] {#_NEWSTERMEXPIREACTION#}: [{if $news_all_tpl.news_termexpireaction eq "off"}{#_NEWSTERMEXPIREACTIONOFF#}{elseif $news_all_tpl.news_termexpireaction eq "delete"}{#_NEWSTERMEXPIREACTIONDELETE#}{/if}]{/if} {#_NEWSVIEW#}: [{if $news_all_tpl.news_valueview eq "all"}{#_NEWSVIEWALLUSERS#}{elseif $news_all_tpl.news_valueview eq "users&admins"}{#_NEWSVIEWONLYREG#}{elseif $news_all_tpl.news_valueview eq "admins"}{#_NEWSVIEWONLYADMIN#}{elseif $news_all_tpl.news_valueview eq "guests"}{#_NEWSVIEWONLYGUESTS#}{/if}]</span>{/if}</td>
+ </tr>
+</table><br><br>
+{/if}
+{/foreach}
+{/if}

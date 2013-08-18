@@ -1,0 +1,11 @@
+{config_load file="ru/install/install.conf"}
+{include file='install/header.html'}
+<center><img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_INSTALLBEGINTITLE#}</span></center><br>
+<center><br>
+<form action="index.php" method="POST">
+<span class="textbig">&nbsp;{#_INSTALLSELECTDATABASETYPE#}:</span>&nbsp;&nbsp;<select name="select_db_type" class="formenter"><option value="mysql" selected="selected">MySQL</option><option value="oci8">Oracle</option><!--<option value="mssql">MsSQL(not tested)</option>--></select><br><br><br>
+<input type="hidden" name="func" value="step3">
+<input type="submit" value="{#_INSTALLBUTTONNEXT#}" class="button">
+</form>
+</center><br><br>
+{include file='install/footer.html'}

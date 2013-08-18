@@ -1,0 +1,56 @@
+{config_load file="$language/systemadmin/modules/administrators/administrators.conf"}
+{#_ADMIN#}</span></center>
+</div>
+<center>
+<br>
+{if $admin_update eq "add"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_ADMINADDOK#}</span><br><br>
+<a href="index.php?path=admin_administrators&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMIN#}</a>
+{elseif $admin_update eq "notalldata"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_ADMINNOTALLDATA#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $admin_update eq "norights"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_ADMINNORIGHTS#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $admin_update eq "findsuchadmin"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_ADMINFINDSUCHADMIN#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $admin_update eq "adderrorpass"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_ADMINPASSNOTEQ#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $admin_update eq "adderrorlogin"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_ADMINLOGININCORRECTCHARACTERS#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $admin_update eq "notinsert"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
+{nocache}
+{if $error ne "no"}
+{foreach $error as $error_tpl}
+{if $error_tpl.message ne "" and $error_tpl.code ne ""}<span class="errorsmall">{$error_tpl.message}<br>{$error_tpl.code}</span><br>{/if}
+{/foreach}
+{/if}
+{/nocache}
+<br><a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $admin_update eq "notinsert2"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $admin_update eq "notfind"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_ADMINNOTFIND#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $admin_update eq "off"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_ADMINOFFOK#}</span><br><br>
+<a href="index.php?path=admin_administrators&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMIN#}</a>
+{elseif $admin_update eq "on"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_ADMINONOK#}</span><br><br>
+<a href="index.php?path=admin_administrators&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMIN#}</a>
+{elseif $admin_update eq "delete"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_ADMINDELETEOK#}</span><br><br>
+<a href="index.php?path=admin_administrators&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMIN#}</a>
+{elseif $admin_update eq "editok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_ADMINEDITOK#}</span><br><br>
+<a href="index.php?path=admin_administrators&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMIN#}</a>
+{elseif $admin_update eq "incorrectemail"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_ADMININCORRECTEMAIL#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{/if}
+</center>

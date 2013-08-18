@@ -1,0 +1,15 @@
+{nocache}
+{config_load file="$language/modules/account/account.conf"}
+{if $block_content_array ne "no"}
+<center><span class="leftrightblocktext">{#_ACCOUNTHELLO#},<br> {$block_content_array}</span></center><br>
+&nbsp;<img src="/{$system_dir}{#bgimage25#}" border="0" alt=""> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_ACCOUNTTITLE#}</a><br>
+&nbsp;<img src="/{$system_dir}{#bgimage25#}" border="0" alt=""> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_logout/{else}/{$system_dir}index.php?path=account&amp;func=account_logout&amp;lang={$site_language}{/if}" class="link">{#_ACCOUNTLOGOUT#}</a>
+{else}
+<center><span class="leftrightblocktext">{#_ACCOUNTHELLO#},<br> {#_ACCOUNTGUEST#}</span></center><br>
+&nbsp;<img src="/{$system_dir}{#bgimage25#}" border="0" alt=""> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_ACCOUNTENTER#}</a><br>
+{if isset($systemdk_account_registration) and $systemdk_account_registration eq "yes"}
+&nbsp;<img src="/{$system_dir}{#bgimage25#}" border="0" alt=""> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_register/{else}/{$system_dir}index.php?path=account&amp;func=account_register&amp;lang={$site_language}{/if}" class="link">{#_ACCOUNTREGISTERLINK#}</a><br>
+{/if}
+&nbsp;<img src="/{$system_dir}{#bgimage25#}" border="0" alt=""> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_lostpass/{else}/{$system_dir}index.php?path=account&amp;func=account_lostpass&amp;lang={$site_language}{/if}" class="link">{#_ACCOUNTLOSTPASSWORDLINK#}</a>
+{/if}
+{/nocache}

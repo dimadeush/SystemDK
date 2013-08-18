@@ -1,0 +1,13 @@
+User-agent: *
+Disallow: /adodb/
+Disallow: /blocks/
+Disallow: /captcha/
+Disallow: /ckeditor/
+Disallow: /flowplayer/
+Disallow: /includes/
+Disallow: /install/
+Disallow: /modules/
+Disallow: /smarty/
+Disallow: /systemadmin/
+Disallow: /themes/
+Disallow: /userfiles/

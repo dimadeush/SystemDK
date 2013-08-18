@@ -1,0 +1,35 @@
+{nocache}
+{if $modules_account_regusername eq '' or $modules_account_regusername eq 'NULL'}{#_ACCOUNTREGNEWUSER#}{else}{$modules_account_regusername}{/if},
+
+{#_ACCOUNTREGTEXT1#} {$modules_account_siteurl}
+
+{#_ACCOUNTREGTEXT2#}
+
+-----------------------------------------
+{#_ACCOUNTREGTEXT3#}:
+-----------------------------------------
+
+{#_ACCOUNTLOGIN#}: modules_account_reguserlogin
+{#_ACCOUNTPASSWORD#}: modules_account_reguserpassword
+
+
+{#_ACCOUNTREGTEXT5#}
+{#_ACCOUNTREGTEXT11#}
+
+-----------------------------------------
+{#_ACCOUNTREGTEXT4#}:
+-----------------------------------------
+
+{#_ACCOUNTREGTEXT6#}
+
+{#_ACCOUNTREGTEXT7#}:
+
+{$modules_account_siteurl}{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_add_confirm/modules_account_regactid/{else}/{$system_dir}index.php?path=account&func=account_add_confirm&act_code=modules_account_regactid&lang={$site_language}{/if}
+
+
+{#_ACCOUNTREGTEXT8#}
+
+
+{#_ACCOUNTREGTEXT9#},
+{#_ACCOUNTREGTEXT10#} {$modules_account_siteurl}.
+{/nocache}

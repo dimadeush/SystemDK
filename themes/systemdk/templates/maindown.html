@@ -1,0 +1,24 @@
+      {nocache}
+      {if $homepage eq "true"}
+      {if $blocks_all_centerdowndata ne "false"}
+      {foreach $blocks_all_centerdowndata as $blocks_all_centerdowndata_tpl}
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+       <tr bgcolor="{#color8#}">
+         <td height="17" align="left"><img border="0" src="/{$system_dir}{#bgimage18#}" alt=""> <span class="tablecenterblocktext"><u>{$blocks_all_centerdowndata_tpl.block_customname}</u></span></td>
+       </tr>
+       <tr>
+         <td class="textbig">
+         {$blocks_all_centerdowndata_tpl.block_content}
+         </td>
+       </tr>
+      </table><br>
+      {/foreach}
+      {/if}
+      {/if}
+      {/nocache}
+      </td>
+    </tr>
+   </table>
+   </td>
+   <td width="1" align="left"><hr width="4" style="color:{#color2#}; border:0;"></td>
+   <td valign="top" width="170" bgcolor="{#color10#}">

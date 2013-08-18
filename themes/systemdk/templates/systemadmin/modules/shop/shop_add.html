@@ -1,0 +1,99 @@
+{#_SHOP#}</span></center>
+</div>
+<br>
+<center>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> <span class="tablecenterblocktext2">|</span>
+{if isset($adminmodules_shop_depth) and $adminmodules_shop_depth eq "cat"}
+<a href="index.php?path=admin_shop&amp;func=shop_add_item&amp;lang={$site_language}" class="link">{#_SHOPADDITEMLINK#}</a>
+{elseif isset($adminmodules_shop_depth) and $adminmodules_shop_depth eq "categ"}
+<a href="index.php?path=admin_shop&amp;func=shop_add_item&amp;cat={$adminmodules_shop_cat}&amp;lang={$site_language}" class="link">{#_SHOPADDITEMLINK#}</a>
+{elseif isset($adminmodules_shop_depth) and $adminmodules_shop_depth eq "subcateg"}
+<a href="index.php?path=admin_shop&amp;func=shop_add_item&amp;cat={$adminmodules_shop_cat}&amp;categ={$adminmodules_shop_categ}&amp;lang={$site_language}" class="link">{#_SHOPADDITEMLINK#}</a>
+{/if}
+<br><br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{if $adminmodules_shop_depth eq "cat"}{#_SHOPCATALOGSADDTITLE#}{elseif $adminmodules_shop_depth eq "categ"}{#_SHOPCATEGORIESADDTITLE#}{elseif $adminmodules_shop_depth eq "subcateg"}{#_SHOPSUBCATEGORIESADDTITLE#}{/if}</span><br><br>
+{if $adminmodules_shop_depth eq "cat"}
+<table width="99%" cellpadding="0" cellspacing="0" border="0"><tr><td align="left"><a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a></td></tr></table>
+{elseif $adminmodules_shop_depth eq "categ"}
+<table width="99%" cellpadding="0" cellspacing="0" border="0"><tr><td align="left"><a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> {if isset($adminmodules_shop_cat) and $adminmodules_shop_cat ne 0}<span class="textlinkbig"><b>&rarr;</b></span> <a href="index.php?path=admin_shop&amp;func=index&amp;cat={$adminmodules_shop_cat}&amp;lang={$site_language}" class="link">{$adminmodules_shop_cat_name}</a> {/if}</td></tr></table>
+{elseif $adminmodules_shop_depth eq "subcateg"}
+<table width="99%" cellpadding="0" cellspacing="0" border="0"><tr><td align="left"><a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> {if isset($adminmodules_shop_cat) and $adminmodules_shop_cat ne 0}<span class="textlinkbig"><b>&rarr;</b></span> <a href="index.php?path=admin_shop&amp;func=index&amp;cat={$adminmodules_shop_cat}&amp;lang={$site_language}" class="link">{$adminmodules_shop_cat_name}</a> {/if}{if isset($adminmodules_shop_categ) and $adminmodules_shop_categ ne 0}<span class="textlinkbig"><b>&rarr;</b></span> <a href="index.php?path=admin_shop&amp;func=index&amp;cat={$adminmodules_shop_cat}&amp;categ={$adminmodules_shop_categ}&amp;lang={$site_language}" class="link">{$adminmodules_shop_categ_name}</a>{/if}</td></tr></table>
+{/if}
+<br>
+<form enctype="multipart/form-data" action="index.php?path=admin_shop&amp;func=shop_add_inbase&amp;lang={$site_language}" method="POST">
+{if $adminmodules_shop_depth eq "categ"}
+<input type="hidden" name="depth" value="1">
+{elseif $adminmodules_shop_depth eq "subcateg"}
+<input type="hidden" name="depth" value="2">
+{/if}
+<table border="0" cellspacing="2"  cellpadding="0">
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPNAMETITLE#}:</span> <span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="item_name" size="40" maxlength="255" class="formenter"> </td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPIMAGETITLE#}:</span> </td><td bgcolor="{#color7#}" class="td2"><input name="item_img" type="file"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPDESCRIPTIONTITLE#}:</span> </td><td bgcolor="{#color7#}" class="td2"><input type="text" name="item_description" size="70" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPSTATUSTITLE#}:</span> </td><td bgcolor="{#color7#}" class="td2"><select name="item_show" class="formenter"> <option value="0">{#_SHOPITEMOFF#}</option><option value="1" selected>{#_SHOPITEMON#}</option></select></td>
+</tr>
+{if $adminmodules_shop_depth eq "categ" or $adminmodules_shop_depth eq "subcateg"}
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPCATALOGTITLE#}:</span> </td><td bgcolor="{#color7#}" class="td2">
+<select name="item_catalog" {if $adminmodules_shop_depth eq "subcateg"}disabled{/if} class="formenter">
+ {if $adminmodules_shop_depth eq "categ"}
+  {foreach $item_all as $item_all_tpl}
+  <option value="{$item_all_tpl.item_id}" {if $adminmodules_shop_cat eq $item_all_tpl.item_id}selected{/if}>{$item_all_tpl.item_name}</option>
+  {/foreach}
+ {elseif $adminmodules_shop_depth eq "subcateg"}
+  <option value="{$adminmodules_shop_cat}">{$adminmodules_shop_cat_name}</option>
+ {/if}
+</select></td>
+</tr>
+{/if}
+{if $adminmodules_shop_depth eq "subcateg"}
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPCATEGORYTITLE#}:</span> </td><td bgcolor="{#color7#}" class="td2">
+<input type="hidden" name="item_catalog" value="{$adminmodules_shop_cat}">
+<select name="item_category" class="formenter">
+{foreach $item_all as $item_all_tpl}
+<option value="{$item_all_tpl.item_id}" {if $adminmodules_shop_categ eq $item_all_tpl.item_id}selected{/if}>{$item_all_tpl.item_name}</option>
+{/foreach}
+</select></td>
+</tr>
+{/if}
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPMETATITLE#}:</span> </td><td bgcolor="{#color7#}" class="td2"><input type="text" name="item_meta_title" size="70" maxlength="255" class="formenter"> </td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPMETAKEYWORDS#}:</span> </td><td bgcolor="{#color7#}" class="td2"><input type="text" name="item_meta_keywords" size="70" maxlength="255" class="formenter"> </td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPMETADESCRIPTION#}:</span> </td><td bgcolor="{#color7#}" class="td2"><input type="text" name="item_meta_description" size="70" maxlength="255" class="formenter"> </td>
+</tr>
+<tr>
+<td colspan="2" align="center"><br><input type="submit" value="{#_SHOPBUTTONSAVE#}" class="button"></td>
+</tr>
+</table>
+</form>
+<br>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text"> {#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</center><br><br>
+<script type="text/javascript">
+$.tools.dateinput.localize("{$language}",  {
+   months:        '{#_CALENDARMONTHS#}',
+   shortMonths:   '{#_CALENDARSHORTMONTHS#}',
+   days:          '{#_CALENDARDAYS#}',
+   shortDays:     '{#_CALENDARSHORTDAYS#}'
+});
+
+ $(":date").dateinput({
+ lang: '{$language}',
+ format: 'dd.mm.yy',
+ selectors: true,
+ firstDay: 1
+ }
+ );
+ </script>

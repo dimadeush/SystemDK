@@ -1,0 +1,144 @@
+{nocache}
+{config_load file="$language/systemadmin/modules/blocks/blocks.conf"}
+{#_BLOCKS#}</span></center>
+</div>
+<center><br>
+{foreach $block_all as $block_all_tpl}
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_BLOCKEDITBLOCKTITLE#} "{$block_all_tpl.block_customname}"</span><br><br>
+<form action="index.php?path=admin_blocks&amp;func=block_edit_save&amp;lang={$site_language}" method="POST">
+<table border="0" cellspacing="2"  cellpadding="0">
+ <tr align="left">
+  <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKNAME#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="block_custom_name" size="30" maxlength="25" value="{$block_all_tpl.block_customname}" class="formenter"></td>
+ </tr>
+ <tr align="left">
+  <td bgcolor="{#color7#}" class="td1">
+<input type="hidden" name="block_id" value="{$block_all_tpl.block_id}">
+{if $block_type eq "file"}
+<input type="hidden" name="block_type" value="file">
+<input type="hidden" name="block_content" value="">
+<input type="hidden" name="block_url" value="">
+<input type="hidden" name="rss_url" value="">
+<input type="hidden" name="block_refresh" value="">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKFILE#}:</span></td><td bgcolor="{#color7#}" class="td2">
+<select name="block_file" class="formenter">
+{if $block_name ne "no"}
+{foreach $block_name as $block_name_tpl}
+{if $block_all_tpl.block_name eq $block_name_tpl.block_name}
+<option value="{$block_name_tpl.block_name}" selected>{$block_name_tpl.block_name}</option>
+{else}
+<option value="{$block_name_tpl.block_name}">{$block_name_tpl.block_name}</option>
+{/if}
+{/foreach}
+</select>
+{else}
+<option value="{$block_all_tpl.block_name}" selected>{$block_all_tpl.block_name}</option>
+</select><br>
+<span class="erorsmall">{#_BLOCKNOTSUCHFILE#}</span>
+{/if}
+{elseif $block_type eq "content"}
+<input type="hidden" name="block_type" value="content">
+<input type="hidden" name="block_file" value="">
+<input type="hidden" name="block_url" value="">
+<input type="hidden" name="rss_url" value="">
+<input type="hidden" name="block_refresh" value="">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKCONTENT#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><textarea id="block_content" name="block_content" cols="50" rows="10" class="formenter">{$block_all_tpl.block_content}</textarea>
+<script type="text/javascript">
+var ckeditor1 = CKEDITOR.replace( 'block_content',
+{
+language: '{$language}'
+});
+DjenxExplorer.init({
+    returnTo: ckeditor1,
+    path: '/ckeditor/Djenx.Explorer/',
+    lang: '{$language}',
+    post: {
+        'PHPSESSID': '{$session_id}'
+          }
+  });
+</script>
+<br>
+{elseif $block_type eq "rss"}
+<input type="hidden" name="block_type" value="rss">
+<input type="hidden" name="block_file" value="">
+<input type="hidden" name="block_content" value="">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKURL#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="block_url" size="30" maxlength="200" value="{$block_all_tpl.block_url}" class="formenter">
+<br><span class="formentername">{#_BLOCKSELECTURLSITE#}:</span><br><select name="rss_url" class="formenter">
+<option value="0">{#_BLOCKSELECTFORMURLSITE#}</option>
+{if $rss_all ne "no"}
+{foreach $rss_all as $rss_all_tpl}
+<option value="{$rss_all_tpl.rss_siteurl}" {if $block_all_tpl.block_url eq $rss_all_tpl.rss_siteurl} selected {else} {/if}>{$rss_all_tpl.rss_sitename}</option>
+{/foreach}
+{/if}
+</select>
+&nbsp;<a href="index.php?path=admin_blocks&amp;func=block_addrsssite&amp;lang={$site_language}" class="link">{#_BLOCKADDURLSITE#}</a>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKURLUPDATETIME#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="block_refresh" class="formenter">
+<option value="1800" {if $block_all_tpl.block_refresh eq "1800"} selected {else} {/if}>1/2</option>
+<option value="3600" {if $block_all_tpl.block_refresh eq "3600"} selected {else} {/if}>1</option>
+<option value="18000" {if $block_all_tpl.block_refresh eq "18000"} selected {else} {/if}>5</option>
+<option value="36000" {if $block_all_tpl.block_refresh eq "36000"} selected {else} {/if}>10</option>
+<option value="86400" {if $block_all_tpl.block_refresh eq "86400"} selected {else} {/if}>24</option>
+</select><br>
+{/if}
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKPOCITION#}:</span></td><td bgcolor="{#color7#}" class="td2"> <select name="block_arrangements" class="formenter">
+{if $block_type ne "rss"}
+<option value="header" {if $block_all_tpl.block_arrangements eq "header"} selected {else} {/if}>{#_BLOCKHEADER#}</option>
+<option value="left" {if $block_all_tpl.block_arrangements eq "left"} selected {else} {/if}>{#_BLOCKLEFT#}</option>
+<option value="right" {if $block_all_tpl.block_arrangements eq "right"} selected {else} {/if}>{#_BLOCKRIGHT#}</option>
+{/if}
+<option value="center-up" {if $block_all_tpl.block_arrangements eq "center-up"} selected {else} {/if}>{#_BLOCKCENTERUP#}</option>
+<option value="center-down" {if $block_all_tpl.block_arrangements eq "center-down"} selected {else} {/if}>{#_BLOCKCENTERDOWN#}</option>
+{if $block_type ne "rss"}
+<option value="footer" {if $block_all_tpl.block_arrangements eq "footer"} selected {else} {/if}>{#_BLOCKFOOTER#}</option>
+{/if}
+</select>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKSTATUS#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="block_status" class="formenter">
+<option value="1" {if $block_all_tpl.block_status eq "1"} selected {else} {/if}>{#_BLOCKONNOW#}</option>
+<option value="0" {if $block_all_tpl.block_status eq "0"} selected {else} {/if}>{#_BLOCKOFFNOW#}</option>
+</select>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKTERMEXPIRE#}:</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="block_termexpire" size="4" maxlength="3" {if $block_all_tpl.block_termexpire ne ""} value="{$block_all_tpl.block_termexpireday+1}"{else}value="0"{/if} class="formenter"> <span class="formentername">{#_BLOCKTERMEXPIREDAY#} {if $block_all_tpl.block_termexpire ne ""} {#_BLOCKTERMEXPIRELAST#} {$block_all_tpl.block_termexpire}{/if}</span>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1" nowrap>
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKTERMEXPIREACTION#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="block_termexpireaction" class="formenter">
+<option value="off" {if $block_all_tpl.block_termexpireaction eq "off"} selected {else} {/if}>{#_BLOCKOFF#}</option>
+<option value="delete" {if $block_all_tpl.block_termexpireaction eq "delete"} selected {else} {/if}>{#_BLOCKDELETE#}</option>
+</select>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_BLOCKWHOVIEW#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="block_valueview" class="formenter">
+<option value="0" {if $block_all_tpl.block_valueview eq "0"} selected {else} {/if}>{#_BLOCKALLVISITORS#}</option>
+<option value="1" {if $block_all_tpl.block_valueview eq "1"} selected {else} {/if}>{#_BLOCKONLYUSERS#}</option>
+<option value="2" {if $block_all_tpl.block_valueview eq "2"} selected {else} {/if}>{#_BLOCKONLYADMINS#}</option>
+<option value="3" {if $block_all_tpl.block_valueview eq "3"} selected {else} {/if}>{#_BLOCKONLYGUESTS#}</option>
+</select>
+</td>
+</tr>
+</table><br>
+<input type="submit" value="{#_BLOCKBUTTONSAVE#}" class="button">
+</form>
+{/foreach}
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+{if $block_type eq "content"}
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}</span>&nbsp;<span class="errorsmall"><sup>1</sup></span>&nbsp;<span class="text">{#_BLOCKPLAYERNOTES#}</span></td></tr></table>
+{/if}
+{/nocache}
+</center><br>

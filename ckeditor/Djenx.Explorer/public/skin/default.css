@@ -1,0 +1,843 @@
+* {
+	font-size: 11px;
+	font-family: Verdana, Tahoma, Arial, Helvetica, sans-serif;
+	line-height: 1.25em;
+	border: 0;
+	margin: 0;
+	padding: 0;
+	outline: none;
+}
+
+:focus {
+	outline: 0;
+}
+
+label {
+	cursor: pointer;
+}
+
+html, body {
+	width: 100%;
+	height:100%;
+	color: #000;
+	font: 100%/1.25 Verdana, Tahoma, Arial, Helvetica, sans-serif;
+	background-color: #1d1d1d;
+}
+
+body {
+	overflow-y: scroll !important;
+}
+
+a, a:link, a:visited {
+	color: #fff;
+	text-decoration: none;
+}
+a:hover {
+	text-decoration: underline;
+}
+
+.hide {display: none;}
+
+/* === */
+
+#header {
+	position: fixed;
+	width: 100%;
+	height: 20px;
+	top: 0px;
+	border-bottom: solid 1px #000;
+	background: #2e2e2e;
+	z-index: 1000;
+}
+
+#main {
+	width: 100%;
+	height: 100%;
+}
+
+#lft {
+	position: fixed;
+	left: 0px;
+	top: 20px;
+	float: left;
+	width: 20%;
+	height: 100%;
+	border-right: solid 1px #000;
+}
+
+#rgt {
+	float: left;
+	width: 79%;
+	overflow: hidden;
+	margin-left: 20%;
+	padding: 21px 0px 20px 2px;
+}
+
+#bottom {
+	position: fixed;
+	width: 100%;
+	height: 20px;
+	bottom: 0px;
+	border-top: solid 1px #000;
+	background-position: right bottom;
+	background-repeat: no-repeat;
+}
+
+/* --- */
+
+.button {
+	display: block;
+	height: 16px;
+	padding: 3px 5px 0px;
+	border: solid 1px #4e4e4e;
+}
+.button:hover {
+	text-decoration: none;
+	border-color: #fff;
+}
+
+/* --- */
+
+#header .options {
+	float: left;
+	width: 20%;
+	height: 20px;
+}
+#header .address {
+	float: left;
+	margin-top: 1px;
+	padding: 1px 10px 1px 10px;
+	border: solid 1px #1d1d1d;
+	background-color: #4e4e4e;
+}
+#header .address, #header .address a, #header .address a:visited {
+	color: #fff;
+	font-size: 12px;	
+}
+#header .address a:hover {
+	color: #52c6f7;
+}
+#header .address:hover {
+	border-color: #5593aa;
+}
+
+#listing {
+	float: right;
+	display: none;
+	padding-right: 20px;
+}
+
+#header #listing, #header #listing a, #header #listing a:visited {
+	color: #fff;
+}
+#listing a {
+	display: inline-block;
+	width: 16px;
+	height: 18px;
+	margin-bottom: -4px; 
+	background-position: center bottom;
+	background-repeat: no-repeat;
+}
+#listing a.pageBack {background-image: url('../image/ico/resultset_previous.png');}
+#listing a.pageNext {background-image: url('../image/ico/resultset_next.png');}
+
+#listing #page {
+	width: 16px;
+	height: 16px;
+	border: solid 1px #1d1d1d;
+}
+
+#header .folderOperation {
+	width: 90px;
+	height: 20px;
+	text-align: center;
+	margin: 0 auto;
+}
+#header .folderOperation a, #header .folderOperation a:visited {
+	float: left;
+	display: block;
+	width: 30px;
+	height: 20px;
+	margin: 0 auto;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+#header .folderOperation a:hover {
+	background-color: #52c6f7;
+}
+#header .folderOperation a.create {
+	background-image: url('../image/ico/folder_add.png');
+}
+#header .folderOperation a.rename {
+	background-image: url('../image/ico/application_xp_terminal.png');
+}
+#header .folderOperation a.delete {
+	background-image: url('../image/ico/folder_delete.png');
+}
+
+#header .options .copyright {
+	float: left;
+	margin: 0px 0 0 7px;
+	position: relative;
+	top: -20px;
+}
+#header .options .settings {
+	float: right;
+	margin: 0px 0px 0 0;
+	position: relative;
+	top: -20px;
+}
+#header .options .button {
+	height: 15px;
+	padding-top: 2px;
+	border: solid 1px #5d5d5d;
+}
+#header .options .button:hover {
+	border-color: #52c6f7;
+}
+
+#header #fileOperation {
+	float: left;
+	width: 329px;
+	height: 20px;
+	padding-left: 2px;
+}
+
+#fileOperation div.sep {
+	float: left;
+	width: 20px;
+	height: 20px;
+}
+#fileOperation div.sep div {
+	width: 10px;
+	height: 20px;
+	border-right: solid 1px #4d4d4d;
+}
+
+#fileOperation a, #fileOperation a:visited {
+	float: left;
+	display: block;
+	width: 24px;
+	height: 20px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+#fileOperation a:hover {
+	background-color: #ddd;
+}
+
+#fileOperation .searchFile {
+	background-image: url('../image/ico/textfield_rename.png');
+}
+#fileOperation .chooseFile, .contextMenu .chooseFile a {
+	background-image: url('../image/ico/tick.png');
+}
+#fileOperation .chooseThumb, .contextMenu .chooseThumb a {
+	background-image: url('../image/ico/arrow_in.png');
+}
+#fileOperation .fileNewWindow, .contextMenu .fileNewWindow a {
+	background-image: url('../image/ico/eye.png');
+}
+#fileOperation .download, .contextMenu .download a {
+	background-image: url('../image/ico/arrow_down.png');
+}
+#fileOperation .rename, .contextMenu .rename a {
+	background-image: url('../image/ico/application_xp_terminal.png');
+}
+#fileOperation .delete, .contextMenu .delete a {
+	background-image: url('../image/ico/cross.png');
+}
+#fileOperation .deleteChecked, .contextMenu .deleteChecked a {
+	background-image: url('../image/ico/spellcheck_error.png');
+}
+#fileOperation .toolBox {
+	display: none;
+	background-image: url('../image/ico/toolbox.png');
+}
+.contextMenu .fileParameter a {
+	background-image: url('../image/ico/wrench.png');
+}
+.contextMenu .archivePack a {
+	background-image: url('../image/ico/winrar_add.png');
+}
+.contextMenu .archiveUnpack a {
+	background-image: url('../image/ico/winrar_extract.png');
+}
+
+/* --- */
+
+.contextMenu {
+	display: none;
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 220px;
+	margin: 0px;
+	padding: 0px;
+	z-index: 99999;
+	border: solid 1px #000;
+	background: #393939 repeat-y left top;
+}
+
+.contextMenu li.separator {
+	border-top: solid 1px #4d4d4d;
+}
+
+.contextMenu li, .contextMenu li {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+
+.contextMenu a, .contextMenu a:visited {
+	display: block;
+	height: 20px;
+	line-height: 20px;
+	text-decoration: none;
+	outline: none;
+	padding: 0 5px 3px 33px;
+	background-repeat: no-repeat;
+	background-position: 5px 4px;
+}
+
+.contextMenu li.hover a span {
+	color: #fff;
+}
+
+.contextMenu li:hover {}
+
+.contextMenu span {
+	color: #eee;
+}
+
+.contextMenu li.disabled {
+	background-image: none !important;
+}
+.contextMenu li.disabled a, .contextMenu li.disabled a:visited,
+.contextMenu li.disabled a span, .contextMenu li.disabled a:visited span {
+	color: #aaa;
+	cursor: default;
+}
+.contextMenu li.hover.disabled a {
+	background-color: transparent;
+}
+
+/* --- */
+
+#bottom .allElement, #bottom .pressed, #bottom .stats {
+	float: left;
+	height: 18px;
+	padding: 2px 10px 0 10px;
+	border-right: solid 1px #4d4d4d;
+}
+#bottom .pressed {
+	padding-left: 26px;
+	background-position: 5px 3px;
+	background-repeat: no-repeat;
+}
+
+#bottom .ajaxLoading {
+	float: right;
+	width: 133px;
+	height: 20px;
+}
+
+#bottom div, #bottom a, #bottom a:visited {
+	color: #fff;
+	font-size: 12px;
+}
+
+/* === */
+
+#boxfolders {
+	display: inline-block;
+	width: 99.5%;
+	height: 60%;
+	overflow: auto;
+	background: #1c1c1c;
+}
+
+#treeFolders li {
+}
+#treeFolders li a b.size, #treeFolders li a i.files {
+	color: #999;
+	font-style: normal;
+	font-weight: normal;
+}
+#treeFolders li a i.files {
+	color: #666;
+}
+
+.jstree-default.jstree-focused {
+	background: none;
+}
+
+#uploads {
+	width: 99.5%;
+	height: 10%;
+}
+
+#uploads .head .r {
+	float: right;
+	position: relative;
+	width: 110px;
+	padding: 2px 4px 0 0;
+}
+
+#uploads a.cogwheel, #uploads a.cogwheel {
+	float: right;
+	display: block;
+	width: 16px;
+	height: 16px;
+	margin-left: 6px;
+	background: url('../image/ico/cogwheel.png') no-repeat;
+}
+#uploads #uploadifyUploader {
+	float: left;
+}
+
+
+#statistic {
+	width: 100%;
+	height: 20%;
+	overflow: auto;
+	margin-top: 1px;
+}
+#statistic li, ul.statistic li {
+	list-style: none;
+	color: #666;
+	padding: 0px 3px;
+	padding-left: 10px;
+}
+#statistic b, #statistic i, #statistic u,
+ul.statistic b, ul.statistic i, ul.statistic u {
+	color: #999;
+	font-style: normal;
+	font-weight: normal;
+	text-decoration: none;
+}
+#statistic u {color: #eee;}
+#uploads .statisticLog {
+	width: 100%;
+	margin: -20px 0px 0 -20px;
+	text-align: right;
+}
+#uploads .statisticLog a, #uploads .statisticLog a:visited {
+	float: right;
+	display: block;
+	width: 20px;
+	height: 20px;
+	background: url('../image/ico/application_form_magnify.png') center no-repeat;
+}
+
+
+ul.statistic {}
+ul.statistic li {
+	color: #aaa;
+	padding-bottom: 2px;
+}
+ul.statistic b, ul.statistic i, ul.statistic u {
+	color: #fff;
+}
+
+
+#uploadContent {
+	position: fixed;
+	bottom: 24px;
+	left: 4px;
+	margin-left: 20%;
+	overflow: auto;
+	z-index: 1001;
+	background: #ddd;
+}
+
+#uploadify {
+}
+
+.uploadifyQueueItem {
+	width: 350px;
+	padding: 10px;
+	border: solid 1px #000;
+	background-color: #ddd;
+}
+.uploadifyError {
+	border: 2px solid #FBCBBC !important;
+	background-color: #FDE5DD !important;
+}
+.uploadifyQueueItem .cancel {
+	float: right;
+}
+.uploadifyQueue .completed {
+	background-color: #E5E5E5;
+}
+.uploadifyProgress {
+	width: 100%;
+	margin-top: 10px;
+	border-top: 1px solid #808080;
+	border-left: 1px solid #808080;
+	border-right: 1px solid #C5C5C5;
+	border-bottom: 1px solid #C5C5C5;
+	background-color: #808080;
+}
+.uploadifyProgressBar {
+	width: 1px;
+	height: 3px;
+	background-color: #52c6f7;
+}
+
+#uploadSimple {
+	float: left;
+	width: 80px;
+	height: 16px;
+	overflow: hidden;
+	background-position: 0px 0px;
+	background-repeat: no-repeat;
+}
+#uploadSimple #uploadify {
+	display: block;
+	font-size: 70px;
+	opacity: 0;
+	filter: alpha(opacity=0);
+	-moz-opacity: 0;
+	float: right;
+	text-align: right;
+	margin: -10px -10px 0 0;
+	padding: 0px;
+	border-width: 0px;
+	/*visibility: hidden;*/
+	background: red;
+	cursor: pointer;
+}
+
+/* --- */
+#dialog {
+	padding-bottom: 15px;
+}
+
+.ui-dialog-title {
+	font-size: 14px;
+}
+
+/* === */
+
+#preview {
+	width: 99.5%;
+	height: 28%;
+}
+#preview .preImage {
+	/*display: table-cell;*/
+	width: 100%;
+	text-align: center;
+	vertical-align: middle;
+	padding-top: 10px;
+}
+#preview #previewImage {
+	max-width: 100%;
+}
+
+#uploads .head,
+#preview .head {
+	width: 100%;
+	height: 20px;
+}
+
+#uploads .head .l,
+#preview .head .l {
+	float: left;
+	color: #fff;
+	font: normal 11px Verdana;
+	padding: 2px 0 0 10px;
+}
+
+#preview .head .r {
+	position: relative;
+	top: -3px;
+	float: right;
+	margin: 0;
+	padding: 0 10px 0 0;
+}
+
+
+#textEditor, #imageEditor {
+	display: none;
+}
+
+#fileThumb .folder,
+#fileThumb .thumb {
+	float: left;
+	width: 140px;
+	margin: 0px 2px 4px 0px;
+	padding: 5px 10px;
+	cursor: pointer;
+	border: solid 1px #5a5a5a;
+	background-color: #5a5a5a;
+	background-position: center;
+	background-repeat: no-repeat;
+	/*background-image: url('../image/ext/default.png');*/
+}
+
+.ie7 html, .ie7 body {
+	overflow: hidden;
+}
+
+.ie7 #fileThumb .folder,
+.ie7 #fileThumb .thumb {
+	width: 162px;
+}
+
+#fileThumb div {
+	font: normal 11px Tahoma;
+	text-align: center;
+}
+
+#fileThumb .folder .image, #fileThumb .folder .image:visited,
+#fileThumb .thumb .image {
+	display: table-cell;
+	vertical-align: middle;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 140px;
+	height: 110px;
+	overflow: hidden;
+}
+#fileThumb .thumb .image img {
+	background-position: center;
+	background-repeat: no-repeat;
+}
+#fileThumb .folder a, #fileThumb .folder a:visited {
+	display: block;
+}
+
+#fileThumb div.thumbClick {
+	background-color: #288db1 !important;
+}
+#fileThumb div.thumbOver {
+	color: #000;
+	background-color: #cecece;
+}
+#fileThumb div.checked {
+	border: solid 1px #fff;
+	background-color: #1d1d1d;
+}
+#fileThumb div.checked div {
+	color: #fff;
+}
+#fileThumb div.unlinkError {
+	background-color: #f44749;
+}
+
+#fileThumb .name, #fileThumb .size, #fileThumb .date {
+	height: 15px;
+	overflow: hidden;
+}
+
+#fileThumb .name {
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: center;
+}
+#fileThumb .folder .name {
+	font-weight: bold;
+}
+#fileThumb .date, #fileThumb .size {
+	/*display: none;*/
+}
+#fileThumb div.checkbox {
+	position: relative;
+	float: right;
+	height: 12px;
+	margin-right: -4px;
+	margin-top: -10px;
+}
+
+.ie7 #fileThumb div.checkbox {
+	position: static;
+}
+
+#fileThumb table.list {}
+#fileThumb table.list thead td {
+	background-color: #528fa6;
+}
+#fileThumb table.list td {
+	padding: 2px 10px 1px 5px;
+	border-bottom: solid 1px #3e3e3e; 
+}
+#fileThumb table.list td.format {
+	width: 16px;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+#fileThumb table.list td.name {
+	text-align: left;
+}
+
+#fileThumb table.list tbody tr.mouseOver {
+	background-color: #528fa6;
+}
+#fileThumb table.list tbody tr.mouseOver td.name {
+	color: #000;
+}
+#fileThumb table.list td._type {
+	position: static;
+	bottom: 0;
+	right: 0;
+	width: 16px;
+	height: auto;
+	background-position: center;
+}
+
+
+/* === */
+
+#author, #setting {
+	display: none;
+}
+#author div.container {
+	padding: 10px 5px;
+}
+#author strong {
+	color: #52c6f7;
+}
+#author li {
+	margin-left: 15px;
+	padding: 1px 0;
+}
+
+#tabs .tab {
+	display: inline-block;
+	padding-bottom: 60px;
+}
+#tabs .clr {
+	float: none;
+	clear: both;
+	width: 100%;
+}
+#tabs fieldset {
+	margin: 0;
+	padding: 4px 0 8px 10px;
+}
+#tabs fieldset.fset-l {
+	float: left;
+	padding-right: 25px;
+}
+#tabs .fset-r {
+	padding-right: 0px;
+}
+.opera #tabs fieldset.fset-l {
+}
+
+
+#confirmation,
+.ui-button-text {
+}
+
+#confirmation .ui-icon {
+	float: left;
+	margin: 1px 5px 2px 0;
+}
+
+#operationInput {
+	width: 100%;
+	border: solid 1px #4d4d4d;
+}
+
+
+/* Settings */
+
+#setting input[type="checkbox"], #setting input[type="radio"] {
+	position: relative;
+	bottom: -2px;
+}
+
+#resize_width, #resize_height, #file_listing {
+	width: 32px;
+	height: 16px;
+	border: solid 1px #3e3e3e;
+}
+
+/* /Setting/ */
+
+#fileSearch {
+	display: none;
+	position: absolute;
+	text-align: right;
+	width: 150px;
+	padding: 10px 5px;
+	background: #363636;
+	left: 383px;
+	top: 21px;
+}
+#fileSearch input {
+	width: 150px;
+	border: solid 1px #fff;
+}
+#fileSearch a {}
+
+/* --- */
+
+
+#archivePack {}
+
+#archivePack div {
+	padding: 10px;
+}
+#archivePack input {
+	width: 200px;
+}
+
+
+/* --- */
+
+._type {
+	position: relative;
+	bottom: -5px;
+	right: -6px;
+	width: 100%;
+	height: 16px;
+	background-position: right bottom;
+	background-repeat: no-repeat;
+	background-image: url('../image/ext/unknown.png');
+}
+.ie7 ._type {
+	position: static;
+}
+
+._dir {background-image: url('../image/ico/folder.png');}
+
+._png {background-image: url('../image/ext/png.gif');}
+._gif {background-image: url('../image/ext/gif.gif');} 
+._jpg, ._jpeg {background-image: url('../image/ext/jpg.gif');}
+._bmp {background-image: url('../image/ext/bmp.gif');}
+._tif, ._tiff {background-image: url('../image/ext/tif.png');}
+._psd {background-image: url('../image/ext/psd.png');}
+._cdr	{background-image: url('../image/ext/cdr.png');}
+
+._wav, ._mp3 {background-image: url('../image/ext/mp3.png');}
+._xml, ._rdf, ._rss {background-image: url('../image/ext/xml.png');}
+
+._fla, .swf	{background-image: url('../image/ext/swf.png');}
+._zip	{background-image: url('../image/ext/zip.png');}
+._rar	{background-image: url('../image/ext/rar.gif');}
+
+._xls, ._xlsx		{background-image: url('../image/ext/xls.png');}
+._doc, ._docx	{background-image: url('../image/ext/doc.png');}
+._ppt, ._pptx	{background-image: url('../image/ext/ppt.png');}
+
+._txt	{background-image: url('../image/ext/txt.png');}
+._reg	{background-image: url('../image/ext/reg.png');}
+._chm{background-image: url('../image/ext/chm.png');}
+._rtf	{background-image: url('../image/ext/rtf.png');}
+._css	{background-image: url('../image/ext/css.png');}
+._pdf	{background-image: url('../image/ext/pdf.png');}
+
+._ttf	{background-image: url('../image/ext/ttf.png');}
+._vb	{background-image: url('../image/ext/vb.png');}
+._cs	{background-image: url('../image/ext/cs.png');}
+._xsl	{background-image: url('../image/ext/xsl.png');}
+._mdb{background-image: url('../image/ext/mdb.png');}
+._pub	{background-image: url('../image/ext/pub.png');}
+._vcs	{background-image: url('../image/ext/vcs.png');}
+._vcf	{background-image: url('../image/ext/vcf.png');}
+._lnk	{background-image: url('../image/ext/lnk.png');}
+
+

@@ -1,0 +1,43 @@
+{config_load file="ru/install/install.conf"}
+{include file='install/header.html'}
+<center>
+{if $error eq "notalldata"}
+<br>&nbsp;<img src="../{#bgimage17#}" border="0" alt=""> <span class="textbig">{#_INSTALLNOTALLDATA#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_INSTALLBACK#}</a>
+{elseif $error eq "nolang"}
+<br>&nbsp;<img src="../{#bgimage17#}" border="0" alt=""> <span class="textbig">{#_INSTALLNOTFOUNDLANG#}</span><br><br>
+{if isset($notfindlangvalue)}<span class="errorsmall"> {$notfindlangvalue}</span>{/if}<br><br>
+<a href="javascript:history.back(1)" class="link">{#_INSTALLBACK#}</a>
+{elseif $error eq "notconnect"}
+<br>&nbsp;<img src="../{#bgimage17#}" border="0" alt=""> <span class="textbig">{#_INSTALLNOTCONNECT#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_INSTALLBACK#}</a>
+{elseif $error eq "inserterror"}
+<br><img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_INSTALL_ERROR#}</span><br><br><span class="textbig">{#_INSTALLERROR#}</span><br><br>
+{foreach $error_mess as $error}
+{if $error.message ne "" and $error.code ne ""}<span class="errorsmall">{$error.message}<br>{$error.code}</span><br>{/if}
+{/foreach}
+<br><a href="javascript:history.back(1)" class="link">{#_INSTALLBACK#}</a>
+{elseif $error eq "inserterror2"}
+<br><img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_INSTALL_ERROR#}</span><br><br><span class="textbig">{#_INSTALLERROR2#}</span><br><br>
+{foreach $error_mess as $error}
+{if $error.message ne "" and $error.code ne ""}<span class="errorsmall">{$error.message}<br>{$error.code}</span><br>{/if}
+{/foreach}
+<br><a href="javascript:history.back(1)" class="link">{#_INSTALLBACK#}</a>
+{elseif $error eq "nowrite"}
+<br><img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_INSTALL_ERROR#}</span><br><br>
+<span class="textbig">{#_INSTALLCANTWRITE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_INSTALLBACK#}</a>
+{elseif $error eq "noteqpass"}
+<br>&nbsp;<img src="../{#bgimage17#}" border="0" alt=""> <span class="textbig">{#_INSTALLNOTEQPASS#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_INSTALLBACK#}</a>
+{elseif $error eq "errorlogin"}
+<br>&nbsp;<img src="../{#bgimage17#}" border="0" alt=""> <span class="textbig">{#_INSTALLERRORLOGIN#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_INSTALLBACK#}</a>
+{elseif $error eq "addok"}
+<br><img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_INSTALLCONPLETEOK2#}</span><br>
+{elseif $error eq "notcorrectemail"}
+<br><img src="../{#bgimage17#}" border="0" alt="">&nbsp;<span class="textbig">{#_INSTALLNOTCORRECTEMAIL#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_INSTALLBACK#}</a>
+{/if}
+</center><br>
+{include file='install/footer.html'}

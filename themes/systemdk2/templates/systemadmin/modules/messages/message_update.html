@@ -1,0 +1,41 @@
+{config_load file="$language/systemadmin/modules/messages/messages.conf"}
+{#_MESSAGE#}</span></center>
+</div>
+<center>
+<br>
+{if $message_update eq "add"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MESSAGEADDOK#}</span><br><br>
+<a href="index.php?path=admin_messages&amp;func=index&amp;lang={$site_language}" class="link">{#_MESSAGE#}</a>
+{elseif $message_update eq "notalldata"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MESSAGENOTALLDATA#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $message_update eq "notinsert"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
+{nocache}
+{if $error ne "no"}
+{foreach $error as $error_tpl}
+{if $error_tpl.message ne "" and $error_tpl.code ne ""}<span class="errorsmall">{$error_tpl.message}<br>{$error_tpl.code}</span><br>{/if}
+{/foreach}
+{/if}
+{/nocache}
+<br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $message_update eq "notinsert2"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $message_update eq "notfind"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_MESSAGENOTFIND#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $message_update eq "on"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MESSAGEONOK#}</span><br><br>
+<a href="index.php?path=admin_messages&amp;func=index&amp;lang={$site_language}" class="link">{#_MESSAGE#}</a>
+{elseif $message_update eq "off"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MESSAGEOFFOK#}</span><br><br>
+<a href="index.php?path=admin_messages&amp;func=index&amp;lang={$site_language}" class="link">{#_MESSAGE#}</a>
+{elseif $message_update eq "delete"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MESSAGEDELETEOK#}</span><br><br>
+<a href="index.php?path=admin_messages&amp;func=index&amp;lang={$site_language}" class="link">{#_MESSAGE#}</a>
+{elseif $message_update eq "editok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MESSAGEEDITOK#}</span><br><br>
+<a href="index.php?path=admin_messages&amp;func=index&amp;lang={$site_language}" class="link">{#_MESSAGE#}</a>
+{/if}
+</center>

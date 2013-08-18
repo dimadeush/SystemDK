@@ -1,0 +1,123 @@
+{#_SHOP#}</span></center>
+</div>
+<br>
+<center><a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> </center>
+<br>
+<form action="index.php?path=admin_shop&amp;func=shop_config_save&amp;lang={$site_language}" method="POST">
+<center><img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_SHOPCONFIGPAGETITLE#}</span></center><br>
+<table cellpadding="0" cellspacing="2" border="0" align="center">
+ <tr>
+   <td>
+      <table width="100%" border="0" cellpadding="0"  cellspacing="2">
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPCATALOGSORDER#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPCATALOGSORDERNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_catalogs_order" class="formenter"><option value="catalog_position" {if $systemdk_shop_catalogs_order eq "catalog_position"} selected {/if}>{#_SHOPCATALOGSORDER1#}</option><option value="catalog_name" {if $systemdk_shop_catalogs_order eq "catalog_name"} selected {/if}>{#_SHOPCATALOGSORDER2#}</option><option value="catalog_date" {if $systemdk_shop_catalogs_order eq "catalog_date"} selected {/if}>{#_SHOPCATALOGSORDER3#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPCATEGORIESORDER#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPCATALOGSORDERNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_categories_order" class="formenter"><option value="category_position" {if $systemdk_shop_categories_order eq "category_position"} selected {/if}>{#_SHOPCATALOGSORDER1#}</option><option value="category_name" {if $systemdk_shop_categories_order eq "category_name"} selected {/if}>{#_SHOPCATALOGSORDER2#}</option><option value="category_date" {if $systemdk_shop_categories_order eq "category_date"} selected {/if}>{#_SHOPCATALOGSORDER3#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPSUBCATEGORIESORDER#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPCATALOGSORDERNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_subcategories_order" class="formenter"><option value="subcategory_position" {if $systemdk_shop_subcategories_order eq "subcategory_position"} selected {/if}>{#_SHOPCATALOGSORDER1#}</option><option value="subcategory_name" {if $systemdk_shop_subcategories_order eq "subcategory_name"} selected {/if}>{#_SHOPCATALOGSORDER2#}</option><option value="subcategory_date" {if $systemdk_shop_subcategories_order eq "subcategory_date"} selected {/if}>{#_SHOPCATALOGSORDER3#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPHOMEITEMSORDER#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPCATALOGSORDERNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_homeitems_order" class="formenter"><option value="item_price" {if $systemdk_shop_homeitems_order eq "item_price"} selected {/if}>{#_SHOPHOMEITEMSORDER1#}</option><option value="item_position" {if $systemdk_shop_homeitems_order eq "item_position"} selected {/if}>{#_SHOPCATALOGSORDER1#}</option><option value="item_name" {if $systemdk_shop_homeitems_order eq "item_name"} selected {/if}>{#_SHOPCATALOGSORDER2#}</option><option value="item_date" {if $systemdk_shop_homeitems_order eq "item_date"} selected {/if}>{#_SHOPCATALOGSORDER3#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPCATITEMSORDER#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPCATALOGSORDERNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_catitems_order" class="formenter"><option value="item_price" {if $systemdk_shop_catitems_order eq "item_price"} selected {/if}>{#_SHOPHOMEITEMSORDER1#}</option><option value="item_position" {if $systemdk_shop_catitems_order eq "item_position"} selected {/if}>{#_SHOPCATALOGSORDER1#}</option><option value="item_name" {if $systemdk_shop_catitems_order eq "item_name"} selected {/if}>{#_SHOPCATALOGSORDER2#}</option><option value="item_date" {if $systemdk_shop_catitems_order eq "item_date"} selected {/if}>{#_SHOPCATALOGSORDER3#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPCATEGITEMSORDER#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPCATALOGSORDERNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_categitems_order" class="formenter"><option value="item_price" {if $systemdk_shop_categitems_order eq "item_price"} selected {/if}>{#_SHOPHOMEITEMSORDER1#}</option><option value="item_position" {if $systemdk_shop_categitems_order eq "item_position"} selected {/if}>{#_SHOPCATALOGSORDER1#}</option><option value="item_name" {if $systemdk_shop_categitems_order eq "item_name"} selected {/if}>{#_SHOPCATALOGSORDER2#}</option><option value="item_date" {if $systemdk_shop_categitems_order eq "item_date"} selected {/if}>{#_SHOPCATALOGSORDER3#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPSUBCATEGITEMSORDER#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPCATALOGSORDERNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_subcategitems_order" class="formenter"><option value="item_price" {if $systemdk_shop_subcategitems_order eq "item_price"} selected {/if}>{#_SHOPHOMEITEMSORDER1#}</option><option value="item_position" {if $systemdk_shop_subcategitems_order eq "item_position"} selected {/if}>{#_SHOPCATALOGSORDER1#}</option><option value="item_name" {if $systemdk_shop_subcategitems_order eq "item_name"} selected {/if}>{#_SHOPCATALOGSORDER2#}</option><option value="item_date" {if $systemdk_shop_subcategitems_order eq "item_date"} selected {/if}>{#_SHOPCATALOGSORDER3#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPHOMEITEMSPERPAGE#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_homeitems_perpage" value="{$systemdk_shop_homeitems_perpage}" size="10" maxlength="2" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPCATITEMSPERPAGE#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_catitems_perpage" value="{$systemdk_shop_catitems_perpage}" size="10" maxlength="2" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPCATEGITEMSPERPAGE#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_categitems_perpage" value="{$systemdk_shop_categitems_perpage}" size="10" maxlength="2" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPSUBCATEGITEMSPERPAGE#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_subcategitems_perpage" value="{$systemdk_shop_subcategitems_perpage}" size="10" maxlength="2" class="formenter"></td>
+      </tr>
+      <tr>
+         <td colspan="2" class="td1" nowrap><br><br></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMIMAGEPATH#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPITEMIMAGEPATHNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_itemimage_path" value="{$systemdk_shop_itemimage_path}" size="40" maxlength="100" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMIMAGEPOSITION#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPITEMIMAGEPOSITIONNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_itemimage_position" class="formenter"><option value="left" {if $systemdk_shop_itemimage_position eq "left"} selected {/if}>{#_SHOPITEMIMAGEPOSITION1#}</option><option value="center" {if $systemdk_shop_itemimage_position eq "center"} selected {/if}>{#_SHOPITEMIMAGEPOSITION2#}</option><option value="right" {if $systemdk_shop_itemimage_position eq "right"} selected {/if}>{#_SHOPITEMIMAGEPOSITION3#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMIMAGEMAXSIZE#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPITEMIMAGEMAXSIZENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_itemimage_maxsize" value="{$systemdk_shop_itemimage_maxsize}" size="15" maxlength="15" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMIMAGEMAXWIDTH#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_itemimage_maxwidth" value="{$systemdk_shop_itemimage_maxwidth}" size="10" maxlength="5" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMIMAGEMAXHEIGHT#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_itemimage_maxheight" value="{$systemdk_shop_itemimage_maxheight}" size="10" maxlength="5" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMIMAGEWIDTH#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_itemimage_width" value="{$systemdk_shop_itemimage_width}" size="10" maxlength="5" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMIMAGEWIDTH2#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_itemimage_width2" value="{$systemdk_shop_itemimage_width2}" size="10" maxlength="5" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMIMAGEWIDTH3#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_itemimage_width3" value="{$systemdk_shop_itemimage_width3}" size="10" maxlength="5" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMIMAGEHEIGHT3#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_itemimage_height3" value="{$systemdk_shop_itemimage_height3}" size="10" maxlength="5" class="formenter"></td>
+      </tr>
+      <tr>
+         <td colspan="2" class="td1" nowrap><br><br></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPIMAGEPATH#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPIMAGEPATHNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_image_path" value="{$systemdk_shop_image_path}" size="40" maxlength="100" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPIMAGEPOSITION#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPITEMIMAGEPOSITIONNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_image_position" class="formenter"><option value="left" {if $systemdk_shop_image_position eq "left"} selected {/if}>{#_SHOPITEMIMAGEPOSITION1#}</option><option value="center" {if $systemdk_shop_image_position eq "center"} selected {/if}>{#_SHOPITEMIMAGEPOSITION2#}</option><option value="right" {if $systemdk_shop_image_position eq "right"} selected {/if}>{#_SHOPITEMIMAGEPOSITION3#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPIMAGEMAXSIZE#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPITEMIMAGEMAXSIZENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_image_maxsize" value="{$systemdk_shop_image_maxsize}" size="15" maxlength="15" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPIMAGEMAXWIDTH#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_image_maxwidth" value="{$systemdk_shop_image_maxwidth}" size="10" maxlength="5" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPIMAGEMAXHEIGHT#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_image_maxheight" value="{$systemdk_shop_image_maxheight}" size="10" maxlength="5" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPIMAGEWIDTH#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_image_width" value="{$systemdk_shop_image_width}" size="10" maxlength="5" class="formenter"></td>
+      </tr>
+      <tr>
+         <td colspan="2" class="td1" nowrap><br><br></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMSCOLUMNS#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_items_columns" value="{$systemdk_shop_items_columns}" size="10" maxlength="2" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMSUNDERPARENT#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#} {#_SHOPITEMSUNDERPARENTNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_items_underparent" value="{$systemdk_shop_items_underparent}" size="10" maxlength="2" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPVALUTA#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPVALUTANOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_valuta" value="{$systemdk_shop_valuta}" size="10" maxlength="40" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPANTISPAMIPADDR#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPANTISPAMIPADDRNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_antispam_ipaddr" class="formenter"><option value="1" {if $systemdk_shop_antispam_ipaddr eq 1} selected {/if}>{#_SHOPITEMON#}</option><option value="0" {if $systemdk_shop_antispam_ipaddr eq 0} selected {/if}>{#_SHOPITEMOFF#}</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPANTISPAMNUM#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPANTISPAMNUMNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_antispam_num" {if $systemdk_shop_antispam_num > 0}value="{$systemdk_shop_antispam_num}"{/if} size="10" maxlength="4" class="formenter"></td>
+      </tr>
+      </table>
+      <br><center><input type="submit" value="{#_SHOPBUTTONSAVE#}" class="button"></center><br>
+   </td>
+ </tr>
+</table>
+</form>
+<center>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</center>
+<br>

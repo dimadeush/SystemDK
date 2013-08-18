@@ -1,0 +1,21 @@
+{config_load file="$language/systemadmin/modules/news/news.conf"}
+{#_NEWS#}</span></center>
+</div>
+<table cellpadding="0" cellspacing="2" border="0" align="right">
+ <tr>
+   <td>
+     <table width="100%" border="0" cellpadding="0"  cellspacing="2">
+      <tr>
+        <td bgcolor="{#color7#}" class="td1" nowrap>&nbsp;<img src="../{#bgimage25#}" border="0" alt="">&nbsp;<a href="index.php?path=admin_news&amp;func=news_config&amp;lang={$site_language}" class="link">{#_NEWS_CONFIGURATION#}</a></td>
+      </tr>
+     </table>
+   </td>
+ </tr>
+</table>
+<br><br>
+<center>
+<a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NEWS_CATEGORIES#}</a>
+<br><br><br>
+<span class="textbig">{#_NEWS_TITLE_COUNT_NEWS#}:</span> <span class="linkbig">{nocache}{$modules_news_num_news}{/nocache}</span><br>
+<span class="textbig">{#_NEWS_TITLE_COUNT_PROGRAMMNEWS#}:</span> <span class="linkbig">{nocache}{$modules_news_num_programmnews}{/nocache}</span>
+</center>

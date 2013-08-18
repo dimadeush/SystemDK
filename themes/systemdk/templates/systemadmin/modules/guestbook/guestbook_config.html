@@ -1,0 +1,42 @@
+{#_GUESTBOOK#}</span></center>
+</div>
+<br>
+<center><a href="index.php?path=admin_guestbook&amp;func=index&amp;lang={$site_language}" class="link">{#_GUESTBOOKTITLE#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_guestbook&amp;func=index&amp;pend=1&amp;lang={$site_language}" class="link">{#_GUESTBOOKPENDLIST#}</a></center>
+<br>
+<form action="index.php?path=admin_guestbook&amp;func=guestbook_config_save&amp;lang={$site_language}" method="POST">
+<center><img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_GUESTBOOKCONFIGPAGETITLE#}</span></center><br>
+<table cellpadding="0" cellspacing="2" border="0" align="center">
+ <tr>
+   <td>
+      <table width="100%" border="0" cellpadding="0"  cellspacing="2">
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_GUESTBOOKCONFIGMETAKEYWORDS#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_GUESTBOOKCONFIGMETAKEYWORDSNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_guestbook_metakeywords" value="{$systemdk_guestbook_metakeywords}" size="40" maxlength="100" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_GUESTBOOKCONFIGMETADESCRIPTION#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_GUESTBOOKCONFIGMETADESCRIPTIONNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_guestbook_metadescription" value="{$systemdk_guestbook_metadescription}" size="40" maxlength="100" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_GUESTBOOKCONFIGNUMPOSTS#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_GUESTBOOKCONFIGNUMPOSTSNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_guestbook_storynum" value="{$systemdk_guestbook_storynum}" size="10" maxlength="2" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_GUESTBOOKCONFIGANTISPAM#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_GUESTBOOKCONFIGANTISPAMNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_guestbook_antispam_ipaddr" class="formenter"><option {if $systemdk_guestbook_antispam_ipaddr eq "yes"} selected {/if}>yes</option><option {if $systemdk_guestbook_antispam_ipaddr eq "no"} selected {/if}>no</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_GUESTBOOKCONFIGANTISPAMNUM#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_GUESTBOOKCONFIGANTISPAMNUMNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_guestbook_antispam_num" value="{$systemdk_guestbook_antispam_num}" size="10" maxlength="2" class="formenter"></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_GUESTBOOKCONFIGNEEDCONFIRM#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_GUESTBOOKCONFIGNEEDCONFIRMNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_guestbook_confirm_need" class="formenter"><option {if $systemdk_guestbook_confirm_need eq "yes"} selected {/if}>yes</option><option {if $systemdk_guestbook_confirm_need eq "no"} selected {/if}>no</option></select></td>
+      </tr>
+      <tr>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_GUESTBOOKCONFIGSORTORDER#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_GUESTBOOKCONFIGSORTORDERNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_guestbook_sortorder" class="formenter"><option value="DESC" {if $systemdk_guestbook_sortorder eq "DESC"}selected{/if}>{#_GUESTBOOKCONFIGDESCORDER#}</option><option value="ASC" {if $systemdk_guestbook_sortorder eq "ASC"}selected{/if}>{#_GUESTBOOKCONFIGASCORDER#}</option></select></td>
+      </tr>
+      </table>
+      <br><center><input type="submit" value="{#_GUESTBOOKBUTTONSAVE#}" class="button"></center><br>
+   </td>
+ </tr>
+</table>
+</form>
+<center>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</center>
+<br>

@@ -1,0 +1,10 @@
+<?php
+define("MODULE_NEWS_NUM_NEWS","5");
+define("MODULE_NEWS_IMAGE_PATH","userfiles/news");
+define("MODULE_NEWS_IMAGE_POSITION","left");
+define("MODULE_NEWS_IMAGE_MAX_SIZE","40000");
+define("MODULE_NEWS_IMAGE_MAX_WIDTH","300");
+define("MODULE_NEWS_IMAGE_MAX_HEIGHT","200");
+define("MODULE_NEWS_IMAGE_WIDTH","50");
+define("MODULE_NEWS_IMAGE_WIDTH2","80");
+?>

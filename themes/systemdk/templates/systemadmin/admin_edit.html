@@ -1,0 +1,62 @@
+{config_load file="$language/systemadmin/modules/administrators/administrators.conf"}
+{#_ADMIN#}</span></center>
+</div>
+<center>
+<br>
+{foreach $admin_all as $admin_all_tpl}
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_ADMINEDITTITLE#}</span><br><br>
+<form action="index.php?func=mainadmin_edit_inbase&amp;lang={$site_language}" method="POST">
+<table border="0" cellspacing="2"  cellpadding="0">
+ <tr align="left">
+ <td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINNAME#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_name" size="30" maxlength="25" value="{$admin_all_tpl.admin_name}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINSURNAME#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_surname" size="30" maxlength="25" value="{$admin_all_tpl.admin_surname}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINWEBSITE#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_website" size="30" maxlength="60" value="{$admin_all_tpl.admin_website}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINEMAIL#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_email" size="30" maxlength="60" value="{$admin_all_tpl.admin_email}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINNEWPASSWORD#}:</span><span class="errorsmall">**</span></td><td bgcolor="{#color7#}" class="td2"><input type="password" name="admin_edit_newpassword" size="30" maxlength="25" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINNEWPASSWORDAGAIN#}:</span><span class="errorsmall">**</span></td><td bgcolor="{#color7#}" class="td2"><input type="password" name="admin_edit_newpassword2" size="30" maxlength="25" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINCOUNTRY#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_country" size="30" maxlength="100" value="{$admin_all_tpl.admin_country}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINCITY#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_city" size="30" maxlength="100" value="{$admin_all_tpl.admin_city}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINADDRESS#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_address" size="30" maxlength="255" value="{$admin_all_tpl.admin_address}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINTELEPHONE#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_telephone" size="30" maxlength="25" value="{$admin_all_tpl.admin_telephone}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINICQ#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_icq" size="10" maxlength="20" value="{$admin_all_tpl.admin_icq}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINGMT#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="admin_edit_gmt" class="formenter"> <option value="+00" {if $admin_all_tpl.admin_gmt eq "+00"} selected{/if}>+00GMT</option><option value="-12" {if $admin_all_tpl.admin_gmt eq "-12"} selected{/if}>-12GMT</option><option value="-11" {if $admin_all_tpl.admin_gmt eq "-11"} selected{/if}>-11GMT</option><option value="-10" {if $admin_all_tpl.admin_gmt eq "-10"} selected{/if}>-10GMT</option><option value="-09"{if $admin_all_tpl.admin_gmt eq "-09"} selected{/if}>-09GMT</option><option value="-08"{if $admin_all_tpl.admin_gmt eq "-08"} selected{/if}>-08GMT</option><option value="-07"{if $admin_all_tpl.admin_gmt eq "-08"} selected{/if}>-07GMT</option><option value="-06"{if $admin_all_tpl.admin_gmt eq "-06"} selected{/if}>-06GMT</option><option value="-05"{if $admin_all_tpl.admin_gmt eq "-05"} selected{/if}>-05GMT</option><option value="-04"{if $admin_all_tpl.admin_gmt eq "-04"} selected{/if}>-04GMT</option><option value="-03"{if $admin_all_tpl.admin_gmt eq "-04"} selected{/if}>-03GMT</option><option value="-02"{if $admin_all_tpl.admin_gmt eq "-02"} selected{/if}>-02GMT</option><option value="-01"{if $admin_all_tpl.admin_gmt eq "-01"} selected{/if}>-01GMT</option><option value="+01"{if $admin_all_tpl.admin_gmt eq "+01"} selected{/if}>+01GMT</option><option value="+02"{if $admin_all_tpl.admin_gmt eq "+02"} selected{/if}>+02GMT</option><option value="+03"{if $admin_all_tpl.admin_gmt eq "+03"} selected{/if}>+03GMT</option><option value="+04"{if $admin_all_tpl.admin_gmt eq "+04"} selected{/if}>+04GMT</option><option value="+05"{if $admin_all_tpl.admin_gmt eq "+05"} selected{/if}>+05GMT</option><option value="+06"{if $admin_all_tpl.admin_gmt eq "+06"} selected{/if}>+06GMT</option><option value="+07"{if $admin_all_tpl.admin_gmt eq "+07"} selected{/if}>+07GMT</option><option value="+08"{if $admin_all_tpl.admin_gmt eq "+08"} selected{/if}>+08GMT</option><option value="+09"{if $admin_all_tpl.admin_gmt eq "+09"} selected{/if}>+09GMT</option><option value="+10"{if $admin_all_tpl.admin_gmt eq "+10"} selected{/if}>+10GMT</option><option value="+11"{if $admin_all_tpl.admin_gmt eq "+11"} selected{/if}>+11GMT</option><option value="+12"{if $admin_all_tpl.admin_gmt eq "+12"} selected{/if}>+12GMT</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINNOTES#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="admin_edit_notes" size="30" maxlength="255" value="{$admin_all_tpl.admin_notes}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_ADMINMAILVISIBLE#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="admin_edit_viewemail">
+<option value="1" {if $admin_all_tpl.admin_viewemail eq "1"} selected{/if}>{#_ADMINMAILVISIBLEON#}</option>
+<option value="0" {if $admin_all_tpl.admin_viewemail eq "0"} selected{/if}>{#_ADMINMAILVISIBLEOFF#}</option>
+</select></td>
+</tr>
+</table><br>
+<input type="submit" value="{#_ADMINBUTTONSAVE#}" class="button">
+</form>
+{/foreach}
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">**</span>&nbsp;<span class="text">{#_ADMINPASSWORDNEWNOTES#}</span></td></tr></table>
+</center><br>

@@ -1,0 +1,126 @@
+{config_load file="$language/systemadmin/modules/news/news.conf"}
+{#_NEWS#}</span></center>
+</div>
+<center>
+<br>
+{foreach $news_all as $news_all_tpl}
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_NEWS_EDIT_TITLE#}</span><br><br>
+<form enctype="multipart/form-data" action="index.php?path=admin_news&amp;func=news_edit_inbase&amp;lang={$site_language}" method="post">
+<table border="0" cellspacing="2"  cellpadding="0">
+ <tr align="left">
+ <td bgcolor="{#color7#}" class="td1">
+ <input type="hidden" name="news_id" value="{$news_all_tpl.news_id}">
+ {if $adminmodules_news_programm eq "yes"}
+ <input type="hidden" name="prog" value="1">
+ {/if}
+ <img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_AUTHOR#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="news_author" size="30" maxlength="25" value="{$news_all_tpl.news_author}" class="formenter"></td>
+ </tr>
+ <tr align="left">
+ <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_CATEGORY#}:</span></td><td bgcolor="{#color7#}" class="td2">
+ <select name="news_category_id" class="formenter">
+ <option value="0" {if $news_all_tpl.news_category_id eq "0"} selected{/if}>{#_NEWS_WITHOUT_CATEGORY#}</option>
+ {if $category_all ne "no"}
+ {foreach $category_all as $category_all_tpl}
+ <option value="{$category_all_tpl.news_category_id}" {if $news_all_tpl.news_category_id eq $category_all_tpl.news_category_id} selected{/if}>{$category_all_tpl.news_category_name}</option>
+ {/foreach}
+ {/if}
+ </select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_TITLE#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="news_title" size="130" maxlength="255" value="{$news_all_tpl.news_title}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{if $adminmodules_news_programm eq "yes"}{#_NEWS_DATEPROGRAMM#}{else}{#_NEWS_DATE#}{/if}:</span></td><td bgcolor="{#color7#}" class="td2"> {if $adminmodules_news_programm eq "yes"} <input type="date" name="news_date" value="{$news_all_tpl.news_date2}" maxlength="10" class="formenter">&nbsp;<input type="text" name="news_hour" value="{$news_all_tpl.news_hour}" maxlength="2" size="4" class="formenter"><span class="text">{#_NEWS_PROGRAMMHOURS#}</span>&nbsp;<input type="text" name="news_minute" value="{$news_all_tpl.news_minute}" maxlength="2" size="4" class="formenter"><span class="text">{#_NEWS_PROGRAMMMINUTES#}</span><input type="hidden" name="news_newdate" value="no">{else}<span class="formentername">{$news_all_tpl.news_date2}</span> &nbsp;<select name="news_newdate" class="formenter"><option value="no" selected>{#_NEWS_DATE_NOTCHANGE#}</option><option value="yes">{#_NEWS_DATE_CHANGE#}</option></select><input type="hidden" name="news_date" value="{$news_all_tpl.news_date}">{/if}</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_IMAGES#}:</span></td><td bgcolor="{#color7#}" class="td2">{if $news_all_tpl.news_images ne "no"}<a href="../{$news_all_tpl.image_path}/{$news_all_tpl.news_images}" target="_blank" class="link">{$news_all_tpl.news_images}</a>&nbsp;<select name="delete_picture"><option value="no">{#_NEWS_NOTDELETE_PICTURE#}</option><option value="yes">{#_NEWS_DELETE_PITCURE#}</option></select><input type="hidden" name="news_images" value="{$news_all_tpl.news_images}">{else} <input name="news_images" type="file"><input type="hidden" name="delete_picture" value="new_file">{/if}</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_SHORT_TEXT#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"> <textarea name="news_short_text" rows="6" cols="130" class="formenter">{$news_all_tpl.news_short_text}</textarea></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_CONTENT#}:</span><span class="errorsmall">* <sup>1</sup></span></td><td bgcolor="{#color7#}" class="td2"> <textarea id="news_content" name="news_content" rows="20" cols="130" class="formenter">{$news_all_tpl.news_content}</textarea>
+<script type="text/javascript">
+var ckeditor1 = CKEDITOR.replace( 'news_content',
+{
+language: '{$language}'
+});
+DjenxExplorer.init({
+    returnTo: ckeditor1,
+    path: '/ckeditor/Djenx.Explorer/',
+    lang: '{$language}',
+    post: {
+        'PHPSESSID': {nocache}'{$session_id}'{/nocache}
+          }
+  });
+</script>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_READ_COUNTER#}:</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="news_readcounter" size="4" maxlength="8" value="{$news_all_tpl.news_readcounter}" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_NOTES#}:</span></td><td bgcolor="{#color7#}" class="td2"> <textarea name="news_notes" rows="2" cols="130" class="formenter">{$news_all_tpl.news_notes}</textarea></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_VALUEVIEW#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="news_valueview">
+<option value="0" {if $news_all_tpl.news_valueview eq "0"} selected{/if}>{#_NEWS_ALLVISITORS#}</option>
+<option value="1" {if $news_all_tpl.news_valueview eq "1"} selected{/if}>{#_NEWS_ONLYUSERS#}</option>
+<option value="2" {if $news_all_tpl.news_valueview eq "2"} selected{/if}>{#_NEWS_ONLYADMINS#}</option>
+<option value="3" {if $news_all_tpl.news_valueview eq "3"} selected{/if}>{#_NEWS_ONLYGUESTS#}</option>
+</select>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_STATUS#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="news_status" class="formenter">
+<option value="1" {if $news_all_tpl.news_status eq "1"} selected{/if}>{#_NEWS_ON#}</option>
+<option value="0" {if $news_all_tpl.news_status eq "0"} selected{/if}>{#_NEWS_OFF#}</option>
+</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_TERMEXPIRE#}:</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="news_termexpire" size="4" maxlength="3" value="{if $news_all_tpl.news_termexpire ne ''}{$news_all_tpl.news_termexpireday+1}{else}0{/if}" class="formenter"> <span class="formentername">{#_NEWS_TERMEXPIREDAY#} {if $news_all_tpl.news_termexpire ne ""}{#_NEWS_TERMEXPIRELAST#} {$news_all_tpl.news_termexpire}{/if}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_TERMEXPIREACTION#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="news_termexpireaction">
+<option value="off" {if $news_all_tpl.news_termexpireaction eq "off"} selected{/if}>{#_NEWS_FUNCTIONOFF#}</option>
+<option value="delete" {if $news_all_tpl.news_termexpireaction eq "delete"} selected{/if}>{#_NEWS_FUNCTIONDELETE#}</option>
+</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_ONMAIN#}:</span><span class="errorsmall"><sup>2</sup></span></td><td bgcolor="{#color7#}" class="td2"><select name="news_onhome" class="formenter">
+<option value="1" {if $news_all_tpl.news_onhome eq "1"} selected{/if}>{#_NEWS_ON#}</option>
+<option value="0" {if $news_all_tpl.news_onhome eq "0"} selected{/if}>{#_NEWS_OFF#}</option>
+</select>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_LINK#}:</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="news_link" size="50" maxlength="255" value="{$news_all_tpl.news_link}" class="formenter"></td>
+</tr>
+</table><br>
+<input type="submit" value="{#_NEWS_EDIT_BUTTON#}" class="button">
+</form>
+<br>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}</span>&nbsp;<span class="errorsmall"><sup>1</sup></span>&nbsp;<span class="text">{#_NEWS_PLAYERNOTES#}</span></td></tr></table>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}</span>&nbsp;<span class="errorsmall"><sup>2</sup></span>&nbsp;<span class="text">{#_NEWS_NOTES2#}</span></td></tr></table>
+<br><br>
+{/foreach}
+{if $adminmodules_news_programm eq "yes"}
+<script type="text/javascript">
+$.tools.dateinput.localize("{$language}",  {
+   months:        '{#_CALENDARMONTHS#}',
+   shortMonths:   '{#_CALENDARSHORTMONTHS#}',
+   days:          '{#_CALENDARDAYS#}',
+   shortDays:     '{#_CALENDARSHORTDAYS#}'
+});
+
+ $(":date").dateinput({
+ lang: '{$language}',
+ format: 'dd.mm.yy',
+ selectors: true,
+ firstDay: 1
+ }
+ );
+ </script>
+{/if}
+</center>

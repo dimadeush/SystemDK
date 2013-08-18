@@ -1,0 +1,34 @@
+{nocache}
+{if $modules_account_regusername eq '' or $modules_account_regusername eq 'no'}{#_ACCOUNTREGNEWUSER#}{else}{$modules_account_regusername}{/if},
+
+{#_ACCOUNTREGTEXT1#} {$modules_account_siteurl}
+
+{#_ACCOUNTLOSTPASSTEXT2#}
+
+-----------------------------------------
+{#_ACCOUNTLOSTPASSTEXT3#}:
+-----------------------------------------
+
+{#_ACCOUNTLOGIN#}: modules_account_reguserlogin
+{#_ACCOUNTNEWPASSWORD#}: modules_account_reguserpassword
+
+
+{#_ACCOUNTLOSTPASSTEXT11#}
+
+-----------------------------------------
+{#_ACCOUNTREGTEXT4#}:
+-----------------------------------------
+
+{#_ACCOUNTLOSTPASSTEXT6#}
+
+{#_ACCOUNTLOSTPASSTEXT7#}:
+
+{$modules_account_siteurl}{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_newpassconf/modules_account_regactid/{else}/{$system_dir}index.php?path=account&func=account_newpassconf&act_code=modules_account_regactid&lang={$site_language}{/if}
+
+
+{#_ACCOUNTREGTEXT8#}
+
+
+{#_ACCOUNTREGTEXT9#},
+{#_ACCOUNTREGTEXT10#} {$modules_account_siteurl}.
+{/nocache}

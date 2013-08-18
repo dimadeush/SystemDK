@@ -1,0 +1,41 @@
+{config_load file="$language/systemadmin/modules/main_pages/main_pages.conf"}
+{#_MAINPAGE#}</span></center>
+</div>
+<center>
+<br>
+{if $main_pageupdate eq "add"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MAINPAGEADDOK#}</span><br><br>
+<a href="index.php?path=admin_main_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_MAINPAGE#}</a>
+{elseif $main_pageupdate eq "notalldata"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTALLDATA#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $main_pageupdate eq "notinsert"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
+{nocache}
+{if $error ne "no"}
+{foreach $error as $error_tpl}
+{if $error_tpl.message ne "" and $error_tpl.code ne ""}<span class="errorsmall">{$error_tpl.message}<br>{$error_tpl.code}</span><br>{/if}
+{/foreach}
+{/if}
+{/nocache}
+<br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $main_pageupdate eq "notinsert2"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $main_pageupdate eq "notfind"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_MAINPAGENOTFIND#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $main_pageupdate eq "on"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MAINPAGEONOK#}</span><br><br>
+<a href="index.php?path=admin_main_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_MAINPAGE#}</a>
+{elseif $main_pageupdate eq "off"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MAINPAGEOFFOK#}</span><br><br>
+<a href="index.php?path=admin_main_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_MAINPAGE#}</a>
+{elseif $main_pageupdate eq "delete"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MAINPAGEDELETEOK#}</span><br><br>
+<a href="index.php?path=admin_main_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_MAINPAGE#}</a>
+{elseif $main_pageupdate eq "editok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MAINPAGEEDITOK#}</span><br><br>
+<a href="index.php?path=admin_main_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_MAINPAGE#}</a>
+{/if}
+</center>

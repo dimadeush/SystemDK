@@ -1,0 +1,14 @@
+{config_load file="$language/systemadmin/modules/settings/settings.conf"}
+{#_SETTINGS#}</span></center>
+</div>
+<br><center>
+{if $done eq "ok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SETTINGSCLEARALLCACHEOK#}</span><br>
+<br>
+<a href="index.php?path=admin_settings&amp;func=index&amp;lang={$site_language}" class="link">{#_SETTINGS#}</a>
+{else}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SETTINGSCLEARALLCACHENO#}</span><br>
+<br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{/if}
+</center>

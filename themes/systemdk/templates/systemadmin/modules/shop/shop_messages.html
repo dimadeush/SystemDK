@@ -1,0 +1,166 @@
+{#_SHOP#}</span></center>
+</div>
+<center>
+<br>
+{if $shop_message eq "sqlerror"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
+{nocache}
+{if $error ne "no"}
+{foreach $error as $error_tpl}
+{if $error_tpl.message ne "" and $error_tpl.code ne ""}<span class="errorsmall">{$error_tpl.message}<br>{$error_tpl.code}</span><br>{/if}
+{/foreach}
+{/if}
+{/nocache}
+<br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "notfoundcatalog"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPNOTFINDCATALOG#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "notfoundcateg"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPNOTFINDCATEG#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "notfoundsubcateg"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPNOTFINDSUBCATEG#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "notfounditem"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPITEMNOTFOUND#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "nocat"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPCATALOGNOTSELECTED#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "nocateg"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPCATEGORYNOTSELECTED#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "nosubcateg"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPSUBCATEGORYNOTSELECTED#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "notalldata"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTALLDATA#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "uploadfileerror"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPUPLOADFILEERROR#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "notuploadfile"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPNOTUPLOADFILE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "noteq"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPNOTEQFILE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "noteqtype"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPNOTEQFILETYPE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "maxsizeerror"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPFILEMAXSIZE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "notsave"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "editokcat" or $shop_message eq "editokcateg" or $shop_message eq "editoksubcateg" or $shop_message eq "editokitem"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPEDITOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOPHOMETITLE#}</a>
+{elseif $shop_message eq "nocatalogs"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPNOTFOUNDCATALOGS#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "nocategs"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPNOTFOUNDCATEGORIES#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "addokcat" or $shop_message eq "addokcateg" or $shop_message eq "addoksubcateg" or $shop_message eq "addokitem"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{if $shop_message eq "addokcat"}{#_SHOPCATALOGADDOK#}{elseif $shop_message eq "addokcateg"}{#_SHOPCATEGORYADDOK#}{elseif $shop_message eq "addoksubcateg"}{#_SHOPSUBCATEGORYADDOK#}{elseif $shop_message eq "addokitem"}{#_SHOPITEMADDOK#}{/if}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOPHOMETITLE#}</a>
+{elseif $shop_message eq "on" or $shop_message eq "on1" or $shop_message eq "on2" or $shop_message eq "onitems"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{if $shop_message eq "on"}{#_SHOPCATONOK#}{elseif $shop_message eq "on1"}{#_SHOPCATEGONOK#}{elseif $shop_message eq "on2"}{#_SHOPSUBCATEGONOK#}{elseif $shop_message eq "onitems"}{#_SHOPITEMONOK#}{/if}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a>
+{elseif $shop_message eq "off" or $shop_message eq "off1" or $shop_message eq "off2" or $shop_message eq "offitems"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{if $shop_message eq "off"}{#_SHOPCATOFFOK#}{elseif $shop_message eq "off1"}{#_SHOPCATEGOFFOK#}{elseif $shop_message eq "off2"}{#_SHOPSUBCATEGOFFOK#}{elseif $shop_message eq "offitems"}{#_SHOPITEMOFFOK#}{/if}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a>
+{elseif $shop_message eq "delete" or $shop_message eq "delete1" or $shop_message eq "delete2" or $shop_message eq "deleteitems"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{if $shop_message eq "delete"}{#_SHOPCATDELETEOK#}{elseif $shop_message eq "delete1"}{#_SHOPCATEGDELETEOK#}{elseif $shop_message eq "delete2"}{#_SHOPSUBCATEGDELETEOK#}{elseif $shop_message eq "deleteitems"}{#_SHOPITEMDELETEOK#}{/if}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a>
+{elseif $shop_message eq "noitem"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPITEMNOTSELECTED#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "sortok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPSORTOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOPHOMETITLE#}</a>
+{elseif $shop_message eq "noorder"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPORDERNOTSELECTED#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "notfoundorder"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPNOTFINDORDER#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "editorderok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPEDITORDEROK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_orders&amp;lang={$site_language}" class="link">{#_SHOPORDERSTITLE#}</a>
+{elseif $shop_message eq "incorrectemail"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPINCORRECTEMAIL#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "postlength"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPCOMMENTISTOOLONG#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "orderitems"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPORDERITEMSNOTLESSTWO#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "status"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPORDERSTATUSUPDATEOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_orders&amp;lang={$site_language}" class="link">{#_SHOPORDERSTITLE#}</a>
+{elseif $shop_message eq "orderdelete"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPORDERSDELETEOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_orders&amp;lang={$site_language}" class="link">{#_SHOPORDERSTITLE#}</a>
+{elseif $shop_message eq "itemdelete"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPORDERITEMDELETEDOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_orderproc&amp;order_id={nocache}{$adminmodules_shop_order_id}{/nocache}&amp;lang={$site_language}" class="link">{#_SHOPRETURNTOORDER#}</a>
+{elseif $shop_message eq "itemupdate"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPORDERITEMEDITOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_orderproc&amp;order_id={nocache}{$adminmodules_shop_order_id}{/nocache}&amp;lang={$site_language}" class="link">{#_SHOPRETURNTOORDER#}</a>
+{elseif $shop_message eq "delivitems"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPDELIVERYNOTLESSONE#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "delivitems2"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPACTIVEDELIVERYNOTLESSONE#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "delivdelete"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPDELIVERYDELETEOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;lang={$site_language}" class="link">{#_SHOPDELIVERY#}</a>
+{elseif $shop_message eq "payitems"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPPAYNOTLESSONE#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "payitems2"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOPACTIVEPAYNOTLESSONE#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "paydelete"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPPAYDELETEOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;pay=1&amp;lang={$site_language}" class="link">{#_SHOPPAY#}</a>
+{elseif $shop_message eq "delivstatuson" or $shop_message eq "delivstatusoff"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{if $shop_message eq "delivstatuson"}{#_SHOPDELIVERYONOK#}{else}{#_SHOPDELIVERYOFFOK#}{/if}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;lang={$site_language}" class="link">{#_SHOPDELIVERY#}</a>
+{elseif $shop_message eq "paystatuson" or $shop_message eq "paystatusoff"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{if $shop_message eq "paystatuson"}{#_SHOPPAYONOK#}{else}{#_SHOPPAYOFFOK#}{/if}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;pay=1&amp;lang={$site_language}" class="link">{#_SHOPPAY#}</a>
+{elseif $shop_message eq "nodeliv" or $shop_message eq "nopay"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{if $shop_message eq "nodeliv"}{#_SHOPDELIVERYNOTSELECTED#}{else}{#_SHOPPAYNOTSELECTED#}{/if}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "notfounddeliv" or $shop_message eq "notfoundpay"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{if $shop_message eq "notfounddeliv"}{#_SHOPDELIVERYNOTFOUND#}{else}{#_SHOPPAYNOTFOUND#}{/if}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "updatedeliv"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPDELIVERYEDITOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;lang={$site_language}" class="link">{#_SHOPDELIVERY#}</a>
+{elseif $shop_message eq "updatepay"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPPAYEDITOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;pay=1&amp;lang={$site_language}" class="link">{#_SHOPPAY#}</a>
+{elseif $shop_message eq "adddeliv"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPDELIVERYADDOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;lang={$site_language}" class="link">{#_SHOPDELIVERY#}</a>
+{elseif $shop_message eq "addpay"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPPAYADDOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;pay=1&amp;lang={$site_language}" class="link">{#_SHOPPAY#}</a>
+{elseif $shop_message eq "nofile"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPCONFIGNOFILE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "nowrite"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOPCONFIGNOTWRITE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "writeok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPCONFIGWRITEOK#}</span><br><br>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOPHOMETITLE#}</a>
+{/if}
+</center>

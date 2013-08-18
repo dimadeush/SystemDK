@@ -1,0 +1,29 @@
+{#_SHOP#}</span></center>
+</div>
+<br>
+<center>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> <span class="tablecenterblocktext2">|</span> {if $adminmodules_shop_method eq "deliv"}<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;lang={$site_language}" class="link">{#_SHOPDELIVERY#}</a>{else}<a href="index.php?path=admin_shop&amp;func=shop_methods&amp;pay=1&amp;lang={$site_language}" class="link">{#_SHOPPAY#}</a>{/if}
+<br><br><br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{if $adminmodules_shop_method eq "deliv"}{#_SHOPADDDELIVERYTITLE#}{else}{#_SHOPADDPAYTITLE#}{/if}</span><br><br>
+<form action="index.php?path=admin_shop&amp;func=shop_method_save2&amp;lang={$site_language}" method="POST">
+{if $adminmodules_shop_method eq "pay"}
+<input type="hidden" name="pay" value="1">
+{/if}
+<table border="0" cellspacing="2"  cellpadding="0">
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPNAMETITLE#}:</span> <span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="item_name" size="40" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{if $adminmodules_shop_method eq "deliv"}{#_SHOPITEMPRICE#}{else}{#_SHOPCOMMISSION#} (%){/if}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="item_price" size="20" maxlength="13" class="formenter">&nbsp;</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPSTATUSTITLE#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="item_status" class="formenter"> <option value="1">{#_SHOPITEMON#}</option><option value="0">{#_SHOPITEMOFF#}</option></select></td>
+</tr>
+<tr>
+<td colspan="2" align="center"><br><input type="submit" value="{#_SHOPBUTTONSAVE#}" class="button"></td>
+</tr>
+</table>
+</form>
+<br>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text"> {#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</center><br><br>

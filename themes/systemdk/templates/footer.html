@@ -1,0 +1,51 @@
+   {nocache}
+   {if $blocks_all_rightdata ne "false"}
+   {foreach $blocks_all_rightdata as $blocks_all_rightdata_tpl}
+   <table width="100%" border="0" cellpadding="0" cellspacing="0"  bgcolor="{#color10#}">
+    <tr bgcolor="{#color11#}">
+      <td width="100%" height="17">
+      <center><span class="blockname">{$blocks_all_rightdata_tpl.block_customname}</span></center>
+      </td>
+    </tr>
+    <tr valign="top" bgcolor="{#color5#}">
+      <td style="width:100%; height:100%; border-left-color:{#color5#}; border-left-style:solid; border-left-width:3px; border-right-color:{#color5#}; border-right-style:solid; border-right-width:3px;" align="left" class="leftrightblocktext2">
+      {$blocks_all_rightdata_tpl.block_content}
+      </td>
+    </tr>
+    <tr bgcolor="{#color12#}">
+      <td height="2"></td>
+    </tr>
+   </table><br>
+   {/foreach}
+   <hr width="170" style="color:{#color10#}; border:0;">
+   {/if}
+   </td>
+ </tr>
+</table>
+</center>
+{if $blocks_all_footerdata ne "false"}
+{foreach $blocks_all_footerdata as $blocks_all_footerdata_tpl}
+{$blocks_all_footerdata_tpl.block_content}
+{/foreach}
+{/if}
+{/nocache}
+<br>
+</div>
+<div id="Footer" style="width:100%; height:20px; background-image:url(/{$system_dir}{#bgimage10#}); background-color:{#color10#};">
+<center>
+<table width="100%" border="0" cellpadding="0"  cellspacing="0">
+ <tr>
+   <td width="10%" align="left">&nbsp;<a href="#"><img src="/{$system_dir}{#bgimage30#}" border="0" align="middle"  alt=""></a></td>
+   <td width="80%"></td>
+   <td width="10%" align="right"><a href="#"><img src="/{$system_dir}{#bgimage30#}" border="0" alt=""></a>&nbsp;</td>
+ </tr>
+</table>
+</center>
+</div>
+<center>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+ <tr>
+   <td width="100%"><br><center><span class="remarks">{nocache}{$include_footer_data_tpl}<br><br>{if $systemdk_statistics eq "yes"}Total Queries:{$sqlstat},&nbsp;Total Cached:{$sqlstatcached}, Page generated: {gentimewatch} seconds <br>{/if}{/nocache} Copyright © 2004-2013, <a href="http://www.systemsdk.com" class="remarks">SystemDK</a>. All rights reserved. SystemDK v3.0</span></center></td>
+ </tr>
+</table>
+</center>

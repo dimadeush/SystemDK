@@ -1,0 +1,344 @@
+@import 'ui-darkness/jquery-ui.css';
+@import '../../jscript/jquery/pnotify/jquery.pnotify.default.css';
+
+/*@import '../default.css';*/
+
+html, body {
+	background-color: #1d1d1d;
+}
+
+#header {
+	background: #2e2e2e;
+}
+
+#lft {
+	border-right-color: #363636;
+	background: url('lft-bg.png') bottom repeat-x;
+}
+
+#boxFolders {
+	background-color: #1c1c1c;
+}
+
+#bottom {
+	border-top-color: #4d4d4d;
+	background-color: #2e2e2e;
+	background: url('panel-bg.png') bottom;
+}
+
+#bottom div {
+	color: #fff;
+}
+#bottom .allElement, #bottom .pressed, #bottom .stats {
+	border-right: solid 1px #4d4d4d;
+}
+
+
+.button {
+	border: solid 1px #4e4e4e;
+	background: #377085 url('button-bg.png') repeat-x;
+}
+
+#header {
+	background: url('panel-bg.png');
+}
+#header .address {
+	border: solid 1px #1d1d1d;
+	background-color: #4e4e4e;
+}
+#header .address a:hover {
+	color: #52c6f7;
+}
+#header .address:hover {
+	border-color: #5593aa;
+}
+
+#header .folderOperation a:hover {
+	background-color: #52c6f7;
+}
+
+#menu {
+	background: url('panel-bg.png') bottom;
+}
+
+
+#rgt {
+	color: #fff;
+}
+
+#fileOperation div.sep div {
+	border-right: solid 1px #4d4d4d;
+}
+#fileOperation a:hover {
+	background-color: #ddd;
+}
+
+#fileThumb .folder .image {
+	background-image: url('folder.png');
+}
+
+#fileThumb .folder,
+#fileThumb .thumb {
+	border: solid 1px #5a5a5a;
+	background-color: #5a5a5a;
+	background-position: center;
+	background-repeat: no-repeat;
+}
+
+#fileThumb div.thumbClick {
+	color: #fff !important;
+	background-color: #288db1 !important;
+}
+#fileThumb div.thumbOver {
+	color: #000;
+	background-color: #cecece;
+}
+#fileThumb div.checked {
+	border: solid 1px #fff;
+	background-color: #1d1d1d;
+}
+#fileThumb div.checked div {
+	color: #fff;
+}
+#fileThumb div.unlinkError {
+	background-color: #f44749;
+}
+
+#fileThumb table.list thead td {
+	background-color: #528fa6;
+}
+#fileThumb table.list td {
+	border-bottom: solid 1px #3e3e3e; 
+}
+
+#fileThumb table.list tbody tr.mouseOver {
+	background-color: #528fa6;
+}
+
+#fileThumb table.list tbody tr.mouseOver td.name {
+	color: #000;
+}
+
+
+#author strong {
+	color: #52c6f7;
+}
+
+#operationInput {
+	border: solid 1px #4d4d4d;
+}
+
+#resize_width, #resize_height {
+	border: solid 1px #3e3e3e;
+}
+
+/* --- */
+
+#uploads .head .l,
+#preview .head .l {
+	color: #fff;
+}
+
+
+#boxfolders {
+	background: #1c1c1c;
+}
+
+/* === */
+
+#uploads .head,
+#preview .head {
+	background: #363636;
+}
+
+#treeFolders li a b.size, #treeFolders li a i.files {
+	color: #999;
+}
+#treeFolders li a i.files {
+	color: #666;
+}
+
+.jstree-default.jstree-focused {
+	background: none;
+}
+.jstree-default li, .jstree-default ins {
+	background-image: url('d.png');
+}
+.jstree-default a, .jstree-default a:visited {
+	color: #fff !important;
+}
+.jstree-default .jstree-hovered {
+	color: #52c6f7 !important;
+	border-color: #1c1c1c;
+	background: none;
+}
+.jstree-default .jstree-clicked {
+	background: #808080;
+	border-color: #1c1c1c;
+}
+.jstree-default a.jstree-loading .jstree-icon {
+	background: url('throbber.gif') center center no-repeat !important;
+}
+
+/* === */
+
+.uploadifyQueueItem {
+	background-color: #ddd;
+}
+.uploadifyError {
+	border: 2px solid #FBCBBC !important;
+	background-color: #FDE5DD !important;
+}
+.uploadifyQueue .completed {
+	background-color: #E5E5E5;
+}
+.uploadifyProgress {
+	border-top: 1px solid #808080;
+	border-left: 1px solid #808080;
+	border-right: 1px solid #C5C5C5;
+	border-bottom: 1px solid #C5C5C5;
+	background-color: #808080;
+}
+.uploadifyProgressBar {
+	background-color: #52c6f7;
+}
+#uploadSimple {
+	background-image: url('browse.png');
+}
+
+/* === */
+
+.contextMenu {
+	background: #393939 url('context-menu-bg.gif') repeat-y left top;
+}
+
+.contextMenu li:hover {
+	background-image: url('context-menu-hover.gif');
+}
+
+/* === */
+
+.image {
+	background-image: url('ext/default.png');
+}
+
+.ext_aac {background-image: url('ext/aac.png');}
+.ext_ac3 {background-image: url('ext/ac3.png');}
+.ext_ace {background-image: url('ext/ace.png');}
+.ext_ade {background-image: url('ext/ade.png');}
+.ext_adp {background-image: url('ext/adp.png');}
+.ext_ai {background-image: url('ext/ai.png');}
+.ext_aiff {background-image: url('ext/aiff.png');}
+.ext_aspx {background-image: url('ext/aspx.png');}
+.ext_au {background-image: url('ext/au.png');}
+.ext_avi {background-image: url('ext/avi.png');}
+.ext_bak {background-image: url('ext/bak.png');}
+.ext_bat {background-image: url('ext/bat.png');}
+.ext_bin {background-image: url('ext/bin.png');}
+.ext_blue-ray {background-image: url('ext/blue-ray.png');}
+.ext_bmp {background-image: url('ext/bmp.png');}
+.ext_bup {background-image: url('ext/bup.png');}
+.ext_cab {background-image: url('ext/cab.png');}
+.ext_cat {background-image: url('ext/cat.png');}
+.ext_chm {background-image: url('ext/chm.png');}
+.ext_cmd {background-image: url('ext/cmd.png');}
+.ext_css {background-image: url('ext/css.png');}
+.ext_csv {background-image: url('ext/csv.png');}
+.ext_cue {background-image: url('ext/cue.png');}
+.ext_dat {background-image: url('ext/dat.png');}
+.ext_default {background-image: url('ext/default.png');}
+.ext_der {background-image: url('ext/der.png');}
+.ext_dic {background-image: url('ext/dic.png');}
+.ext_divx {background-image: url('ext/divx.png');}
+.ext_diz {background-image: url('ext/diz.png');}
+.ext_dll {background-image: url('ext/dll.png');}
+.ext_doc {background-image: url('ext/doc.png');}
+.ext_docx {background-image: url('ext/docx.png');}
+.ext_dos {background-image: url('ext/dos.png');}
+.ext_download {background-image: url('ext/download.png');}
+.ext_dvd {background-image: url('ext/dvd.png');}
+.ext_dwg {background-image: url('ext/dwg.png');}
+.ext_dwt {background-image: url('ext/dwt.png');}
+.ext_emf {background-image: url('ext/emf.png');}
+.ext_exc {background-image: url('ext/exc.png');}
+.ext_fav {background-image: url('ext/fav.png');}
+.ext_fla {background-image: url('ext/fla.png');}
+.ext_font {background-image: url('ext/font.png');}
+.ext_gif {background-image: url('ext/gif.png');}
+.ext_hlp {background-image: url('ext/hlp.png');}
+.ext_html {background-image: url('ext/html.png');}
+.ext_ie7 {background-image: url('ext/ie7.png');}
+.ext_ifo {background-image: url('ext/ifo.png');}
+.ext_inf {background-image: url('ext/inf.png');}
+.ext_ini {background-image: url('ext/ini.png');}
+.ext_iso {background-image: url('ext/iso.png');}
+.ext_isp {background-image: url('ext/isp.png');}
+.ext_java {background-image: url('ext/java.png');}
+.ext_jfif {background-image: url('ext/jfif.png');}
+.ext_jpeg {background-image: url('ext/jpeg.png');}
+.ext_jpg {background-image: url('ext/jpg.png');}
+.ext_js {background-image: url('ext/js.png');}
+.ext_log {background-image: url('ext/log.png');}
+.ext_m4a {background-image: url('ext/m4a.png');}
+.ext_m4p {background-image: url('ext/m4p.png');}
+.ext_mmf {background-image: url('ext/mmf.png');}
+.ext_mmm {background-image: url('ext/mmm.png');}
+.ext_mov {background-image: url('ext/mov.png');}
+.ext_movie {background-image: url('ext/movie.png');}
+.ext_mp2 {background-image: url('ext/mp2.png');}
+.ext_mp2v {background-image: url('ext/mp2v.png');}
+.ext_mp3 {background-image: url('ext/mp3.png');}
+.ext_mp4 {background-image: url('ext/mp4.png');}
+.ext_mpe {background-image: url('ext/mpe.png');}
+.ext_mpeg {background-image: url('ext/mpeg.png');}
+.ext_mpg {background-image: url('ext/mpg.png');}
+.ext_mpv2 {background-image: url('ext/mpv2.png');}
+.ext_msi {background-image: url('ext/msi.png');}
+.ext_music {background-image: url('ext/music.png');}
+.ext_nfo {background-image: url('ext/nfo.png');}
+.ext_one {background-image: url('ext/one.png');}
+.ext_pdd {background-image: url('ext/pdd.png');}
+.ext_pdf {background-image: url('ext/pdf.png');}
+.ext_php {background-image: url('ext/php.png');}
+.ext_png {background-image: url('ext/png.png');}
+.ext_pps {background-image: url('ext/pps.png');}
+.ext_ppt {background-image: url('ext/ppt.png');}
+.ext_pptx {background-image: url('ext/pptx.png');}
+.ext_print {background-image: url('ext/print.png');}
+.ext_psd {background-image: url('ext/psd.png');}
+.ext_rar {background-image: url('ext/rar.png');}
+.ext_rb {background-image: url('ext/rb.png');}
+.ext_reg {background-image: url('ext/reg.png');}
+.ext_rtf {background-image: url('ext/rtf.png');}
+.ext_safari {background-image: url('ext/safari.png');}
+.ext_scp {background-image: url('ext/scp.png');}
+.ext_search {background-image: url('ext/search.png');}
+.ext_sql {background-image: url('ext/sql.png');}
+.ext_swf {background-image: url('ext/swf.png');}
+.ext_sys {background-image: url('ext/sys.png');}
+.ext_theme {background-image: url('ext/theme.png');}
+.ext_tif {background-image: url('ext/tif.png');}
+.ext_tiff {background-image: url('ext/tiff.png');}
+.ext_tmp {background-image: url('ext/tmp.png');}
+.ext_ttf {background-image: url('ext/ttf.png');}
+.ext_txt {background-image: url('ext/txt.png');}
+.ext_uis {background-image: url('ext/uis.png');}
+.ext_upload {background-image: url('ext/upload.png');}
+.ext_url {background-image: url('ext/url.png');}
+.ext_vcr {background-image: url('ext/vcr.png');}
+.ext_video {background-image: url('ext/video.png');}
+.ext_vob {background-image: url('ext/vob.png');}
+.ext_wba {background-image: url('ext/wba.png');}
+.ext_wma {background-image: url('ext/wma.png');}
+.ext_wmv {background-image: url('ext/wmv.png');}
+.ext_wpl {background-image: url('ext/wpl.png');}
+.ext_wri {background-image: url('ext/wri.png');}
+.ext_wtx {background-image: url('ext/wtx.png');}
+.ext_wzv {background-image: url('ext/wzv.png');}
+.ext_xls {background-image: url('ext/xls.png');}
+.ext_xlsx {background-image: url('ext/xlsx.png');}
+.ext_xml {background-image: url('ext/xml.png');}
+.ext_xsl {background-image: url('ext/xsl.png');}
+.ext_zap {background-image: url('ext/zap.png');}
+.ext_zip {background-image: url('ext/zip.png');}
+

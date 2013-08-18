@@ -1,0 +1,80 @@
+{config_load file="$language/systemadmin/modules/news/news.conf"}
+{#_NEWS#}</span></center>
+</div>
+<center>
+<br><br>
+{if $news_update eq "add"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_ADDOK#}</span><br><br><br>
+<a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a>
+{elseif $news_update eq "addcategory"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CATEGORY_ADD#}</span><br><br>
+<a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NEWS_CATEGORIES#}</a>
+{elseif $news_update eq "notalldata"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_NEWS_NOTALLDATA#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "notinsert"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
+{nocache}
+{if $error ne "no"}
+{foreach $error as $error_tpl}
+{if $error_tpl.message ne "" and $error_tpl.code ne ""}<span class="errorsmall">{$error_tpl.message}<br>{$error_tpl.code}</span><br><br>{/if}
+{/foreach}
+{/if}
+{/nocache}
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "notinsert2"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "notfind"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOTFIND#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "notfindcat"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOTFINDCAT#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "attack"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_UPLOADFILEATTACK#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "maxsize"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_NEWS_MAXSIZE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "notupload"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOTUPLOADFILE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "noteq"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_NEWS_NOTEQFILE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "noteqtype"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_NEWS_NOTEQFILETYPE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "on"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_ONOK#}</span><br><br><br>
+<a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a>
+{elseif $news_update eq "off"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_OFFOK#}</span><br><br><br>
+<a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a>
+{elseif $news_update eq "delete"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_DELETEOK#}</span><br><br><br>
+<a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a>
+{elseif $news_update eq "editok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_EDITOK#}</span><br><br><br>
+<a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a>
+{elseif $news_update eq "editcatok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CATEDITOK#}</span><br><br>
+<a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NEWS_CATEGORIES#}</a>
+{elseif $news_update eq "deletecatconf"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CATEGORYDELETECONFIRMDESC#}<br><br>{#_NEWS_CATEGORYDELETECONFIRM1#} "{nocache}{$category_del_name}{/nocache}" {#_NEWS_CATEGORYDELETECONFIRM2#} {nocache}{$count_del_news_id}{/nocache} {#_NEWS_CATEGORYDELETECONFIRM3#}?</span><br><br>
+<a href="index.php?path=admin_news&amp;func=category_delete&amp;category_id={$category_id}&amp;conf=1&amp;lang={$site_language}" class="link">{#_YES#}</a> | <a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NO#}</a>
+{elseif $news_update eq "delcatok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CATDELOK#}</span><br><br>
+<a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NEWS_CATEGORIES#}</a>
+{elseif $news_update eq "nofile"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOCONFIGFILE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "nowrite"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOCONFIGWRITEFILE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $news_update eq "writeok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CONFIGWRITEOK#}</span><br><br>
+<a href="index.php?path=admin_news&amp;func=index&amp;lang={$site_language}" class="link">{#_NEWS#}</a>
+{/if}
+</center>

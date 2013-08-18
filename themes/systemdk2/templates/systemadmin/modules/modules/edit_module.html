@@ -1,0 +1,82 @@
+{#_MODULES#}</span></center>
+</div>
+<br><center><img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_OTHERMODULESINSYSTEM#}</span><br><br>
+<table border="0" width="99%" cellspacing="2"  cellpadding="0">
+  {nocache}
+  {if $display_menu eq "yes"}
+  {foreach $additional_modules as $additional_modules_tpl}
+  {if $additional_modules_tpl.module_ordinal_number eq "0"}
+  <tr>
+  {/if}
+  <td align="center" width="16%" style="padding-bottom: 4px; padding-top: 4px; CURSOR:POINTER;" bgcolor="{#color7#}" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color7#}'" onclick="location.href='index.php?path=admin_{$additional_modules_tpl.module_name}&amp;lang={$site_language}'">
+    <a href="index.php?path=admin_{$additional_modules_tpl.module_name}&amp;lang={$site_language}" class="link">{if $display_admin_graphic ne "no"}<img src="../themes/systemdk2/images/systemadmin/{$additional_modules_tpl.module_name}.jif" border="0" alt="{$additional_modules_tpl.module_customname}" title="{$additional_modules_tpl.module_customname}" height="30" width="30"><br>{/if}{$additional_modules_tpl.module_customname}</a>
+    {if $additional_modules_tpl.module_ordinal_number eq "5"}
+    </td></tr>
+    {else}
+  </td>
+  {/if}
+  {/foreach}
+ {if $additional_modules_tpl.module_ordinal_number ne "5"}
+ </tr>
+ {/if}
+ {else}
+ <tr><td align="center" bgcolor="{#color7#}"><span class="tablecenterblocktext2">{#_NOOTHERMODULESINSYSTEM#}</span></td></tr>
+ {/if}
+ {/nocache}
+</table>
+<br>
+<br>
+{if $module_edit_save eq "save_ok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MODULEPARAMSSAVE#}</span><br>
+<br><a href="index.php?path=admin_modules&amp;func=index&amp;lang={$site_language}" class="link">{#_ALLMODULESINSYSTEM#}</a>
+{elseif $module_edit_save eq "save_status"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MODULEPARAMSSAVE#}</span><br>
+<br><a href="index.php?path=admin_modules&amp;func=index&amp;lang={$site_language}" class="link">{#_ALLMODULESINSYSTEM#}</a>
+{elseif $module_edit_save eq "nosuchmodule"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MODULENOSUCHMODULE#}</span><br>
+<br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $module_edit_save eq "noalldata"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MODULENOTALLDATA#}</span><br>
+<br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $module_edit_save eq "findinbase"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MODULECUSTOMNAMEFINDINBASE#}</span><br>
+<br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $module_edit_save eq "notsave"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br>
+{nocache}
+{if $error ne "no"}
+{foreach $error as $error_tpl}
+{if $error_tpl.message ne "" and $error_tpl.code ne ""}<br><span class="errorsmall">{$error_tpl.message}<br>{$error_tpl.code}</span><br>{/if}
+{/foreach}
+{/if}
+{/nocache}
+<br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $module_edit_save eq "notsave2"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br>
+<br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{else}
+<form action="index.php?path=admin_modules&amp;func=edit_module_save&amp;lang={$site_language}" method="POST">
+{foreach $module_all as $module_all_tpl}
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_MODULEEDITNAME#} {$module_all_tpl.module_name}</span><br><br>
+<table border="0" cellpadding="0" cellspacing="2" align="center">
+ <tr align="left">
+   <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MODULE#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{$module_all_tpl.module_name}</span><input type="hidden" name="module_id" value="{$module_all_tpl.module_id}"></td>
+ </tr>
+ <tr align="left">
+   <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MODULENAME#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="module_customname" value="{$module_all_tpl.module_customname}" size="25" class="formenter" maxlength="25"></td>
+ </tr>
+ <tr align="left">
+   <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MODULESTATUS#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="module_status" class="formenter"><option value="0" {if $module_all_tpl.module_status eq "0"} selected {/if}>{#_MODULEOFFNOW#}</option><option value="1" {if $module_all_tpl.module_status eq "1"} selected {/if}>{#_MODULEONNOW#}</option></select></td>
+ </tr>
+ <tr align="left">
+   <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MODULEWHOVIEW#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="module_valueview" class="formenter"><option value="0" {if $module_all_tpl.module_valueview eq "0"} selected {/if}>{#_MODULEALLVISITORS#}</option><option value="1" {if $module_all_tpl.module_valueview eq "1"} selected {/if}>{#_MODULEONLYUSERS#}</option><option value="2" {if $module_all_tpl.module_valueview eq "2"} selected {/if}>{#_MODULEONLYADMINS#}</option><option value="3" {if $module_all_tpl.module_valueview eq "3"} selected {/if}>{#_MODULEONLUGUESTS#}</option></select></td>
+ </tr>
+ <tr>
+   <td colspan="2" align="center"><br><input type="submit" value="{#_MODULESAVEBUTTON#}" class="button"></td>
+ </tr>
+</table>
+{/foreach}
+</form>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+{/if}
+</center><br>

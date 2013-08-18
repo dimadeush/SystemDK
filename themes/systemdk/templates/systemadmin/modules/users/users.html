@@ -1,0 +1,67 @@
+{config_load file="$language/systemadmin/modules/users/users.conf"}
+{#_USER#}</span></center>
+</div>
+{if isset($adminmodules_users_temp) and $adminmodules_users_temp eq "yes"}
+<table cellpadding="0" cellspacing="2" border="0" align="right">
+ <tr>
+   <td>
+     <table width="100%" border="0" cellpadding="0"  cellspacing="2">
+      <tr>
+        <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage25#}" border="0" alt="">&nbsp;<a href="index.php?path=admin_users&amp;func=user_status&amp;action=deletetempall&amp;lang={$site_language}" class="link">{#_USERDELLALLTEMPUSERS#}</a></td>
+      </tr>
+     </table>
+   </td>
+ </tr>
+</table>
+{/if}
+<br>
+<center>
+<table border="0" width="99%" cellspacing="2"  cellpadding="0">
+<tr align="center">
+<td>
+{if isset($adminmodules_users_temp) and $adminmodules_users_temp eq "yes"}
+ <a href="index.php?path=admin_users&amp;func=index&amp;lang={$site_language}" class="link">{#_USER#}</a><br><br>
+ <img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_USERLISTTEMPUSERS#}</span>
+{else}
+ <a href="index.php?path=admin_users&amp;func=user_add&amp;lang={$site_language}" class="link">{#_USERADD#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_users&amp;func=index&amp;temp=1&amp;lang={$site_language}" class="link">{#_USERLISTTEMPUSERS#}</a><br><br>
+ <img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_USER#}</span>
+{/if}
+</td>
+</tr>
+</table>
+<br>
+<form action="index.php?path=admin_users&amp;func=user_status&amp;lang={$site_language}" method="POST">
+<table border="0" width="99%" cellspacing="2"  cellpadding="0">
+<tr align="center">
+<td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_USERFIO#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_USERLOGIN#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_USEREMAIL#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_USERSTATUS#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_USERREGDATE#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_USERFUNCTIONS#}</span></td>
+</tr>
+{if $user_all ne "no"}
+{foreach $user_all as $user_all_tpl}
+<tr>
+<td width="1%" bgcolor="{#color7#}" nowrap><img src="../{#bgimage15#}" border="0" alt=""></td><td width="1%" bgcolor="{#color7#}"><center><input type="checkbox" name="user_id[]" value="{$user_all_tpl.user_id}" class="formenter"></center></td><td width="16%" bgcolor="{#color7#}" class="td1" nowrap align="left"> {if $user_all_tpl.user_name ne "" or $user_all_tpl.user_surname ne ""}<span class="tablecenterblocktext2">{$user_all_tpl.user_name} {$user_all_tpl.user_surname}</span>{/if}</td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap> <span class="tablecenterblocktext2">{$user_all_tpl.user_login}</span></td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap> <span class="tablecenterblocktext2"><a href="mailto:{$user_all_tpl.user_email}" class="link">{$user_all_tpl.user_email}</a></span></td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap> <span class="tablecenterblocktext2">{if isset($adminmodules_users_temp) and $adminmodules_users_temp eq "yes"}{#_USERSWAITCONFIRMREG#}{else}{if $user_all_tpl.user_active eq "1"}{#_USERACTIVE#}{elseif $user_all_tpl.user_active eq "0"}{#_USERNOTACTIVE#}{/if}{/if}</span></td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap> <span class="tablecenterblocktext2"> {$user_all_tpl.user_regdate}</span></td><td width="16%" bgcolor="{#color7#}" class="td2" nowrap>{if isset($adminmodules_users_temp) and $adminmodules_users_temp ne "yes"}<a href="index.php?path=admin_users&amp;func=user_edit&amp;user_id={$user_all_tpl.user_id}&amp;lang={$site_language}" class="link">{#_USERFUNCTIONEDIT#}</a><span class="tablecenterblocktext2">|</span>{if $user_all_tpl.user_active eq "1"}<a href="index.php?path=admin_users&amp;func=user_status&amp;action=off&amp;user_id={$user_all_tpl.user_id}&amp;lang={$site_language}" class="link">{#_USERFUNCTIONOFF#}</a>{elseif $user_all_tpl.user_active eq "0"}<a href="index.php?path=admin_users&amp;func=user_status&amp;action=on&amp;user_id={$user_all_tpl.user_id}&amp;lang={$site_language}" class="link">{#_USERFUNCTIONON#}</a>{/if}<span class="tablecenterblocktext2">|</span><a href="index.php?path=admin_users&amp;func=user_status&amp;action=delete&amp;user_id={$user_all_tpl.user_id}&amp;lang={$site_language}" class="link">{#_USERFUNCTIONDELETE#}</a>{else}<a href="index.php?path=admin_users&amp;func=user_status&amp;action=deletetemp&amp;user_id={$user_all_tpl.user_id}&amp;lang={$site_language}" class="link">{#_USERFUNCTIONDELETE#}</a>{/if}</td>
+</tr>
+{/foreach}
+{else}
+<tr>
+<td width="100%" colspan="8" align="center" bgcolor="{#color7#}" class="td2" nowrap><span class="tablecenterblocktext2">{#_USERNOTUSERS#}</span></td>
+</tr>
+{/if}
+</table>
+{if $user_all ne "no"}
+ <table border="0" width="99%" cellspacing="2"  cellpadding="0"><tr align="right"><td><span class="tablecenterblocktext2">{#_USERACTIONWITHSELECTED#}:</span> <select name="action" class="formenter"> {if isset($adminmodules_users_temp) and $adminmodules_users_temp ne "yes"}<option value="off">{#_USERFUNCTIONOFF#}</option><option value="on">{#_USERFUNCTIONON#}</option>{/if}<option value="{if isset($adminmodules_users_temp) and $adminmodules_users_temp eq "yes"}deletetemp{else}delete{/if}">{#_USERFUNCTIONDELETE#}</option></select> <input type="submit" value="{#_USERBUTTONDONE#}" class="button"></td></tr></table>
+{/if}
+</form>
+</center>
+<br><br>
+{if $html ne "no"}
+<table width="100%" cellpadding="0" cellspacing="2" border="0">
+ <tr>
+  <td><center><span class="tablecenterblocktext2">{#_USERCOUNTTOTAL#}:{$totalusers} ({#_USERPAGECOUNTTOTAL#}:{$num_pages})</span></center></td>
+ </tr>
+</table>
+<center>{if $prevpage ne "no"}<a href="index.php?path=admin_users&amp;func=index{if isset($adminmodules_users_temp) and $adminmodules_users_temp eq "yes"}&amp;temp=1{/if}&amp;num_page={$prevpage}&amp;lang={$site_language}" title="{#_USERPREVPAGE#}" class="link"><img src="../{#bgimage19#}" border="0" alt="{#_USERPREVPAGE#}"></a> {/if}
+{foreach $html as $html_tpl}
+{if $html_tpl.param1 eq "1"} <span class="tablecenterblocktext2">[{$html_tpl.number}]</span> {elseif $html_tpl.param1 eq "2"} <a href="index.php?path=admin_users&amp;func=index{if isset($adminmodules_users_temp) and $adminmodules_users_temp eq "yes"}&amp;temp=1{/if}&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "3"} ...<a href="index.php?path=admin_users&amp;func=index{if isset($adminmodules_users_temp) and $adminmodules_users_temp eq "yes"}&amp;temp=1{/if}&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "4"} <a href="index.php?path=admin_users&amp;func=index{if isset($adminmodules_users_temp) and $adminmodules_users_temp eq "yes"}&amp;temp=1{/if}&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a>... {/if}
+{/foreach}
+{if $nextpage ne "no"} <a href="index.php?path=admin_users&amp;func=index{if isset($adminmodules_users_temp) and $adminmodules_users_temp eq "yes"}&amp;temp=1{/if}&amp;num_page={$nextpage}&amp;lang={$site_language}" title="{#_USERNEXTPAGE#}" class="link"><img src="../{#bgimage20#}" border="0" alt="{#_USERNEXTPAGE#}"></a>{/if}</center>
+{/if}<br><br>

@@ -1,0 +1,24 @@
+{config_load file="$language/systemadmin/modules/blocks/blocks.conf"}
+{#_BLOCKS#}</span></center>
+</div>
+<br><center>
+{if $blockadd eq "yes"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_BLOCK#} {#_BLOCKADDED#}</span><br><br>
+<a href="index.php?path=admin_blocks&amp;func=index&amp;lang={$site_language}" class="link">{#_BLOCKS#}</a>
+{elseif $blockadd eq "no"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_BLOCKNOTALLDATA#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $blockadd eq "can'topenurl"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_BLOCKCANTOPENURLRSS#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $blockadd eq "findinbase"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_BLOCKCUSTOMNAMEFINDINBASE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $blockadd eq "nofile"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_BLOCKNOFILE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $blockadd eq "notfind"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_BLOCKNOTFIND#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{/if}
+</center>

@@ -1,0 +1,30 @@
+{#_SHOP#}</span></center>
+</div>
+<br>
+<center>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_shop&amp;func=shop_orders&amp;lang={$site_language}" class="link">{#_SHOPORDERSTITLE#}</a>
+<br><br><br>
+{foreach $order_item_all as $order_item_all_tpl}
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_SHOPORDERITEMEDIT#} ¹{$order_item_all_tpl.order_id}</span> <span class="tablecenterblocktext2">[</span> <a href="index.php?path=admin_shop&amp;func=shop_orderproc&amp;order_id={$order_item_all_tpl.order_id}&amp;lang={$site_language}" class="link">{#_SHOPSHOWORDER#}</a> <span class="tablecenterblocktext2">]</span><br><br>
+<form action="index.php?path=admin_shop&amp;func=shop_orderi_save&amp;lang={$site_language}" method="POST">
+<input type="hidden" name="order_item_id" value="{$order_item_all_tpl.order_item_id}">
+<input type="hidden" name="order_id" value="{$order_item_all_tpl.order_id}">
+<table border="0" cellspacing="2"  cellpadding="0">
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPNAMETITLE#}:</span> <span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="order_item_name" value="{$order_item_all_tpl.order_item_name}" size="40" maxlength="255" class="formenter"> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/item/{if $order_item_all_tpl.item_catalog_id > 0 or $order_item_all_tpl.item_category_id > 0 or $order_item_all_tpl.item_subcategory_id > 0}cat/{if $order_item_all_tpl.item_category_id > 0}{$order_item_all_tpl.item_categ_cat_id}/{elseif $order_item_all_tpl.item_subcategory_id > 0}{$order_item_all_tpl.item_subcateg_cat_id}/{else}{$order_item_all_tpl.item_catalog_id}/{/if}{/if}{if $order_item_all_tpl.item_category_id > 0 or $order_item_all_tpl.item_subcategory_id > 0}categ/{if $order_item_all_tpl.item_subcategory_id > 0}{$order_item_all_tpl.item_subcateg_categ_id}/{else}{$order_item_all_tpl.item_category_id}/{/if}{/if}{if $order_item_all_tpl.item_subcategory_id > 0}subcateg/{$order_item_all_tpl.item_subcategory_id}/{/if}{$order_item_all_tpl.item_id}/{else}/{$system_dir}index.php?path=shop&amp;func=item{if $order_item_all_tpl.item_catalog_id > 0 or $order_item_all_tpl.item_category_id > 0 or $order_item_all_tpl.item_subcategory_id > 0}&amp;cat_id={if $order_item_all_tpl.item_category_id > 0}{$order_item_all_tpl.item_categ_cat_id}{elseif $order_item_all_tpl.item_subcategory_id > 0}{$order_item_all_tpl.item_subcateg_cat_id}{else}{$order_item_all_tpl.item_catalog_id}{/if}{/if}{if $order_item_all_tpl.item_category_id > 0 or $order_item_all_tpl.item_subcategory_id > 0}&amp;categ_id={if $order_item_all_tpl.item_subcategory_id > 0}{$order_item_all_tpl.item_subcateg_categ_id}{else}{$order_item_all_tpl.item_category_id}{/if}{/if}{if $order_item_all_tpl.item_subcategory_id > 0}&amp;subcateg_id={$order_item_all_tpl.item_subcategory_id}{/if}&amp;item_id={$order_item_all_tpl.item_id}&amp;lang={$site_language}{/if}" target="_blank" class="link">{#_SHOPSHOWLINK#}</a></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPITEMPRICE#}:</span> <span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="order_item_price" value="{$order_item_all_tpl.order_item_price}" size="20" maxlength="13" class="formenter">&nbsp;</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPITEMQUANTITY2#}:</span> <span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="order_item_quantity" value="{$order_item_all_tpl.order_item_quantity}" size="20" maxlength="3" class="formenter"></td>
+</tr>
+<tr>
+<td colspan="2" align="center"><br><input type="submit" value="{#_SHOPBUTTONSAVE#}" class="button"></td>
+</tr>
+</table>
+</form>
+{/foreach}
+<br>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text"> {#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</center><br><br>

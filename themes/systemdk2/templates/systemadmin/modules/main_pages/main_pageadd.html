@@ -1,0 +1,68 @@
+{config_load file="$language/systemadmin/modules/main_pages/main_pages.conf"}
+{#_MAINPAGE#}</span></center>
+</div>
+<center>
+<br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_MAINPAGEADDTITLE#}</span><br><br>
+<form action="index.php?path=admin_main_pages&amp;func=mainpage_add_inbase&amp;lang={$site_language}" method="POST">
+<table border="0" cellspacing="2"  cellpadding="0">
+ <tr align="left">
+ <td bgcolor="{#color7#}" class="td1">
+<input type="hidden" name="mainpage_author" value="{$mainpage_author}">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MAINPAGEAUTHOR#}:</span></td><td bgcolor="{#color7#}" class="td2"> <span class="formentername">{nocache}{$mainpage_author}{/nocache}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MAINPAGETITLE#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="mainpage_title" size="130" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MAINPAGECONTENT#}:</span><span class="errorsmall">* <sup>1</sup></span></td><td bgcolor="{#color7#}" class="td2"> <textarea id="mainpage_content" name="mainpage_content" rows="20" cols="130" class="formenter"></textarea>
+<script type="text/javascript">
+var ckeditor1 = CKEDITOR.replace( 'mainpage_content',
+{
+language: '{$language}'
+});
+DjenxExplorer.init({
+    returnTo: ckeditor1,
+    path: '/ckeditor/Djenx.Explorer/',
+    lang: '{$language}',
+    post: {
+        'PHPSESSID': {nocache}'{$session_id}'{/nocache}
+          }
+  });
+</script>
+<br>
+</td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MAINPAGENOTES#}:</span></td><td bgcolor="{#color7#}" class="td2"> <textarea name="mainpage_notes" rows="3" cols="130" class="formenter"></textarea></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MAINPAGESTATUS#}:</span></td><td bgcolor="{#color7#}" class="td2"> <select name="mainpage_status" class="formenter">
+<option value="1">{#_MAINPAGEACTIVE#}</option>
+<option value="0">{#_MAINPAGENOTACTIVE#}</option>
+</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MAINPAGETERMEXPIRE#}:</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="mainpage_termexpire" size="4" maxlength="3" value="0" class="formenter"> <span class="formentername">{#_MAINPAGETERMEXPIREDAY#}</span></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MAINPAGETERMEXPIREACTION#}:</span></td><td bgcolor="{#color7#}" class="td2"> <select name="mainpage_termexpireaction" class="formenter">
+<option value="off" selected>{#_MAINPAGEFUNCTIONOFF#}</option>
+<option value="delete">{#_MAINPAGEFUNCTIONDELETE#}</option>
+</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MAINPAGEWHOVIEW#}:</span></td><td bgcolor="{#color7#}" class="td2"> <select name="mainpage_valueview" class="formenter">
+<option value="0" selected>{#_MAINPAGEALLVISITORS#}</option>
+<option value="1">{#_MAINPAGEONLYUSERS#}</option>
+<option value="2">{#_MAINPAGEONLYADMINS#}</option>
+<option value="3">{#_MAINPAGEONLYGUESTS#}</option>
+</select>
+</td>
+</tr>
+</table><br>
+<input type="submit" value="{#_MAINPAGEBUTTONADD#}" class="button">
+</form>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}</span>&nbsp;<span class="errorsmall"><sup>1</sup></span>&nbsp;<span class="text">{#_MAINPAGEPLAYERNOTES#}</span></td></tr></table>
+</center><br>

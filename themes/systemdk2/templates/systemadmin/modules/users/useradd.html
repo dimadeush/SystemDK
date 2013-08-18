@@ -1,0 +1,71 @@
+{config_load file="$language/systemadmin/modules/users/users.conf"}
+{#_USER#}</span></center>
+</div>
+<center>
+<br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_USERADDTITLE#}</span><br><br>
+<form action="index.php?path=admin_users&amp;func=user_add_inbase&amp;lang={$site_language}" method="POST">
+<table border="0" cellspacing="2"  cellpadding="0">
+ <tr align="left">
+ <td bgcolor="{#color7#}" class="td1">
+<img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERNAME#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_name" size="30" maxlength="25" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERSURNAME#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_surname" size="30" maxlength="25" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERWEBSITE#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_website" size="30" maxlength="60" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USEREMAIL#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_email" size="30" maxlength="60" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERLOGIN#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_login" size="30" maxlength="25" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERPASSWORD#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="password" name="user_add_password" size="30" maxlength="25" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERPASSWORD#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="password" name="user_add_password2" size="30" maxlength="25" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERCOUNTRY#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_country" size="30" maxlength="100" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERCITY#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_city" size="30" maxlength="100" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERADDRESS#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_address" size="30" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERTELEPHONE#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_telephone" size="30" maxlength="25" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERICQ#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_icq" size="10" maxlength="20" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERGMT#}:</span><span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><select name="user_add_gmt" class="formenter"> <option value="+00">+00GMT</option><option value="-12">-12GMT</option><option value="-11">-11GMT</option><option value="-10">-10GMT</option><option value="-09">-09GMT</option><option value="-08">-08GMT</option><option value="-07">-07GMT</option><option value="-06">-06GMT</option><option value="-05">-05GMT</option><option value="-04">-04GMT</option><option value="-03">-03GMT</option><option value="-02">-02GMT</option><option value="-01">-01GMT</option><option value="+01">+01GMT</option><option value="+02">+02GMT</option><option value="+03">+03GMT</option><option value="+04">+04GMT</option><option value="+05">+05GMT</option><option value="+06">+06GMT</option><option value="+07">+07GMT</option><option value="+08">+08GMT</option><option value="+09">+09GMT</option><option value="+10">+10GMT</option><option value="+11">+11GMT</option><option value="+12">+12GMT</option></select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERNOTES#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_notes" size="30" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERSTATUS#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="user_add_active" class="formenter">
+<option value="1">{#_USERACTIVE#}</option>
+<option value="0">{#_USERNOTACTIVE#}</option>
+</select></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERACTIVENOTES#}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="user_add_activenotes" size="30" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_USERMAILVISIBLE#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="user_add_viewemail" class="formenter">
+<option value="1">{#_USERMAILVISIBLEON#}</option>
+<option value="0">{#_USERMAILVISIBLEOFF#}</option>
+</select></td>
+</tr>
+</table><br>
+<input type="submit" value="{#_USERBUTTONADD#}" class="button">
+</form>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</center><br>

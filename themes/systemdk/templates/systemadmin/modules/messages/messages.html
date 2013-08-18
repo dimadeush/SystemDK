@@ -1,0 +1,42 @@
+{config_load file="$language/systemadmin/modules/messages/messages.conf"}
+{#_MESSAGE#}</span></center>
+</div>
+<center>
+<br>
+<a href="index.php?path=admin_messages&amp;func=message_add&amp;lang={$site_language}" class="link">{#_MESSAGEADD#}</a>
+<br><br>
+<form action="index.php?path=admin_messages&amp;func=message_status&amp;lang={$site_language}" method="POST">
+<table border="0" width="99%" cellspacing="2"  cellpadding="0">
+<tr align="center">
+<td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MESSAGETITLE#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MESSAGEAUTHOR#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MESSAGEWHOVIEW#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MESSAGESTATUS#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MESSAGETERMEXPIRE#}</span></td><td width="16%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_MESSAGEFUNCTION#}</span></td>
+</tr>
+{if $message_all ne "no"}
+{foreach $message_all as $message_all_tpl}
+<tr>
+<td width="1%" bgcolor="{#color7#}" nowrap><img src="../{#bgimage15#}" border="0" alt=""></td><td width="1%" bgcolor="{#color7#}"><center><input type="checkbox" name="message_id[]" value="{$message_all_tpl.message_id}" class="formenter"></center></td><td width="16%" bgcolor="{#color7#}" class="td1" nowrap align="left"><span class="tablecenterblocktext2"> {$message_all_tpl.message_title|truncate:30:"...":true}</span></td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$message_all_tpl.message_author}</span></td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap>{if $message_all_tpl.message_valueview eq "0"} <span class="tablecenterblocktext2">{#_MESSAGEALLVISITORS#}</span>{elseif $message_all_tpl.message_valueview eq "1"} <span class="tablecenterblocktext2">{#_MESSAGEONLYUSERS#}</span>{elseif $message_all_tpl.message_valueview eq "2"} <span class="tablecenterblocktext2">{#_MESSAGEONLYADMINS#}</span>{elseif $message_all_tpl.message_valueview eq "3"}<span class="tablecenterblocktext2">{#_MESSAGEONLYGUESTS#}</span>{/if}</td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap>{if $message_all_tpl.message_status eq "1"}<span class="tablecenterblocktext2">{#_MESSAGEACTIVE#}</span>{elseif $message_all_tpl.message_status eq "0"}<span class="tablecenterblocktext2">{#_MESSAGENOTACTIVE#}</span>{/if}</td><td width="16%" bgcolor="{#color7#}" class="td2" align="center" nowrap>{if $message_all_tpl.message_termexpire eq "notunlim"}<span class="tablecenterblocktext2">{#_MESSAGELIMTIME#}</span>{else}<span class="tablecenterblocktext2">{#_MESSAGEUNLIMTIME#}</span>{/if}</td><td width="16%" bgcolor="{#color7#}" class="td2" nowrap><a href="index.php?path=admin_messages&amp;func=message_edit&amp;message_id={$message_all_tpl.message_id}&amp;lang={$site_language}" class="link">{#_MESSAGEFUNCTIONEDIT#}</a><span class="tablecenterblocktext2">|</span>{if $message_all_tpl.message_status eq "1"}<a href="index.php?path=admin_messages&amp;func=message_status&amp;action=off&amp;message_id={$message_all_tpl.message_id}&amp;lang={$site_language}" class="link">{#_MESSAGEFUNCTIONOFF#}</a>{elseif $message_all_tpl.message_status eq "0"}<a href="index.php?path=admin_messages&amp;func=message_status&amp;action=on&amp;message_id={$message_all_tpl.message_id}&amp;lang={$site_language}" class="link">{#_MESSAGEFUNCTIONON#}</a>{/if}<span class="tablecenterblocktext2">|</span><a href="index.php?path=admin_messages&amp;func=message_status&amp;action=delete&amp;message_id={$message_all_tpl.message_id}&amp;lang={$site_language}" class="link">{#_MESSAGEFUNCTIONDELETE#}</a></td>
+</tr>
+{/foreach}
+{else}
+<tr>
+<td width="100%" colspan="8" align="center" bgcolor="{#color7#}"><span class="tablecenterblocktext2">{#_MESSAGENOMESSAGE#}</span></td>
+</tr>
+{/if}
+</table>
+{if $message_all ne "no"}
+ <table border="0" width="99%" cellspacing="2"  cellpadding="0"><tr align="right"><td><span class="tablecenterblocktext2">{#_MESSAGEACTIONWITHSELECTED#}:</span> <select name="action" class="formenter"> <option value="off">{#_MESSAGEFUNCTIONOFF#}</option><option value="on">{#_MESSAGEFUNCTIONON#}</option><option value="delete">{#_MESSAGEFUNCTIONDELETE#}</option></select> <input type="submit" value="{#_MESSAGEBUTTONDONE#}" class="button"></td></tr></table>
+{/if}
+</form>
+</center>
+<br><br>
+{if $html ne "no"}
+<table width="100%" cellpadding="0" cellspacing="2" border="0">
+ <tr>
+  <td><center><span class="tablecenterblocktext2">{#_MESSAGECOUNTTOTAL#}:{$totalmessages} ({#_MESSAGEPAGECOUNTTOTAL#}:{$num_pages})</span></center></td>
+ </tr>
+</table>
+<center>{if $prevpage ne "no"}<a href="index.php?path=admin_messages&amp;func=index&amp;num_page={$prevpage}&amp;lang={$site_language}" title="{#_MESSAGEPREVPAGE#}" class="link"><img src="../{#bgimage19#}" border="0" alt="{#_MESSAGEPREVPAGE#}"></a> {/if}
+{foreach $html as $html_tpl}
+{if $html_tpl.param1 eq "1"} <span class="tablecenterblocktext2">[{$html_tpl.number}]</span> {elseif $html_tpl.param1 eq "2"} <a href="index.php?path=admin_messages&amp;func=index&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "3"} ...<a href="index.php?path=admin_messages&amp;func=index&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "4"} <a href="index.php?path=admin_messages&amp;func=index&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a>... {/if}
+{/foreach}
+{if $nextpage ne "no"} <a href="index.php?path=admin_messages&amp;func=index&amp;num_page={$nextpage}&amp;lang={$site_language}" title="{#_MESSAGENEXTPAGE#}" class="link"><img src="../{#bgimage20#}" border="0" alt="{#_MESSAGENEXTPAGE#}"></a>{/if}</center>
+{/if}<br><br>

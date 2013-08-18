@@ -1,0 +1,43 @@
+{config_load file="$language/systemadmin/modules/news/news.conf"}
+{#_NEWS#}</span></center>
+</div><br>
+<center>{if $adminmodules_news_programm eq "yes"}<a href="index.php?path=admin_news&amp;func=news_add&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_ADD_PROGRAMMNEWS#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a>{else}<a href="index.php?path=admin_news&amp;func=news_add&amp;lang={$site_language}" class="link">{#_NEWS_ADD#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a>{/if} <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NEWS_CATEGORIES#}</a><br><br><img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{if $adminmodules_news_programm eq "yes"} {#_NEWS_PROGRAMM#}{else}{#_NEWS_CURRENT#}{/if}</span>
+<br><br>
+<form action="index.php?path=admin_news&amp;func=news_status&amp;lang={$site_language}" method="POST">
+{if $adminmodules_news_programm eq "yes"}
+<input type="hidden" name="prog" value="1">
+{/if}
+<table border="0" width="99%" cellspacing="2"  cellpadding="0">
+<tr align="center">
+<td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="23%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_NEWS_TITLE#}</span></td><td width="10%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_NEWS_DATE#}</span></td><td width="15%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_NEWS_CATEGORY#}</span></td><td width="10%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_NEWS_VALUEVIEW#}</span></td><td width="10%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_NEWS_STATUS#}</span></td><td width="15%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_NEWS_TERMEXPIRE#}</span></td><td width="15%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_NEWS_FUNCTIONS#}</span></td>
+</tr>
+{if $news_all ne "no"}
+{foreach $news_all as $news_all_tpl}
+<tr>
+<td width="1%" bgcolor="{#color7#}" nowrap><img src="../{#bgimage15#}" border="0" alt=""></td><td width="1%" bgcolor="{#color7#}"><center><input type="checkbox" name="news_id[]" value="{$news_all_tpl.news_id}" class="formenter"></center></td><td width="23%" bgcolor="{#color7#}" class="td1" align="left"><span class="tablecenterblocktext2"> {$news_all_tpl.news_title|truncate:30:"...":true}</span></td><td width="10%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$news_all_tpl.news_date}</span></td><td width="15%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{if $news_all_tpl.news_category_name ne "no"}{$news_all_tpl.news_category_name}{else}{#_NEWS_WITHOUT_CATEGORY#}{/if}</span></td><td width="10%" bgcolor="{#color7#}" class="td2" align="center" nowrap>{if $news_all_tpl.news_valueview eq "0"} <span class="tablecenterblocktext2">{#_NEWS_ALLVISITORS#}</span>{elseif $news_all_tpl.news_valueview eq "1"} <span class="tablecenterblocktext2">{#_NEWS_ONLYUSERS#}</span>{elseif $news_all_tpl.news_valueview eq "2"} <span class="tablecenterblocktext2">{#_NEWS_ONLYADMINS#}</span>{elseif $news_all_tpl.news_valueview eq "3"}<span class="tablecenterblocktext2">{#_NEWS_ONLYGUESTS#}</span>{/if} </td><td width="10%" bgcolor="{#color7#}" class="td2" align="center" nowrap>{if $news_all_tpl.news_status eq "1"}<span class="tablecenterblocktext2">{#_NEWS_ON#}</span>{elseif $news_all_tpl.news_status eq "0"}<span class="tablecenterblocktext2">{#_NEWS_OFF#}</span>{/if}</td><td width="15%" bgcolor="{#color7#}" class="td2" align="center" nowrap>{if $news_all_tpl.news_termexpire eq "notunlim"}<span class="tablecenterblocktext2">{#_NEWS_LIM#}</span>{else}<span class="tablecenterblocktext2">{#_NEWS_UNLIM#}</span>{/if}</td><td width="15%" bgcolor="{#color7#}" class="td2" align="left" nowrap><a href="index.php?path=admin_news&amp;func=news_edit{if $adminmodules_news_programm eq "yes"}&amp;prog=1{/if}&amp;news_id={$news_all_tpl.news_id}&amp;lang={$site_language}" class="link">{#_NEWS_FUNCTIONEDIT#}</a><span class="tablecenterblocktext2">|</span>{if $news_all_tpl.news_status eq "1"}<a href="index.php?path=admin_news&amp;func=news_status{if $adminmodules_news_programm eq "yes"}&amp;prog=1{/if}&amp;action=off&amp;news_id={$news_all_tpl.news_id}&amp;lang={$site_language}" class="link">{#_NEWS_FUNCTIONOFF#}</a>{elseif $news_all_tpl.news_status eq "0"}<a href="index.php?path=admin_news&amp;func=news_status{if $adminmodules_news_programm eq "yes"}&amp;prog=1{/if}&amp;action=on&amp;news_id={$news_all_tpl.news_id}&amp;lang={$site_language}" class="link">{#_NEWS_FUNCTIONON#}</a>{/if}<span class="tablecenterblocktext2">|</span><a href="index.php?path=admin_news&amp;func=news_status{if $adminmodules_news_programm eq "yes"}&amp;prog=1{/if}&amp;action=delete&amp;news_id={$news_all_tpl.news_id}&amp;lang={$site_language}" class="link">{#_NEWS_FUNCTIONDELETE#}</a></td>
+</tr>
+{/foreach}
+{else}
+<tr>
+<td width="100%" colspan="9" align="center" bgcolor="{#color7#}"><span class="tablecenterblocktext2">{#_NEWS_NOMESSAGE#}</span></td>
+</tr>
+{/if}
+</table>
+{if $news_all ne "no"}
+ <table border="0" width="99%" cellspacing="2"  cellpadding="0"><tr align="right"><td><span class="tablecenterblocktext2">{#_NEWS_ACTIONWITHSELECTED#}:</span> <select name="action" class="formenter"> <option value="off">{#_NEWS_FUNCTIONOFF#}</option><option value="on">{#_NEWS_FUNCTIONON#}</option><option value="delete">{#_NEWS_FUNCTIONDELETE#}</option></select> <input type="submit" value="{#_NEWS_BUTTONDONE#}" class="button"></td></tr></table>
+{/if}
+</form>
+</center>
+<br><br>
+{if $html ne "no"}
+<table width="100%" cellpadding="0" cellspacing="2" border="0">
+ <tr>
+  <td><center><span class="tablecenterblocktext2">{#_NEWS_COUNTTOTAL#}:{$totalnews} ({#_NEWS_PAGESCOUNTTOTAL#}:{$num_pages})</span></center></td>
+ </tr>
+</table>
+<center>{if $prevpage ne "no"}<a href="index.php?path=admin_news&amp;func=news_current{if $adminmodules_news_programm eq "yes"}&amp;prog=1{/if}&amp;num_page={$prevpage}&amp;lang={$site_language}" title="{#_NEWS_PREVPAGE#}" class="link"><img src="../{#bgimage19#}" border="0" alt="{#_NEWS_PREVPAGE#}"></a> {/if}
+{foreach $html as $html_tpl}
+{if $html_tpl.param1 eq "1"} <span class="tablecenterblocktext2">[{$html_tpl.number}]</span> {elseif $html_tpl.param1 eq "2"} <a href="index.php?path=admin_news&amp;func=news_current{if $adminmodules_news_programm eq "yes"}&amp;prog=1{/if}&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "3"} ...<a href="index.php?path=admin_news&amp;func=news_current{if $adminmodules_news_programm eq "yes"}&amp;prog=1{/if}&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "4"} <a href="index.php?path=admin_news&amp;func=news_current{if $adminmodules_news_programm eq "yes"}&amp;prog=1{/if}&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a>... {/if}
+{/foreach}
+{if $nextpage ne "no"} <a href="index.php?path=admin_news&amp;func=news_current{if $adminmodules_news_programm eq "yes"}&amp;prog=1{/if}&amp;num_page={$nextpage}&amp;lang={$site_language}" title="{#_NEWS_NEXTPAGE#}" class="link"><img src="../{#bgimage20#}" border="0" alt="{#_NEWS_NEXTPAGE#}"></a>{/if}</center>
+{/if}<br><br>

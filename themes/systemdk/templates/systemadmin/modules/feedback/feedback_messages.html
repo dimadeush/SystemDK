@@ -1,0 +1,44 @@
+{config_load file="$language/systemadmin/modules/feedback/feedback.conf"}
+{#_MENUFEEDBACK#}</span></center>
+</div>
+<center>
+<br>
+{if $feedback_message eq "sqlerror"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
+{nocache}
+{if $error ne "no"}
+{foreach $error as $error_tpl}
+{if $error_tpl.message ne "" and $error_tpl.code ne ""}<span class="errorsmall">{$error_tpl.message}<br>{$error_tpl.code}</span><br>{/if}
+{/foreach}
+{/if}
+{/nocache}
+<br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $feedback_message eq "notalldata"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTALLDATA#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $feedback_message eq "incorrectemail"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_FEEDBACKINCORRECTEMAIL#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $feedback_message eq "addok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_FEEDBACKADDOK#}</span><br><br>
+<a href="index.php?path=admin_feedback&amp;func=index&amp;lang={$site_language}" class="link">{#_MENUFEEDBACK#}</a>
+{elseif $feedback_message eq "notfind"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_FEEDBACKNOTFIND#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $feedback_message eq "notsave"}
+<img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
+<a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $feedback_message eq "editok"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_FEEDBACKEDITOK#}</span><br><br>
+<a href="index.php?path=admin_feedback&amp;func=index&amp;lang={$site_language}" class="link">{#_MENUFEEDBACK#}</a>
+{elseif $feedback_message eq "on"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_FEEDBACKONOK#}</span><br><br>
+<a href="index.php?path=admin_feedback&amp;func=index&amp;lang={$site_language}" class="link">{#_MENUFEEDBACK#}</a>
+{elseif $feedback_message eq "off"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_FEEDBACKOFFOK#}</span><br><br>
+<a href="index.php?path=admin_feedback&amp;func=index&amp;lang={$site_language}" class="link">{#_MENUFEEDBACK#}</a>
+{elseif $feedback_message eq "delete"}
+<img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_FEEDBACKDELETEOK#}</span><br><br>
+<a href="index.php?path=admin_feedback&amp;func=index&amp;lang={$site_language}" class="link">{#_MENUFEEDBACK#}</a>
+{/if}
+</center>

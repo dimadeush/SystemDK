@@ -1,0 +1,246 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+	"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Djenx.Explorer v2.2.3 (beta)</title>
+		<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+		<meta name="author" content="Demphest Gorphek" />
+		<meta name="copyright" content="© 2009-2011 demphest.ru" />
+		<link type="image/png" rel="shortcut icon" href="public/image/ico/edit_diff.png" />
+		<link type="text/css" rel="stylesheet" href="public/jscript/jquery/tree/themes/default/style.css" />
+		<link type="text/css" rel="stylesheet" href="public/skin/default.css" />
+		<script type="text/javascript" charset="utf-8" src="public/jscript/jquery/jquery.js"></script>
+		<script type="text/javascript" charset="utf-8" src="public/jscript/jquery/jquery.cookie.js"></script>
+		<script type="text/javascript" charset="utf-8" src="public/jscript/jquery/jquery.hotkeys.js"></script>
+		<script type="text/javascript" charset="utf-8" src="public/jscript/jquery/pnotify/jquery.pnotify.js"></script>
+		<script type="text/javascript" charset="utf-8" src="public/jscript/djenx/djenx.js?load=djenx.explorer"></script>
+		<script type="text/javascript" charset="utf-8" src="public/jscript/jquery/tree/jquery.jstree.js"></script>
+		<script type="text/javascript" charset="utf-8" src="public/jscript/swfobject/swfobject.js"></script>
+		<script type="text/javascript" charset="utf-8" src="public/jscript/jquery/uploadify/jquery.uploadify.js"></script>
+		<script type="text/javascript" charset="utf-8" src="public/jscript/jquery/jquery-ui.js"></script>
+		<script type="text/javascript" charset="utf-8" src="public/jscript/jquery/contextMenu/jquery.contextMenu.js"></script>
+	</head>
+<body>
+<div id="header">
+	<div class="options">
+		<div id="folderOperation" class="folderOperation">
+			<a href="" class="create"></a>
+			<a href="" class="rename"></a>
+			<a href="" class="delete"></a>
+		</div>
+		<div class="copyright"><a href="" class="button"><span lang="author">Author</span></a></div>
+		<div class="settings"><a href="" class="button"><span lang="settings">Settings</span></a></div>
+	</div>
+	<div id="fileOperation">
+		<a href="" class="searchFile"></a>
+		<div class="sep"><div></div></div>
+		<a href="" class="chooseFile"></a>
+		<a href="" class="chooseThumb"></a>
+		<div class="sep"><div></div></div>
+		<a href="" class="fileNewWindow"></a>
+		<a href="" class="download"></a>
+		<a href="" class="rename"></a>
+		<div class="sep"><div></div></div>
+		<a href="" class="delete"></a>
+		<a href="" class="deleteChecked"></a>
+		<div class="sep"><div></div></div>
+		<a href="" class="toolBox"></a>
+	</div>
+	<div class="address">
+		<div id="address"></div>
+	</div>
+	<div id="listing">
+		<a href="" class="pageBack"></a>
+		<span lang="page">Page</span> <input type="text" id="page" value="1" /> <span lang="pageOf">of</span> <b class="pageCount"></b>
+		<a href="" class="pageNext"></a>
+	</div>
+</div>
+<div id="main">
+	<div id="lft">
+		<div id="boxfolders">
+			<div id="treeFolders"></div>
+		</div>
+		<div id="uploads">
+			<div class="head">
+				<div class="l"><span lang="operation.upload">Upload</span></div>
+				<div class="r"><input type="file" name="Filedata" id="uploadify" /> <a href="" class="cogwheel"></a></div>
+			</div>
+			<div id="statistic"></div>
+			<div class="statisticLog"><a href=""></a></div>
+			<div id="uploadContent"></div>
+		</div>
+		<div id="preview">
+			<div class="head">
+				<div class="l"><span lang="preview">Preview</span></div>
+				<div class="r"><a href="" title=""><img src="public/image/blank.gif" alt="" /></a></div>	
+			</div>
+			<div class="preImage"><img alt="" src="public/image/blank.gif" id="previewImage" /></div>
+		</div>
+	</div>
+	<div id="rgt">
+		<div id="fileThumb"></div>
+	</div>
+</div>
+
+<div id="fileSearch">
+	<input type="text" name="fileName" value="" />
+	<a href=""><span lang="close">close</span></a>
+</div>
+
+<div id="bottom">
+	<div class="allElement"></div>
+	<div class="pressed"></div>
+	<div class="stats"></div>
+	<div class="ajaxLoading"></div>
+</div>
+
+<!-- ===  -->
+
+<div id="author" title="Djenx.Explorer">
+	<div class="container">
+	<strong>Author Demphest Gorphek (<a href="http://www.demphest.ru/djenx-explorer">www.demphest.ru</a>)</strong>
+	<br />
+	<br />In the process of creation used the following components, for which it separate thanks ;-)
+	<br /><br />
+	<ul>
+		<li>jQuery (<a href="http://jquery.com/">jquery.com</a>)
+			<ul>
+				<li>jQuery UI (<a href="http://jqueryui.com/about">jqueryui.com</a>)</li>
+				<li>jquery.jstree (<a href="http://www.jstree.com/">jstree.com</a>)</li>
+				<li>jquery.contextmenu (<a href="http://abeautifulsite.net/2008/09/jquery-context-menu-plugin/">abeautifulsite.net</a>)</li>
+				<li>jquery.cookie (<a href="http://stilbuero.de">stilbuero.de</a>)</li>
+				<li>jquery.uploadify (<a href="http://www.uploadify.com/">uploadify.com</a>)</li>
+				<li>jquery.form - Form Plugin (<a href="http://malsup.com/jquery/form/">malsup.com</a>)</li>
+			</ul>
+		</li>
+		<li><a href="http://code.google.com/p/swfobject/">SWFObject</a></li>
+		<li>Jordan Michael - "120 different file extension icons" (<a href="http://www.jordan-michael.com">jordan-michael.com</a>)</li>
+		<li>Mark James - "Icons used in menu" (<a href="http://www.famfamfam.com/">famfamfam.com</a>)</li>
+	</ul>
+	</div>
+</div>
+
+<div id="setting">
+	<div class="container">
+		<div id="tabs">
+			<ul>
+				<li><a href="#tabGeneral"><span lang="general">General</span></a></li>
+				<li><a href="#tabUploading"><span lang="uploading">Downloading</span></a></li>
+				<li><a href="#tabExtension"><span lang="extension">Extension</span></a></li>
+				<li><a href="#tabAdditionally"><span lang="additionally">Additionally</span></a></li>
+			</ul>
+			<div id="tabGeneral">
+				<div class="tab">
+					<div class="clr"><span lang="view">View</span> / <span lang="display">Display</span></div>
+					<fieldset class="fset-l">
+						<input type="radio" id="view_thumb" name="view" checked="checked" /> <label for="view_thumb"><span lang="thumbnail">Thumbnails</span></label>
+						<br /><input type="radio" id="view_list" name="view" /> <label for="view_list"><span lang="list">List</span></label>
+					</fieldset>
+					<fieldset class="fset-l">
+						<label for="display_fileName"><input type="checkbox" id="display_fileName" checked="checked" /> <span lang="common.name">Name</span></label>
+						<br /><label for="display_fileDate"><input type="checkbox" id="display_fileDate" checked="checked" /> <span lang="common.date">Date</span></label>
+						<br /><label for="display_fileSize"><input type="checkbox" id="display_fileSize" checked="checked" /> <span lang="common.size">Size</span></label>
+					</fieldset>
+					
+					<div class="clr">
+						<label for="display_folder"><input type="checkbox" id="display_folder" checked="checked" /> <span lang="common.folderInMainWindow">Folder in the main window</span></label>
+						<br /><br />
+					</div>
+					
+					<div class="clr"><span lang="sorting">Sorting</span>:</div>
+					<fieldset class="fset-l">
+						<input type="radio" id="sort_name" name="sort_method" value="name" checked="checked" /> <label for="sort_name"><span lang="options.sortName">by File name</span></label>
+						<br /><input type="radio" id="sort_date" name="sort_method" value="date" /> <label for="sort_date"><span lang="options.sortDate">by Date</span></label>
+						<br /><input type="radio" id="sort_size" name="sort_method" value="size" /> <label for="sort_size"><span lang="options.sortSize">by Size</span></label>
+					</fieldset>
+					<fieldset class="fset-l fset-r">
+						<input type="radio" id="sort_type_asc" name="sort_type" value="asc" checked="checked" /> <label for="sort_type_asc"><span lang="options.ascending">Ascending</span></label>
+						<br /><input type="radio" id="sort_type_desc" name="sort_type" value="desc" /> <label for="sort_type_desc"><span lang="options.descending">По убыванию</label>
+					</fieldset>
+
+					<div class="clr"><br /><span lang="treeFolder.folders">Directory tree</span></div>
+					<fieldset>
+						<label for="display_treeSize"><input type="checkbox" id="display_treeSize" checked="checked" /> <span lang="treeFolder.dirSize">Directory size</span></label>
+						<br /><label for="display_treeFiles"><input type="checkbox" id="display_treeFiles" checked="checked" /> <span lang="treeFolder.countFiles">Number of files</span></label>
+					</fieldset>
+					
+					<div class="clr"><br /><span lang="confirmation">Confirmation</span></div>
+					<fieldset>
+						<label for="display_confirmDelete"><input type="checkbox" id="display_confirmDelete" checked="checked" /> <span lang="options.removesFileFolder">Deleting files and folders</span></label>
+					</fieldset>
+					
+				</div>
+			</div>
+			<div id="tabUploading">
+				<div class="tab">
+					<span lang="options.resizeImages">Resize images:</span>
+					<fieldset>
+						<input type="text" id="resize_width" value="" /> <label for="resize_width"><span lang="width">Width</span></label>
+						<br /><input type="text" id="resize_height" value="" /> <label for="resize_height"><span lang="height">Height</span></label>
+						<br /><br /><input type="checkbox" id="image_crop" /> <label for="image_crop"><span lang="operation.imageCrop">Crop image size</span></label>
+						<br /><br /><input type="checkbox" id="replace_file" /> <label for="replace_file"><span lang="operation.replaceEqFileName">Replace files with same name</span></label>
+					</fieldset>
+				</div>
+			</div>
+			<div id="tabExtension">
+				<div class="tab">
+					<div class="clr">
+						<label for="display_contextmenu"><input type="checkbox" id="display_contextmenu" checked="checked" /> <span lang="contextmenu">Context menu</span></label>
+						<br /><br />
+						<input type="text" id="file_listing" value="" /> <label for="file_listing"><span lang="common.numberFileOnPage">Number of files to the page</span></label>
+					</div>
+
+				</div>
+			</div>
+			<div id="tabAdditionally">
+				<div class="tab">
+					<a href="" class="button clearTree"><span lang="operation.clearCacheTree">Clear the cache directory tree</span></a>
+					<br /><a href="" class="button clearThumbnail"><span lang="operation.clearThumbnails">Clear all thumbnails</span></a>
+					<br /><a href="" class="button clearStatistic"><span lang="operation.clearStatistic">Clear statistic operation</span></a>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div id="dialog"></div>
+<div id="confirmation"></div>
+<div id="operation">
+	<span class="info"></span>
+	<input type="text" id="operationInput" name="operationInput" value="" />
+</div>
+
+<div id="archivePack">
+	<div><span lang="dialog.enterFileName">Enter the file name without extension</span></div>
+	<div>
+		<input type="text" name="archiveName" value="" />
+		<select name="archiveFormat"></select>
+	</div>
+</div>
+
+
+<ul id="contextMenuFile" class="contextMenu">
+	<li class="chooseFile"><a href="#fileChoose"><span lang="title.fileChoose">Choose file</span></a></li>
+	<li class="chooseThumb"><a href="#fileChooseThumb"><span lang="title.fileChooseThumb">Choose Thumbnail</span></a></li>
+	<li class="fileNewWindow separator"><a href="#fileOpenWindow"><span lang="title.fileOpenWindow">Open file in new window</span></a></li>
+	<li class="download"><a href="#fileDownload"><span lang="title.fileDownload">Download file</span></a></li>
+	<li class="rename"><a href="#fileRename"><span lang="title.fileRename">Rename the file</span></a></li>
+	<li class="delete separator"><a href="#fileRemoveSelected"><span lang="title.fileRemoveSelected">Delete selected file</span></a></li>
+	<li class="deleteChecked"><a href="#fileRemoveChecked"><span lang="title.fileRemoveChecked">Delete checked files</span></a></li>
+	<li class="archivePack separator"><a href="#archivePack"><span lang="title.archivePack">Pack to the archive</span></a></li>
+	<li class="archiveUnpack"><a href="#archiveUnpack"><span lang="title.archiveUnpack">Unpack the archive</span></a></li>
+	<li class="fileParameter separator hide"><a href="#fileParameter"><span lang="title.fileParameter">File parameters</span></a></li>
+</ul>
+
+<ul id="contextMenuToolBox" class="contextMenu">
+	<li class="rename hide"><a href="#fileRename"><span lang="title.fileRename">Rename the file</span></a></li>
+	<li class="fileParameter hide"><a href="#fileParameter"><span lang="title.fileParameter">File parameters</span></a></li>
+	<li class="archivePack separator"><a href="#archivePack"><span lang="title.archivePack">Pack to the archive</span></a></li>
+	<li class="archiveUnpack disabled"><a href="#archiveUnpack"><span lang="title.archiveUnpack">Unpack the archive</span></a></li>
+	<li class="delete separator hide"><a href="#fileRemoveSelected"><span lang="title.fileRemoveSelected">Delete selected file</span></a></li>
+	<li class="deleteChecked hide"><a href="#fileRemoveChecked"><span lang="title.fileRemoveChecked">Delete checked files</span></a></li>
+</ul>
+
+</body>
+</html>
