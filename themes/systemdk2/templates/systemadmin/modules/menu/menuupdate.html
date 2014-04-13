@@ -3,10 +3,10 @@
 </div>
 <center>
 <br>
-{if $menu_update eq "yes"}
+{if $menu_update eq "range_done" or $menu_update eq "edit_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MENUUPDATEOK#}</span><br><br>
 <a href="index.php?path=admin_menu&amp;func=index&amp;lang={$site_language}" class="link">{#_MENU#}</a>
-{elseif $menu_update eq "notsave"}
+{elseif $menu_update eq "show_sql_error" or $menu_update eq "status_sql_error" or $menu_update eq "add_sql_error" or $menu_update eq "edit_sql_error"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
 {nocache}
 {if $error ne "no"}
@@ -16,16 +16,16 @@
 {/if}
 {/nocache}
 <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $menu_update eq "notsave2"}
+{elseif $menu_update eq "save_ok" or $menu_update eq "status_ok" or $menu_update eq "edit_ok"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $menu_update eq "notalldata"}
+{elseif $menu_update eq "add_not_all_data" or $menu_update eq "edit_not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MENUNOTALLDATA#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $menu_update eq "nomodules"}
+{elseif $menu_update eq "add_no_modules" or $menu_update eq "edit_no_modules"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MENUNOMODULES#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $menu_update eq "nopages"}
+{elseif $menu_update eq "add_no_pages" or $menu_update eq "edit_no_pages"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MENUNOPAGES#}</span><br><br>
 <a href="javascript:history.back(1)" class="links">{#_ADMINGOBACK#}</a>
 {elseif $menu_update eq "on"}
@@ -37,10 +37,10 @@
 {elseif $menu_update eq "delete"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MENUDELETE#}</span><br><br>
 <a href="index.php?path=admin_menu&amp;func=index&amp;lang={$site_language}" class="link">{#_MENU#}</a>
-{elseif $menu_update eq "add"}
+{elseif $menu_update eq "add_ok"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MENUADD#}</span><br><br>
 <a href="index.php?path=admin_menu&amp;func=index&amp;lang={$site_language}" class="link">{#_MENU#}</a>
-{elseif $menu_update eq "notfound"}
+{elseif $menu_update eq "edit_not_found"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MENUELEMENTNOTFOUND#}</span><br><br>
 <a href="javascript:history.back(1)" class="links">{#_ADMINGOBACK#}</a>
 {/if}

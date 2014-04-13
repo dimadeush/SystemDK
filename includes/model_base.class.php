@@ -4,10 +4,10 @@
  * File:      model_base.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 abstract class model_base {
 
@@ -21,5 +21,3 @@ abstract class model_base {
         $this->db = singleton::getinstance('db',$this->registry);
     }
 }
-
-?>

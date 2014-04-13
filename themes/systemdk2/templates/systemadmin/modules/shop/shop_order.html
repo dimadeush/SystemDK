@@ -42,7 +42,7 @@
 </td>
 </tr>
 <tr align="left">
-<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPORDERCUSTOMER#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{if $order_all_tpl.order_customer_id eq 0}{#_SHOPUNREGISTEREDCUSTOMER#}</span>{else}{if $order_all_tpl.order_customer_login ne ""}{$order_all_tpl.order_customer_login} {if $order_all_tpl.order_customer_name ne "" or $order_all_tpl.order_customer_surname ne ""}( {$order_all_tpl.order_customer_name} {$order_all_tpl.order_customer_surname} ){/if}{else}{#_SHOPREGISTEREDCUSTOMER#}{/if} </span>  <a href="index.php?path=admin_shop&amp;func=user_edit&amp;user_id={$order_all_tpl.order_customer_id}&amp;lang={$site_language}" target="_blank" class="link">{#_SHOPSHOWLINK#}</a>{/if} </td>
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPORDERCUSTOMER#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{if $order_all_tpl.order_customer_id eq 0}{#_SHOPUNREGISTEREDCUSTOMER#}</span>{else}{if $order_all_tpl.order_customer_login ne ""}{$order_all_tpl.order_customer_login} {if $order_all_tpl.order_customer_name ne "" or $order_all_tpl.order_customer_surname ne ""}( {$order_all_tpl.order_customer_name} {$order_all_tpl.order_customer_surname} ){/if}{else}{#_SHOPREGISTEREDCUSTOMER#}{/if} </span>  <a href="index.php?path={if $order_all_tpl.order_customer_type eq 'admin'}admin_administrators&amp;func=admin_edit&amp;admin_id={else}admin_users&amp;func=user_edit&amp;user_id={/if}{$order_all_tpl.order_customer_id}&amp;lang={$site_language}" target="_blank" class="link">{#_SHOPSHOWLINK#}</a>{/if} </td>
 </tr>
 <tr align="left">
 <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPSHIPNAME#}:</span> {if $adminmodules_shop_orderedit eq "edit"}<span class="errorsmall">*</span>{/if}</td><td bgcolor="{#color7#}" class="td2">{if $adminmodules_shop_orderedit eq "edit"}<input type="text" name="ship_name" value="{$order_all_tpl.ship_name}" size="60" maxlength="255" class="formenter">{else}<span class="tablecenterblocktext2">{$order_all_tpl.ship_name}</span>{/if} </td>
@@ -150,7 +150,7 @@ $.tools.dateinput.localize("{$language}",  {
 
  $(":date").dateinput({
  lang: '{$language}',
- format: 'dd.mm.yy',
+ format: 'dd.mm.yyyy',
  selectors: true,
  firstDay: 1
  }

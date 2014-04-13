@@ -78,7 +78,7 @@ DjenxExplorer.init({
 </select></td>
 </tr>
 <tr align="left">
-<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_TERMEXPIRE#}:</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="news_termexpire" size="4" maxlength="3" value="{if $news_all_tpl.news_termexpire ne ''}{$news_all_tpl.news_termexpireday+1}{else}0{/if}" class="formenter"> <span class="formentername">{#_NEWS_TERMEXPIREDAY#} {if $news_all_tpl.news_termexpire ne ""}{#_NEWS_TERMEXPIRELAST#} {$news_all_tpl.news_termexpire}{/if}</span></td>
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_TERMEXPIRE#}:</span></td><td bgcolor="{#color7#}" class="td2"> <input type="text" name="news_termexpire" size="4" maxlength="3" value="{if $news_all_tpl.news_termexpire ne ''}{$news_all_tpl.news_termexpireday}{else}0{/if}" class="formenter"> <span class="formentername">{#_NEWS_TERMEXPIREDAY#} {if $news_all_tpl.news_termexpire ne ""}{#_NEWS_TERMEXPIRELAST#} {$news_all_tpl.news_termexpire}{/if}</span></td>
 </tr>
 <tr align="left">
 <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_NEWS_TERMEXPIREACTION#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="news_termexpireaction">
@@ -116,7 +116,7 @@ $.tools.dateinput.localize("{$language}",  {
 
  $(":date").dateinput({
  lang: '{$language}',
- format: 'dd.mm.yy',
+ format: 'dd.mm.yyyy',
  selectors: true,
  firstDay: 1
  }

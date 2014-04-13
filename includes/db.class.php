@@ -4,10 +4,10 @@
  * File:      db.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 include_once(__SITE_PATH."/adodb/adodb.inc.php");
 class db {
@@ -152,9 +152,12 @@ class db {
     }
 
 
+    public function FailTrans() {
+        return $this->adodb->FailTrans();
+    }
+
+
     public function Close() {
         $this->adodb->Close();
     }
 }
-
-?>

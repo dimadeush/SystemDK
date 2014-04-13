@@ -1,133 +1,133 @@
 <?php
 /**
  * Project:   SystemDK: PHP Content Management System
- * File:      model_blocks.class.php
+ * File:      model_admin_blocks.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 class admin_blocks extends model_base {
 
 
+    private $error;
+    private $error_array;
+    private $result;
+
+
     public function __construct($registry) {
         parent::__construct($registry);
-        $this->registry->main_class->blocks_autocheck();
+        $this->registry->main_class->blocks_check_process();
+    }
+
+
+    public function get_property_value($property) {
+        if(isset($this->$property) and in_array($property,array('error','error_array','result'))) {
+            return $this->$property;
+        }
+        return false;
     }
 
 
     public function index() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUBLOCKS'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|show|".$this->registry->language)) {
-            $sql = "SELECT a.block_id, a.block_name, a.block_customname, a.block_version, a.block_status, a.block_valueview, a.block_content, a.block_url, a.block_arrangements, a.block_priority, (SELECT max(b.block_id) FROM ".PREFIX."_blocks_".$this->registry->sitelang." b WHERE b.block_priority=a.block_priority-1 AND b.block_arrangements=a.block_arrangements)as block_id2,(SELECT max(c.block_id) FROM ".PREFIX."_blocks_".$this->registry->sitelang." c WHERE c.block_priority=a.block_priority+1 AND c.block_arrangements=a.block_arrangements) as block_id3,a.block_termexpire FROM ".PREFIX."_blocks_".$this->registry->sitelang." a ORDER BY a.block_arrangements, a.block_priority";
-            $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows > 0) {
-                    while(!$result->EOF) {
-                        $block_id = intval($result->fields['0']);
-                        $block_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
-                        $block_customname = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
-                        $block_version = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
-                        $block_status = intval($result->fields['4']);
-                        $block_valueview = intval($result->fields['5']);
-                        $block_content = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']));
-                        $block_url = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['7']));
-                        $block_arrangements = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['8']));
-                        $block_priority = intval($result->fields['9']);
-                        $priority1 = $block_priority - 1;
-                        $priority2 = $block_priority + 1;
-                        $block_id2 = intval($result->fields['10']);
-                        if(isset($block_id2) and $block_id2 != 0) {
-                            $param1 = $block_id2;
-                        } else {
-                            $param1 = "";
-                        }
-                        $block_id3 = intval($result->fields['11']);
-                        if(isset($block_id3) and $block_id3 != 0) {
-                            $param2 = $block_id3;
-                        } else {
-                            $param2 = "";
-                        }
-                        $block_termexpire = intval($result->fields['12']);
-                        if(!isset($block_termexpire) or $block_termexpire == 0) {
-                            $block_termexpire = "unlim";
-                        } else {
-                            $block_termexpire = "notunlim";
-                        }
-                        $block_all[] = array(
-                            "block_id" => $block_id,
-                            "block_name" => $block_name,
-                            "block_customname" => $block_customname,
-                            "block_version" => $block_version,
-                            "block_status" => $block_status,
-                            "block_valueview" => $block_valueview,
-                            "block_content" => $block_content,
-                            "block_url" => $block_url,
-                            "block_arrangements" => $block_arrangements,
-                            "block_priority" => $block_priority,
-                            "param1" => $param1,
-                            "param2" => $param2,
-                            "priority1" => $priority1,
-                            "priority2" => $priority2,
-                            "block_termexpire" => $block_termexpire
-                        );
-                        $result->MoveNext();
-                    }
-                    $this->registry->main_class->assign("block_all",$block_all);
-                } else {
-                    $this->registry->main_class->assign("block_all","no");
-                }
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $sql = "SELECT a.block_id, a.block_name, a.block_custom_name, a.block_version, a.block_status, a.block_value_view, a.block_content, a.block_url, a.block_arrangements, a.block_priority, (SELECT max(b.block_id) FROM ".PREFIX."_blocks_".$this->registry->sitelang." b WHERE b.block_priority = a.block_priority-1 AND b.block_arrangements = a.block_arrangements) as block_id2,(SELECT max(c.block_id) FROM ".PREFIX."_blocks_".$this->registry->sitelang." c WHERE c.block_priority = a.block_priority+1 AND c.block_arrangements = a.block_arrangements) as block_id3,a.block_term_expire FROM ".PREFIX."_blocks_".$this->registry->sitelang." a ORDER BY a.block_arrangements, a.block_priority";
+        $result = $this->db->Execute($sql);
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
             } else {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|showsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->assign("block_save","notsave");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|showsqlerror|".$this->registry->language);
-                exit();
+                $row_exist = 0;
             }
+            if($row_exist > 0) {
+                while(!$result->EOF) {
+                    $block_id = intval($result->fields['0']);
+                    $block_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                    $block_customname = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
+                    $block_version = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
+                    $block_status = intval($result->fields['4']);
+                    $block_valueview = intval($result->fields['5']);
+                    $block_content = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']));
+                    $block_url = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['7']));
+                    $block_arrangements = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['8']));
+                    $block_priority = intval($result->fields['9']);
+                    $priority1 = $block_priority - 1;
+                    $priority2 = $block_priority + 1;
+                    $block_id2 = intval($result->fields['10']);
+                    if(isset($block_id2) and $block_id2 != 0) {
+                        $param1 = $block_id2;
+                    } else {
+                        $param1 = "";
+                    }
+                    $block_id3 = intval($result->fields['11']);
+                    if(isset($block_id3) and $block_id3 != 0) {
+                        $param2 = $block_id3;
+                    } else {
+                        $param2 = "";
+                    }
+                    $block_termexpire = intval($result->fields['12']);
+                    if(!isset($block_termexpire) or $block_termexpire == 0) {
+                        $block_termexpire = "unlim";
+                    } else {
+                        $block_termexpire = "notunlim";
+                    }
+                    $block_all[] = array(
+                        "block_id" => $block_id,
+                        "block_name" => $block_name,
+                        "block_customname" => $block_customname,
+                        "block_version" => $block_version,
+                        "block_status" => $block_status,
+                        "block_valueview" => $block_valueview,
+                        "block_content" => $block_content,
+                        "block_url" => $block_url,
+                        "block_arrangements" => $block_arrangements,
+                        "block_priority" => $block_priority,
+                        "param1" => $param1,
+                        "param2" => $param2,
+                        "priority1" => $priority1,
+                        "priority2" => $priority2,
+                        "block_termexpire" => $block_termexpire
+                    );
+                    $result->MoveNext();
+                }
+                $this->result['block_all'] = $block_all;
+            } else {
+                $this->result['block_all'] = "no";
+            }
+        } else {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'show_sql_error';
+            $this->error_array = $error;
+            return;
         }
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|show|".$this->registry->language)) {
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blocks.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|show|".$this->registry->language);
     }
 
 
-    public function blockorder() {
-        if(isset($_GET['block_newpriority'])) {
-            $block_newpriority = intval($_GET['block_newpriority']);
+    public function blockorder($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['block_newpriority'])) {
+            $block_newpriority = intval($array['block_newpriority']);
         }
-        if(isset($_GET['block_priority'])) {
-            $block_priority = intval($_GET['block_priority']);
+        if(isset($array['block_priority'])) {
+            $block_priority = intval($array['block_priority']);
         }
-        if(isset($_GET['block_nextid'])) {
-            $block_nextid = intval($_GET['block_nextid']);
+        if(isset($array['block_nextid'])) {
+            $block_nextid = intval($array['block_nextid']);
         }
-        if(isset($_GET['block_id'])) {
-            $block_id = intval($_GET['block_id']);
+        if(isset($array['block_id'])) {
+            $block_id = intval($array['block_id']);
         }
-        if((!isset($_GET['block_id']) or !isset($_GET['block_newpriority']) or !isset($_GET['block_priority']) or !isset($_GET['block_nextid'])) or ($block_id == 0 or $block_newpriority == 0 or $block_priority == 0 or $block_nextid == 0)) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if((!isset($array['block_id']) or !isset($array['block_newpriority']) or !isset($array['block_priority']) or !isset($array['block_nextid'])) or ($block_id == 0 or $block_newpriority == 0 or $block_priority == 0 or $block_nextid == 0)) {
+            $this->error = 'empty_data';
+            return;
         }
         $this->db->StartTrans();
         $result = $this->db->Execute("UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_priority='".$block_priority."' WHERE block_id='".$block_nextid."'");
@@ -145,79 +145,41 @@ class admin_blocks extends model_base {
             $error[] = array("code" => $error_code,"message" => $error_message);
         }
         $this->db->CompleteTrans();
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUBLOCKS'));
         if($result === false or $result2 === false) {
             if($num_result1 > 0 or $num_result2 > 0) {
                 $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|show");
             }
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|showsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|showsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'show_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $result2 !== false and $num_result1 == 0 and $num_result2 == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statusok|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statusok|".$this->registry->language);
-            exit();
+            $this->error = 'order_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|show");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|order|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","yes");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|order|ok|".$this->registry->language);
+            $this->result = 'order_done';
         }
     }
 
 
     public function select_block_type() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|selecttype|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-            $this->registry->main_class->assign("block_select_type","yes");
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockadd.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|selecttype|".$this->registry->language);
+        $this->result = false;
+        $this->result['block_select_type'] = "yes";
     }
 
 
-    public function add_block() {
-        if(isset($_POST['block_type'])) {
-            $block_type = trim($_POST['block_type']);
+    public function add_block($block_type) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($block_type)) {
+            $block_type = trim($block_type);
         }
-        if(!isset($_POST['block_type']) or $block_type == "") {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                $this->registry->main_class->assign("blockadd","no");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language);
-            exit();
+        if(empty($block_type)) {
+            $this->error = 'add_not_all_data';
+            return;
         }
-        $this->registry->main_class->assign("block_select_type","no");
+        $this->result['block_select_type'] = "no";
         $block_type = $this->registry->main_class->format_striptags($block_type);
         if($block_type == "file") {
             $blocks_dir = dir("../blocks");
@@ -242,55 +204,35 @@ class admin_blocks extends model_base {
                     $result = $this->db->Execute($sql);
                     if($result) {
                         if(isset($result->fields['0'])) {
-                            $numrows = intval($result->fields['0']);
+                            $row_exist = intval($result->fields['0']);
                         } else {
-                            $numrows = 0;
+                            $row_exist = 0;
                         }
                         $blocks_list[$i] = $this->registry->main_class->extracting_data($blocks_list[$i]);
-                        if($numrows == 0 and $blocks_list[$i] != "") {
+                        if($row_exist == 0 and $blocks_list[$i] != "") {
                             $block_name[] = $blocks_list[$i];
                         }
                     } else {
                         $error_message = $this->db->ErrorMsg();
                         $error_code = $this->db->ErrorNo();
                         $error[] = array("code" => $error_code,"message" => $error_message);
-                        $this->registry->main_class->assign("error",$error);
-                        $this->registry->main_class->display_theme_adminheader();
-                        $this->registry->main_class->display_theme_adminmain();
-                        $this->registry->main_class->displayadmininfo();
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addsqlerror|".$this->registry->language)) {
-                            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                            $this->registry->main_class->assign("block_save","notsave");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addsqlerror|".$this->registry->language);
-                        exit();
+                        $this->error = 'add_sql_error';
+                        $this->error_array = $error;
+                        return;
                     }
                 }
             }
             if(!isset($block_name)) {
-                $this->registry->main_class->assign("blockadd","nofile");
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnofile|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnofile|".$this->registry->language);
-                exit();
+                $this->error = 'add_no_file';
+                return;
             } else {
-                $this->registry->main_class->assign("block_name",$block_name);
+                $this->result['block_name'] = $block_name;
             }
-            $this->registry->main_class->assign("block_type","file");
+            $this->result['block_type'] = "file";
         } elseif($block_type == "content") {
-            $this->registry->main_class->assign("block_type","content");
+            $this->result['block_type'] = "content";
         } elseif($block_type == "rss") {
-            $sql = "SELECT rss_id,rss_sitename,rss_siteurl FROM ".PREFIX."_rss_".$this->registry->sitelang;
+            $sql = "SELECT rss_id,rss_site_name,rss_site_url FROM ".PREFIX."_rss_".$this->registry->sitelang;
             $result = $this->db->Execute($sql);
             if($result) {
                 while(!$result->EOF) {
@@ -305,105 +247,67 @@ class admin_blocks extends model_base {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("block_save","notsave");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addsqlerror|".$this->registry->language);
-                exit();
+                $this->error = 'add_sql_error';
+                $this->error_array = $error;
+                return;
             }
             if(!isset($rss_all)) {
-                $this->registry->main_class->assign("rss_all","no");
+                $this->result['rss_all'] = "no";
             } else {
-                $this->registry->main_class->assign("rss_all",$rss_all);
+                $this->result['rss_all'] = $rss_all;
             }
-            $this->registry->main_class->assign("block_type","rss");
+            $this->result['block_type'] = "rss";
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_block_type';
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|add|".$block_type."|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockadd.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|add|".$block_type."|".$this->registry->language);
     }
 
 
-    public function add_block_inbase() {
-        if(isset($_POST['block_type'])) {
-            $block_type = trim($_POST['block_type']);
-        }
-        if(isset($_POST['block_custom_name'])) {
-            $block_custom_name = trim($_POST['block_custom_name']);
-        }
-        if(isset($_POST['block_file'])) {
-            $block_file = trim($_POST['block_file']);
-        }
-        if(isset($_POST['block_arrangements'])) {
-            $block_arrangements = trim($_POST['block_arrangements']);
-        }
-        if(isset($_POST['block_status'])) {
-            $block_status = intval($_POST['block_status']);
-        }
-        if(isset($_POST['block_termexpire'])) {
-            $block_termexpire = intval($_POST['block_termexpire']);
-        }
-        if(isset($_POST['block_termexpireaction'])) {
-            $block_termexpireaction = trim($_POST['block_termexpireaction']);
-        }
-        if(isset($_POST['block_valueview'])) {
-            $block_valueview = intval($_POST['block_valueview']);
-        }
-        if(isset($_POST['block_content'])) {
-            $block_content = trim($_POST['block_content']);
-        }
-        if(isset($_POST['block_url'])) {
-            $block_url = trim($_POST['block_url']);
-        }
-        if(isset($_POST['block_refresh'])) {
-            $block_refresh = intval($_POST['block_refresh']);
-        }
-        if(isset($_POST['rss_url'])) {
-            $rss_url = trim($_POST['rss_url']);
-        }
-        if((!isset($_POST['block_type']) or !isset($_POST['block_custom_name']) or !isset($_POST['block_arrangements']) or !isset($_POST['block_status']) or !isset($_POST['block_termexpire']) or !isset($_POST['block_termexpireaction']) or !isset($_POST['block_valueview']) or !isset($_POST['block_content']) or !isset($_POST['block_url']) or !isset($_POST['block_refresh']) or !isset($_POST['rss_url'])) or ($block_type == "" or $block_custom_name == "" or $block_arrangements == "" or $block_termexpireaction == "")) {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                $this->registry->main_class->assign("blockadd","no");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
+    public function add_block_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'block_type',
+                    'block_custom_name',
+                    'block_file',
+                    'block_arrangements',
+                    'block_termexpireaction',
+                    'block_content',
+                    'block_url',
+                    'rss_url'
+                );
+                $keys2 = array(
+                    'block_status',
+                    'block_termexpire',
+                    'block_valueview',
+                    'block_refresh',
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language);
-            exit();
         }
-        $block_file = $this->registry->main_class->format_striptags($block_file);
-        $block_file = $this->registry->main_class->processing_data($block_file);
-        $block_file = substr(substr($block_file,0,-1),1);
-        $block_custom_name = $this->registry->main_class->format_striptags($block_custom_name);
-        $block_custom_name = $this->registry->main_class->processing_data($block_custom_name);
-        $block_custom_name = substr(substr($block_custom_name,0,-1),1);
-        $block_arrangements = $this->registry->main_class->format_striptags($block_arrangements);
-        $block_arrangements = $this->registry->main_class->processing_data($block_arrangements);
-        $block_arrangements = substr(substr($block_arrangements,0,-1),1);
-        $sql = "SELECT (SELECT MAX(a.block_priority) FROM ".PREFIX."_blocks_".$this->registry->sitelang." a WHERE a.block_arrangements='".$block_arrangements."') as block_priority,(SELECT MAX(b.block_id) FROM ".PREFIX."_blocks_".$this->registry->sitelang." b WHERE b.block_customname='".$block_custom_name."') as check_block_customname ".$this->registry->main_class->check_db_need_from_clause();
+        if((!isset($array['block_type']) or !isset($array['block_custom_name']) or !isset($array['block_arrangements']) or !isset($array['block_status']) or !isset($array['block_termexpire']) or !isset($array['block_termexpireaction']) or !isset($array['block_valueview']) or !isset($array['block_content']) or !isset($array['block_url']) or !isset($array['block_refresh']) or !isset($array['rss_url'])) or ($data_array['block_type'] == "" or $data_array['block_custom_name'] == "" or $data_array['block_arrangements'] == "" or $data_array['block_termexpireaction'] == "")) {
+            $this->error = 'add_not_all_data';
+            return;
+        }
+        $data_array['block_file'] = $this->registry->main_class->format_striptags($data_array['block_file']);
+        $data_array['block_file'] = $this->registry->main_class->processing_data($data_array['block_file']);
+        $data_array['block_file'] = substr(substr($data_array['block_file'],0,-1),1);
+        $data_array['block_custom_name'] = $this->registry->main_class->format_striptags($data_array['block_custom_name']);
+        $data_array['block_custom_name'] = $this->registry->main_class->processing_data($data_array['block_custom_name']);
+        $data_array['block_custom_name'] = substr(substr($data_array['block_custom_name'],0,-1),1);
+        $data_array['block_arrangements'] = $this->registry->main_class->format_striptags($data_array['block_arrangements']);
+        $data_array['block_arrangements'] = $this->registry->main_class->processing_data($data_array['block_arrangements']);
+        $data_array['block_arrangements'] = substr(substr($data_array['block_arrangements'],0,-1),1);
+        $sql = "SELECT (SELECT MAX(a.block_priority) FROM ".PREFIX."_blocks_".$this->registry->sitelang." a WHERE a.block_arrangements='".$data_array['block_arrangements']."') as block_priority,(SELECT MAX(b.block_id) FROM ".PREFIX."_blocks_".$this->registry->sitelang." b WHERE b.block_custom_name='".$data_array['block_custom_name']."') as check_block_custom_name ".$this->registry->main_class->check_db_need_from_clause();
         $result0 = $this->db->Execute($sql);
         if($result0) {
             if(isset($result0->fields['0']) and intval($result0->fields['0']) > 0) {
@@ -417,65 +321,34 @@ class admin_blocks extends model_base {
                 $check_block_customname = 0;
             }
             if($check_block_customname > 0) {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addfind|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                    $this->registry->main_class->assign("blockadd","findinbase");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addfind|".$this->registry->language);
-                exit();
+                $this->error = 'add_found';
+                return;
             }
         } else {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'add_sql_error';
+            $this->error_array = $error;
+            return;
         }
-        if($block_termexpire == "0") {
-            $block_termexpire = 'NULL';
-            $block_termexpireaction = 'NULL';
+        if($data_array['block_termexpire'] == "0") {
+            $data_array['block_termexpire'] = 'NULL';
+            $data_array['block_termexpireaction'] = 'NULL';
         } else {
-            $block_termexpire = $this->registry->main_class->gettime() + ($block_termexpire * 86400);
-            $block_termexpire = "'$block_termexpire'";
-            $block_termexpireaction = $this->registry->main_class->format_striptags($block_termexpireaction);
-            $block_termexpireaction = $this->registry->main_class->processing_data($block_termexpireaction);
-            $block_termexpireaction = "$block_termexpireaction";
+            $data_array['block_termexpire'] = $this->registry->main_class->get_time() + ($data_array['block_termexpire'] * 86400);
+            $data_array['block_termexpire'] = "'".$data_array['block_termexpire']."'";
+            $data_array['block_termexpireaction'] = $this->registry->main_class->format_striptags($data_array['block_termexpireaction']);
+            $data_array['block_termexpireaction'] = $this->registry->main_class->processing_data($data_array['block_termexpireaction']);
         }
-        $block_type = $this->registry->main_class->format_striptags($block_type);
-        if($block_type == "file") {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!isset($_POST['block_file']) or $block_file == "") {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("blockadd","no");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language);
-                exit();
+        $data_array['block_type'] = $this->registry->main_class->format_striptags($data_array['block_type']);
+        if($data_array['block_type'] == "file") {
+            if(empty($data_array['block_file'])) {
+                $this->error = 'add_not_all_data';
+                return;
             } else {
-                $block_add_id = $this->db->GenID(PREFIX."_blocks_id_".$this->registry->sitelang);
-                $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (block_id,block_name,block_customname,block_status,block_valueview,block_arrangements,block_priority,block_termexpire,block_termexpireaction)  VALUES ($block_add_id,'$block_file','$block_custom_name','$block_status','$block_valueview','$block_arrangements','$block_priority',$block_termexpire,$block_termexpireaction)";
+                $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX."_blocks_id_".$this->registry->sitelang,'block_id');
+                $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (".$sequence_array['field_name_string']."block_name,block_custom_name,block_status,block_value_view,block_arrangements,block_priority,block_term_expire,block_term_expire_action)  VALUES (".$sequence_array['sequence_value_string']."'".$data_array['block_file']."','".$data_array['block_custom_name']."','".$data_array['block_status']."','".$data_array['block_valueview']."','".$data_array['block_arrangements']."','".$block_priority."',".$data_array['block_termexpire'].",".$data_array['block_termexpireaction'].")";
                 $result = $this->db->Execute($sql);
                 if($result === false) {
                     $error_message = $this->db->ErrorMsg();
@@ -483,38 +356,28 @@ class admin_blocks extends model_base {
                     $error[] = array("code" => $error_code,"message" => $error_message);
                 }
             }
-        } elseif($block_type == "content") {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!isset($block_content) or $block_content == "") {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("blockadd","no");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language);
-                exit();
+        } elseif($data_array['block_type'] == "content") {
+            if(empty($data_array['block_content'])) {
+                $this->error = 'add_not_all_data';
+                return;
             } else {
-                $block_content = $this->registry->main_class->processing_data($block_content);
-                $block_content = substr(substr($block_content,0,-1),1);
-                $block_add_id = $this->db->GenID(PREFIX."_blocks_id_".$this->registry->sitelang);
+                $data_array['block_content'] = $this->registry->main_class->processing_data($data_array['block_content']);
+                $data_array['block_content'] = substr(substr($data_array['block_content'],0,-1),1);
                 $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
                 if($check_db_need_lobs == 'yes') {
                     $this->db->StartTrans();
-                    $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (block_id,block_content,block_customname,block_status,block_valueview,block_arrangements,block_priority,block_termexpire, block_termexpireaction)  VALUES ($block_add_id,empty_clob(),'$block_custom_name','$block_status','$block_valueview','$block_arrangements','$block_priority',$block_termexpire,$block_termexpireaction)";
+                    $block_add_id = $this->db->GenID(PREFIX."_blocks_id_".$this->registry->sitelang);
+                    $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (block_id,block_content,block_custom_name,block_status,block_value_view,block_arrangements,block_priority,block_term_expire, block_term_expire_action) VALUES ($block_add_id,empty_clob(),'".$data_array['block_custom_name']."','".$data_array['block_status']."','".$data_array['block_valueview']."','".$data_array['block_arrangements']."','".$block_priority."',".$data_array['block_termexpire'].",".$data_array['block_termexpireaction'].")";
                     $result2 = $this->db->Execute($sql);
                     if($result2 === false) {
                         $error_message = $this->db->ErrorMsg();
                         $error_code = $this->db->ErrorNo();
                         $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    $result = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$block_content,'block_id='.$block_add_id);
+                    $result = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$data_array['block_content'],'block_id='.$block_add_id);
                     $this->db->CompleteTrans();
                 } else {
-                    $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (block_id,block_content,block_customname,block_status,block_valueview,block_arrangements,block_priority,block_termexpire, block_termexpireaction)  VALUES ($block_add_id,'$block_content','$block_custom_name','$block_status','$block_valueview','$block_arrangements','$block_priority',$block_termexpire,$block_termexpireaction)";
+                    $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (block_content,block_custom_name,block_status,block_value_view,block_arrangements,block_priority,block_term_expire, block_term_expire_action)  VALUES ('".$data_array['block_content']."','".$data_array['block_custom_name']."','".$data_array['block_status']."','".$data_array['block_valueview']."','".$data_array['block_arrangements']."','".$block_priority."',".$data_array['block_termexpire'].",".$data_array['block_termexpireaction'].")";
                     $result = $this->db->Execute($sql);
                     $result2 = true;
                 }
@@ -526,140 +389,46 @@ class admin_blocks extends model_base {
                 if($result2 === false) {
                     $result = false;
                 } else {
-                    if($this->registry->main_class->check_player_entry($block_content)) {
+                    if($this->registry->main_class->check_player_entry($data_array['block_content'])) {
                         $this->registry->main_class->clearAllCache();
                     }
                 }
             }
-        } elseif($block_type == "rss") {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if($rss_url != "" and $rss_url != "0") {
-                $block_url = $rss_url;
+        } elseif($data_array['block_type'] == "rss") {
+            if(!empty($data_array['rss_url'])) {
+                $data_array['block_url'] = $data_array['rss_url'];
             }
-            $block_url = $this->registry->main_class->format_striptags($block_url);
-            if(!isset($block_url) or $block_url == "") {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("blockadd","no");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnotalldata|".$this->registry->language);
-                exit();
+            $data_array['block_url'] = $this->registry->main_class->format_striptags($data_array['block_url']);
+            if(empty($data_array['block_url'])) {
+                $this->error = 'add_not_all_data';
+                return;
             } else {
-                if($block_url != "") {
-                    $time = $this->registry->main_class->gettime();
-                    if(!preg_match("/http:\\//i",$block_url)) {
-                        $block_url = "http://".$block_url;
+                if($data_array['block_url'] != "") {
+                    $time = $this->registry->main_class->get_time();
+                    if(!preg_match("/http:\\//i",$data_array['block_url'])) {
+                        $data_array['block_url'] = "http://".$data_array['block_url'];
                     }
-                    $addr = @parse_url($block_url);
-                    $fp = @fsockopen($addr['host'],80,$errno,$errstr,20);
-                    if(!$fp) {
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnourl|".$this->registry->language)) {
-                            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                            $this->registry->main_class->assign("blockadd","can'topenurl");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnourl|".$this->registry->language);
-                        exit;
-                    }
-                    @fputs($fp,"GET ".$addr['path']."?".$addr['query']." HTTP/1.0\r\n");
-                    @fputs($fp,"HOST: ".$addr['host']."\r\n\r\n");
-                    $string = "";
-                    while(!feof($fp)) {
-                        $pagetext = @fgets($fp,300);
-                        $string .= @chop($pagetext);
-                        if(!isset($rss_encoding) and preg_match("/encoding/i","$pagetext")) {
-                            $rss_encoding = explode("ENCODING=",strtoupper($pagetext));
-                            $rss_encoding = $rss_encoding[1];
-                            $rss_encoding1 = explode('"',$rss_encoding);
-                            if(!isset($rss_encoding1[1])) {
-                                $rss_encoding = explode("'",$rss_encoding);
-                            } else {
-                                $rss_encoding = $rss_encoding1;
-                            }
-                            $rss_encoding = $this->registry->main_class->format_striptags($rss_encoding[1]);
-                        }
-                    }
-                    @fputs($fp,"Connection: close\r\n\r\n");
-                    @fclose($fp);
-                    if(!isset($rss_encoding) or $rss_encoding == "") {
-                        $rss_encoding = "none";
-                    }
-                    $items = explode("</item>",$string);
-                    $content = "";
-                    for($i = 0;$i < 8;$i++) {
-                        $link = @preg_replace('/.*<link>/i','',$items[$i]);
-                        $link = @preg_replace('/<\/link>.*/i','',$link);
-                        $link = @str_ireplace('<![CDATA[','',$link);
-                        $link = @str_ireplace(']]>','',$link);
-                        $link = @str_ireplace('&','&amp;',$link);
-                        $title = @preg_replace('/.*<title>/i','',$items[$i]);
-                        $title = @preg_replace('/<\/title>.*/i','',$title);
-                        $title = @str_ireplace('<![CDATA[','',$title);
-                        $title = @str_ireplace(']]>','',$title);
-                        $description = @preg_replace('/.*<description>/i','',$items[$i]);
-                        $description = @preg_replace('/<\/description>.*/i','',$description);
-                        $description = @str_ireplace('<![CDATA[','',$description);
-                        $description = @str_ireplace(']]>','',$description);
-                        $image = @preg_replace('/\/>.*/i','>',$description);
-                        if(strcasecmp($description,$image) == 0) {
-                            $image = "";
-                        }
-                        $description = @preg_replace('/.*\/>/i','',$description);
-                        $rssdate = @preg_replace('/.*<pubDate>/i','',$items[$i]);
-                        $rssdate = @preg_replace('/<\/pubDate>.*/i','',$rssdate);
-                        $rssdate = @strtotime($rssdate);
-                        if(@$items[$i] == "" and isset($cont) and $cont != 1) {
-                            $content = "";
-                            $cont = 0;
-                        } else {
-                            if(strcmp($link,$title) AND $items[$i] != "") {
-                                $cont = 1;
-                                $title = $this->registry->main_class->encode_rss_text($title,$rss_encoding);
-                                $description = $this->registry->main_class->encode_rss_text($description,$rss_encoding);
-                                $link = $this->registry->main_class->format_striptags($link);
-                                $image = $this->registry->main_class->format_striptags($image,'<img>');
-                                $rssdate = $this->registry->main_class->format_striptags($rssdate);
-                                $rsslink = array(
-                                    "link" => $link,
-                                    "title" => $title,
-                                    "rssdate" => date("d.m.y H:i",$rssdate),
-                                    "description" => $description,
-                                    "image" => $image
-                                );
-                                $this->registry->main_class->assign("rsslink",$rsslink);
-                                $this->registry->main_class->assign("language",$this->registry->language);
-                                $content2 = $this->registry->main_class->fetch("systemadmin/modules/blocks/blockrss.html");
-                                $content2 = $this->registry->main_class->processing_data($content2,'need');
-                                $content2 = substr(substr($content2,0,-1),1);
-                                $content .= $content2;
-                            }
-                        }
+                    $admin_rss_action = 'add';
+                    $get_result = $this->registry->main_class->block_rss(false,false,$data_array['block_url'],false,false,false,$admin_rss_action);
+                    if(!empty($get_result['rss_link']) and $get_result['rss_link'] === 'no') {
+                        $this->error = 'error_url';
+                        return;
+                    } elseif(!empty($get_result['rss_link']) and $get_result['rss_link'] === 'no2') {
+                        $content = "";
+                    } elseif($get_result) {
+                        $content = $get_result;
                     }
                 }
-                if($content == "") {
-                    if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnourl|".$this->registry->language)) {
-                        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
-                        $this->registry->main_class->assign("blockadd","can'topenurl");
-                        $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                        $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                    }
-                    $this->registry->main_class->database_close();
-                    $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addnourl|".$this->registry->language);
-                    exit;
+                if(empty($content)) {
+                    $this->error = 'error_url';
+                    return;
                 }
-                $block_url = $this->registry->main_class->processing_data($block_url);
-                $block_add_id = $this->db->GenID(PREFIX."_blocks_id_".$this->registry->sitelang);
+                $data_array['block_url'] = $this->registry->main_class->processing_data($data_array['block_url']);
                 $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
                 if($check_db_need_lobs == 'yes') {
                     $this->db->StartTrans();
-                    $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (block_id,block_url,block_customname,block_status,block_valueview,block_content,block_arrangements,block_priority,block_refresh,block_lastrefresh,block_termexpire, block_termexpireaction)  VALUES ($block_add_id,$block_url,'$block_custom_name','$block_status','$block_valueview',empty_clob(),'$block_arrangements','$block_priority','$block_refresh','$time',$block_termexpire,$block_termexpireaction)";
+                    $block_add_id = $this->db->GenID(PREFIX."_blocks_id_".$this->registry->sitelang);
+                    $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (block_id,block_url,block_custom_name,block_status,block_value_view,block_content,block_arrangements,block_priority,block_refresh,block_last_refresh,block_term_expire, block_term_expire_action)  VALUES (".$block_add_id.",".$data_array['block_url'].",'".$data_array['block_custom_name']."','".$data_array['block_status']."','".$data_array['block_valueview']."',empty_clob(),'".$data_array['block_arrangements']."','".$block_priority."','".$data_array['block_refresh']."','".$time."',".$data_array['block_termexpire'].",".$data_array['block_termexpireaction'].")";
                     $result2 = $this->db->Execute($sql);
                     if($result2 === false) {
                         $error_message = $this->db->ErrorMsg();
@@ -669,7 +438,7 @@ class admin_blocks extends model_base {
                     $result = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$content,'block_id='.$block_add_id);
                     $this->db->CompleteTrans();
                 } else {
-                    $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (block_id,block_url,block_customname,block_status,block_valueview,block_content,block_arrangements,block_priority,block_refresh,block_lastrefresh,block_termexpire, block_termexpireaction)  VALUES ($block_add_id,$block_url,'$block_custom_name','$block_status','$block_valueview','$content','$block_arrangements','$block_priority','$block_refresh','$time',$block_termexpire,$block_termexpireaction)";
+                    $sql = "INSERT INTO ".PREFIX."_blocks_".$this->registry->sitelang." (block_url,block_custom_name,block_status,block_value_view,block_content,block_arrangements,block_priority,block_refresh,block_last_refresh,block_term_expire, block_term_expire_action)  VALUES (".$data_array['block_url'].",'".$data_array['block_custom_name']."','".$data_array['block_status']."','".$data_array['block_valueview']."','".$content."','".$data_array['block_arrangements']."','".$block_priority."','".$data_array['block_refresh']."','".$time."',".$data_array['block_termexpire'].",".$data_array['block_termexpireaction'].")";
                     $result = $this->db->Execute($sql);
                     $result2 = true;
                 }
@@ -683,145 +452,100 @@ class admin_blocks extends model_base {
                 }
             }
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_block_type';
+            return;
         }
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDBLOCKPAGETITLE'));
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'add_sql_error';
+            $this->error_array = $error;
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|show");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|add|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("blockadd","yes");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|add|ok|".$this->registry->language);
+            $this->result = 'yes';
         }
     }
 
 
-    public function block_status() {
-        if(isset($_GET['action'])) {
-            $action = trim($_GET['action']);
+    public function block_status($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['action'])) {
+            $action = trim($array['action']);
         }
-        if(isset($_GET['block_id'])) {
-            $block_id = intval($_GET['block_id']);
+        if(isset($array['block_id'])) {
+            $block_id = intval($array['block_id']);
         }
-        if((!isset($_GET['block_id']) or !isset($_GET['action'])) or ($block_id == 0 or $action == "")) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if((!isset($array['block_id']) or !isset($array['action'])) or ($block_id == 0 or $action == "")) {
+            $this->error = 'not_all_data';
+            return;
         }
         $action = $this->registry->main_class->format_striptags($action);
         if($action == "off") {
             $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_status='0' WHERE block_id='".$block_id."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
-            $this->registry->main_class->assign("block_save","off");
         } elseif($action == "on") {
             $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_status='1' WHERE block_id='".$block_id."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
-            $this->registry->main_class->assign("block_save","on");
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_action';
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUBLOCKS'));
         if($result === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statussqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statussqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'status_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statusok|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statusok|".$this->registry->language);
-            exit();
+            $this->error = 'status_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|show");
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|edit|file|".$block_id);
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|edit|rss|".$block_id);
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|edit|content|".$block_id);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|".$action."|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|".$action."|ok|".$this->registry->language);
+            $this->result = $action;
         }
     }
 
 
-    public function block_delete() {
-        if(isset($_GET['block_id'])) {
-            $block_id = intval($_GET['block_id']);
+    public function block_delete($block_id) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $block_id = intval($block_id);
+        if($block_id == 0) {
+            $this->error = 'not_all_data';
+            return;
         }
-        if(!isset($_GET['block_id']) or $block_id == 0) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUBLOCKS'));
-        $sql = "SELECT block_priority,block_arrangements FROM ".PREFIX."_blocks_".$this->registry->sitelang." WHERE block_id='".$block_id."'";
+        $sql = "SELECT block_priority,block_arrangements FROM ".PREFIX."_blocks_".$this->registry->sitelang." WHERE block_id = '".$block_id."'";
         $result = $this->db->Execute($sql);
         if($result) {
             if(isset($result->fields['0'])) {
-                $num_result = intval($result->fields['0']);
+                $row_exist = intval($result->fields['0']);
             } else {
-                $num_result = 0;
+                $row_exist = 0;
             }
-            if($num_result > 0) {
+            if($row_exist > 0) {
                 $block_priority = intval($result->fields['0']);
                 $block_arrangements = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
-                $this->db->Execute("UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_priority=block_priority-1 WHERE block_arrangements='".$block_arrangements."' and block_priority>'".$block_priority."'");
-                $sql = "DELETE FROM ".PREFIX."_blocks_".$this->registry->sitelang." WHERE block_id='".$block_id."'";
+                $this->db->StartTrans();
+                $this->db->Execute("UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_priority = block_priority-1 WHERE block_arrangements = '".$block_arrangements."' and block_priority > '".$block_priority."'");
+                $sql = "DELETE FROM ".PREFIX."_blocks_".$this->registry->sitelang." WHERE block_id = '".$block_id."'";
                 $result = $this->db->Execute($sql);
-                $num_result = $this->db->Affected_Rows();
                 if($result === false) {
                     $error_message = $this->db->ErrorMsg();
                     $error_code = $this->db->ErrorNo();
                     $error[] = array("code" => $error_code,"message" => $error_message);
                 }
+                $this->db->CompleteTrans();
             } else {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statusnotfind|".$this->registry->language)) {
-                    $this->registry->main_class->assign("blockadd","notfind");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statusnotfind|".$this->registry->language);
-                exit();
+                $this->error = 'status_not_found';
+                return;
             }
         } else {
             $error_message = $this->db->ErrorMsg();
@@ -829,51 +553,32 @@ class admin_blocks extends model_base {
             $error[] = array("code" => $error_code,"message" => $error_message);
         }
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statussqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statussqlerror|".$this->registry->language);
-            exit();
-        } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statusok|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|statusok|".$this->registry->language);
-            exit();
+            $this->error = 'status_sql_error';
+            $this->error_array = $error;
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|show");
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|edit|file|".$block_id);
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|edit|rss|".$block_id);
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|edit|content|".$block_id);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|delete|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","delete");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|delete|ok|".$this->registry->language);
+            $this->result = "delete";
         }
     }
 
 
-    public function block_edit() {
-        if(isset($_GET['block_type'])) {
-            $block_type = trim($_GET['block_type']);
+    public function block_edit($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['block_type'])) {
+            $block_type = trim($array['block_type']);
         }
-        if(isset($_GET['block_id'])) {
-            $block_id = intval($_GET['block_id']);
+        if(isset($array['block_id'])) {
+            $block_id = intval($array['block_id']);
         }
-        if((!isset($_GET['block_id']) or !isset($_GET['block_type'])) or ($block_id == 0 or $block_type == "")) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if((!isset($array['block_id']) or !isset($array['block_type'])) or ($block_id == 0 or $block_type == "")) {
+            $this->error = 'not_all_data';
+            return;
         }
         $block_type = $this->registry->main_class->format_striptags($block_type);
         if($block_type == "file") {
@@ -895,48 +600,38 @@ class admin_blocks extends model_base {
                 $blocks_list[$i] = $this->registry->main_class->processing_data($blocks_list[$i]);
                 $blocks_list[$i] = substr(substr($blocks_list[$i],0,-1),1);
                 if($blocks_list[$i] != "") {
-                    $sql = "SELECT block_id FROM ".PREFIX."_blocks_".$this->registry->sitelang." WHERE block_name='".$blocks_list[$i]."'";
+                    $sql = "SELECT block_id FROM ".PREFIX."_blocks_".$this->registry->sitelang." WHERE block_name = '".$blocks_list[$i]."'";
                     $result = $this->db->Execute($sql);
                     if($result) {
                         if(isset($result->fields['0'])) {
-                            $numrows = intval($result->fields['0']);
+                            $row_exist = intval($result->fields['0']);
                         } else {
-                            $numrows = 0;
+                            $row_exist = 0;
                         }
                         $blocks_list[$i] = $this->registry->main_class->extracting_data($blocks_list[$i]);
-                        if(($numrows == 0 and $blocks_list[$i] != "") or (intval($result->fields['0']) == $block_id)) {
+                        if(($row_exist == 0 and $blocks_list[$i] != "") or (intval($result->fields['0']) == $block_id)) {
                             $block_name[]['block_name'] = $blocks_list[$i];
                         }
                     } else {
-                        $this->registry->main_class->display_theme_adminheader();
-                        $this->registry->main_class->display_theme_adminmain();
-                        $this->registry->main_class->displayadmininfo();
                         $error_message = $this->db->ErrorMsg();
                         $error_code = $this->db->ErrorNo();
                         $error[] = array("code" => $error_code,"message" => $error_message);
-                        $this->registry->main_class->assign("error",$error);
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language)) {
-                            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                            $this->registry->main_class->assign("block_save","notsave");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language);
-                        exit();
+                        $this->error = 'edit_sql_error';
+                        $this->error_array = $error;
+                        return;
                     }
                 }
             }
             if(!isset($block_name)) {
-                $this->registry->main_class->assign("block_name","no");
+                $this->result['block_name'] = "no";
             } else {
-                $this->registry->main_class->assign("block_name",$block_name);
+                $this->result['block_name'] = $block_name;
             }
-            $this->registry->main_class->assign("block_type","file");
+            $this->result['block_type'] = "file";
         } elseif($block_type == "content") {
-            $this->registry->main_class->assign("block_type","content");
+            $this->result['block_type'] = "content";
         } elseif($block_type == "rss") {
-            $sql = "SELECT rss_id,rss_sitename,rss_siteurl FROM ".PREFIX."_rss_".$this->registry->sitelang;
+            $sql = "SELECT rss_id,rss_site_name,rss_site_url FROM ".PREFIX."_rss_".$this->registry->sitelang;
             $result = $this->db->Execute($sql);
             if($result) {
                 while(!$result->EOF) {
@@ -948,47 +643,36 @@ class admin_blocks extends model_base {
                     $result->MoveNext();
                 }
             } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("block_save","notsave");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language);
-                exit();
+                $this->error = 'edit_sql_error';
+                $this->error_array = $error;
+                return;
             }
             if(!isset($rss_all)) {
-                $this->registry->main_class->assign("rss_all","no");
+                $this->result['rss_all'] = "no";
             } else {
-                $this->registry->main_class->assign("rss_all",$rss_all);
+                $this->result['rss_all'] = $rss_all;
             }
-            $this->registry->main_class->assign("block_type","rss");
+            $this->result['block_type'] = "rss";
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_block_type';
+            return;
         }
-        $sql = "SELECT block_id,block_name,block_customname,block_version,block_status,block_valueview,block_content,block_url,block_arrangements,block_refresh,block_lastrefresh,block_termexpire,block_termexpireaction FROM ".PREFIX."_blocks_".$this->registry->sitelang." WHERE block_id='".$block_id."'";
+        $sql = "SELECT block_id,block_name,block_custom_name,block_version,block_status,block_value_view,block_content,block_url,block_arrangements,block_refresh,block_last_refresh,block_term_expire,block_term_expire_action FROM ".PREFIX."_blocks_".$this->registry->sitelang." WHERE block_id = '".$block_id."'";
         $result = $this->db->Execute($sql);
         if($result) {
             if(isset($result->fields['0'])) {
-                $numrows = intval($result->fields['0']);
+                $row_exist = intval($result->fields['0']);
             } else {
-                $numrows = 0;
+                $row_exist = 0;
             }
-            if($numrows > 0) {
+            if($row_exist > 0) {
                 if(isset($result->fields['11']) and intval($result->fields['11']) != 0 and intval($result->fields['11']) !== "") {
                     $block_termexpire = intval($result->fields['11']);
                     $block_termexpire = date("d.m.y H:i",$block_termexpire);
-                    $block_termexpireday = intval(((intval($result->fields['11']) - $this->registry->main_class->gettime()) / 3600) / 24);
+                    $block_termexpireday = intval(((intval($result->fields['11']) - $this->registry->main_class->get_time()) / 3600) / 24);
                 } else {
                     $block_termexpire = "";
                     $block_termexpireday = "";
@@ -1014,116 +698,67 @@ class admin_blocks extends model_base {
                     "block_termexpireday" => $block_termexpireday,
                     "block_termexpireaction" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['12']))
                 );
-                $this->registry->main_class->assign("block_all",$block_all);
+                $this->result['block_all'] = $block_all;
             } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnotfind|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("blockadd","notfind");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnotfind|".$this->registry->language);
-                exit();
+                $this->error = 'edit_not_found';
+                return;
             }
         } else {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'edit_sql_error';
+            $this->error_array = $error;
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|edit|".$block_type."|".$block_id."|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockedit.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|edit|".$block_type."|".$block_id."|".$this->registry->language);
     }
 
 
-    public function block_edit_save() {
-        if(isset($_POST['block_id'])) {
-            $block_id = intval($_POST['block_id']);
-        }
-        if(isset($_POST['block_type'])) {
-            $block_type = trim($_POST['block_type']);
-        }
-        if(isset($_POST['block_custom_name'])) {
-            $block_custom_name = trim($_POST['block_custom_name']);
-        }
-        if(isset($_POST['block_file'])) {
-            $block_file = trim($_POST['block_file']);
-        }
-        if(isset($_POST['block_arrangements'])) {
-            $block_arrangements = trim($_POST['block_arrangements']);
-        }
-        if(isset($_POST['block_status'])) {
-            $block_status = intval($_POST['block_status']);
-        }
-        if(isset($_POST['block_termexpire'])) {
-            $block_termexpire = intval($_POST['block_termexpire']);
-        }
-        if(isset($_POST['block_termexpireaction'])) {
-            $block_termexpireaction = trim($_POST['block_termexpireaction']);
-        }
-        if(isset($_POST['block_valueview'])) {
-            $block_valueview = intval($_POST['block_valueview']);
-        }
-        if(isset($_POST['block_content'])) {
-            $block_content = trim($_POST['block_content']);
-        }
-        if(isset($_POST['block_url'])) {
-            $block_url = trim($_POST['block_url']);
-        }
-        if(isset($_POST['block_refresh'])) {
-            $block_refresh = intval($_POST['block_refresh']);
-        }
-        if(isset($_POST['rss_url'])) {
-            $rss_url = trim($_POST['rss_url']);
-        }
-        if((!isset($_POST['block_id']) or !isset($_POST['block_type']) or !isset($_POST['block_custom_name']) or !isset($_POST['block_file']) or !isset($_POST['block_arrangements']) or !isset($_POST['block_status']) or !isset($_POST['block_termexpire']) or !isset($_POST['block_termexpireaction']) or !isset($_POST['block_valueview']) or !isset($_POST['block_content']) or !isset($_POST['block_url']) or !isset($_POST['block_refresh']) or !isset($_POST['rss_url'])) or ($block_type == "" or $block_id == 0 or $block_custom_name == "" or $block_arrangements == "" or $block_termexpireaction == "")) {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                $this->registry->main_class->assign("blockadd","no");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
+    public function block_edit_save($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'block_type',
+                    'block_custom_name',
+                    'block_file',
+                    'block_arrangements',
+                    'block_termexpireaction',
+                    'block_content',
+                    'block_url',
+                    'rss_url'
+                );
+                $keys2 = array(
+                    'block_id',
+                    'block_status',
+                    'block_termexpire',
+                    'block_valueview',
+                    'block_refresh',
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnotalldata|".$this->registry->language);
-            exit();
         }
-        $block_custom_name = $this->registry->main_class->format_striptags($block_custom_name);
-        $block_custom_name = $this->registry->main_class->processing_data($block_custom_name);
-        $block_arrangements = $this->registry->main_class->format_striptags($block_arrangements);
-        $block_arrangements = $this->registry->main_class->processing_data($block_arrangements);
-        $sql = "select a.block_arrangements,(select max(b.block_priority) from ".PREFIX."_blocks_".$this->registry->sitelang." b where b.block_arrangements=".$block_arrangements.") as block_new_priority,(SELECT max(c.block_id) FROM ".PREFIX."_blocks_".$this->registry->sitelang." c WHERE c.block_customname=".$block_custom_name." and c.block_id<>'".$block_id."') as check_custom_name,a.block_priority from ".PREFIX."_blocks_".$this->registry->sitelang." a where a.block_id='".$block_id."'";
+        if((!isset($array['block_id']) or !isset($array['block_type']) or !isset($array['block_custom_name']) or !isset($array['block_file']) or !isset($array['block_arrangements']) or !isset($array['block_status']) or !isset($array['block_termexpire']) or !isset($array['block_termexpireaction']) or !isset($array['block_valueview']) or !isset($array['block_content']) or !isset($array['block_url']) or !isset($array['block_refresh']) or !isset($array['rss_url'])) or ($data_array['block_type'] == "" or $data_array['block_id'] == 0 or $data_array['block_custom_name'] == "" or $data_array['block_arrangements'] == "" or $data_array['block_termexpireaction'] == "")) {
+            $this->error = 'edit_not_all_data';
+            return;
+        }
+        $data_array['block_custom_name'] = $this->registry->main_class->format_striptags($data_array['block_custom_name']);
+        $data_array['block_custom_name'] = $this->registry->main_class->processing_data($data_array['block_custom_name']);
+        $data_array['block_arrangements'] = $this->registry->main_class->format_striptags($data_array['block_arrangements']);
+        $data_array['block_arrangements'] = $this->registry->main_class->processing_data($data_array['block_arrangements']);
+        $sql = "select a.block_arrangements,(select max(b.block_priority) from ".PREFIX."_blocks_".$this->registry->sitelang." b where b.block_arrangements = ".$data_array['block_arrangements'].") as block_new_priority,(SELECT max(c.block_id) FROM ".PREFIX."_blocks_".$this->registry->sitelang." c WHERE c.block_custom_name = ".$data_array['block_custom_name']." and c.block_id <> '".$data_array['block_id']."') as check_custom_name,a.block_priority from ".PREFIX."_blocks_".$this->registry->sitelang." a where a.block_id = '".$data_array['block_id']."'";
         $result0 = $this->db->Execute($sql);
         if($result0 and isset($result0->fields['0']) and isset($result0->fields['3']) and trim($result0->fields['0']) !== '' and intval($result0->fields['3']) != 0) {
             $block_old_arrangements = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result0->fields['0']));
-            $block_arrangements = substr(substr($block_arrangements,0,-1),1);
-            if($this->registry->main_class->extracting_data($block_arrangements) !== "$block_old_arrangements") {
+            $data_array['block_arrangements'] = substr(substr($data_array['block_arrangements'],0,-1),1);
+            if($this->registry->main_class->extracting_data($data_array['block_arrangements']) !== "$block_old_arrangements") {
                 $needupdate = "yes";
             } else {
                 $needupdate = "no";
@@ -1140,681 +775,482 @@ class admin_blocks extends model_base {
             }
             $block_old_priority = intval($result0->fields['3']);
             if($check_block_customname > 0) {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editfind|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                    $this->registry->main_class->assign("blockadd","findinbase");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editfind|".$this->registry->language);
-                exit();
+                $this->error = 'edit_found';
+                return;
             }
         } else {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'edit_sql_error';
+            $this->error_array = $error;
+            return;
         }
-        if($block_termexpire == "0") {
-            $block_termexpire = 'NULL';
-            $block_termexpireaction = 'NULL';
+        if($data_array['block_termexpire'] == "0") {
+            $data_array['block_termexpire'] = 'NULL';
+            $data_array['block_termexpireaction'] = 'NULL';
         } else {
-            $block_termexpire = $this->registry->main_class->gettime() + ($block_termexpire * 86400);
-            $block_termexpire = "'$block_termexpire'";
-            $block_termexpireaction = $this->registry->main_class->format_striptags($block_termexpireaction);
-            $block_termexpireaction = $this->registry->main_class->processing_data($block_termexpireaction);
+            $data_array['block_termexpire'] = $this->registry->main_class->get_time() + ($data_array['block_termexpire'] * 86400);
+            $data_array['block_termexpire'] = "'".$data_array['block_termexpire']."'";
+            $data_array['block_termexpireaction'] = $this->registry->main_class->format_striptags($data_array['block_termexpireaction']);
+            $data_array['block_termexpireaction'] = $this->registry->main_class->processing_data($data_array['block_termexpireaction']);
         }
-        $block_type = $this->registry->main_class->format_striptags($block_type);
-        if($block_type == "file") {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!isset($block_file) or $block_file == "") {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnofile|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("blockadd","no");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnofile|".$this->registry->language);
-                exit();
-            } else {
-                $block_file = $this->registry->main_class->format_striptags($block_file);
-                $block_file = $this->registry->main_class->processing_data($block_file);
-                $this->db->StartTrans();
-                if($needupdate == "yes") {
-                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_name=$block_file,block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_arrangements='$block_arrangements',block_priority='$block_new_priority',block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                    $result2 = $this->db->Execute("UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_priority=block_priority-1 WHERE block_arrangements='".$block_old_arrangements."' and block_priority>'".$block_old_priority."'");
-                } else {
-                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_name=$block_file,block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                    $result2 = true;
-                }
-                if($result2 === false) {
-                    $error_message = $this->db->ErrorMsg();
-                    $error_code = $this->db->ErrorNo();
-                    $error[] = array("code" => $error_code,"message" => $error_message);
-                }
-                $result = $this->db->Execute($sql);
-                $num_result = $this->db->Affected_Rows();
-                if($result === false) {
-                    $error_message = $this->db->ErrorMsg();
-                    $error_code = $this->db->ErrorNo();
-                    $error[] = array("code" => $error_code,"message" => $error_message);
-                }
-                $this->db->CompleteTrans();
-                if($result === false or $result2 === false) {
-                    $result = false;
-                }
-                $this->registry->main_class->assign("block_type","file");
+        $data_array['block_type'] = $this->registry->main_class->format_striptags($data_array['block_type']);
+        if($data_array['block_type'] == "file") {
+            if(empty($data_array['block_file'])) {
+                $this->error = 'edit_not_all_data';
+                return;
             }
-        } elseif($block_type == "content") {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!isset($block_content) or $block_content == "") {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnotalldata|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("blockadd","no");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnotalldata|".$this->registry->language);
-                exit();
+            $data_array['block_file'] = $this->registry->main_class->format_striptags($data_array['block_file']);
+            $data_array['block_file'] = $this->registry->main_class->processing_data($data_array['block_file']);
+            $this->db->StartTrans();
+            if($needupdate == "yes") {
+                $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_name = ".$data_array['block_file'].",block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_arrangements = '".$data_array['block_arrangements']."',block_priority = '".$block_new_priority."',block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                $result2 = $this->db->Execute("UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_priority = block_priority-1 WHERE block_arrangements = '".$block_old_arrangements."' and block_priority > '".$block_old_priority."'");
             } else {
-                $block_content = $this->registry->main_class->processing_data($block_content);
-                $block_content = substr(substr($block_content,0,-1),1);
-                $this->db->StartTrans();
-                $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
-                if($needupdate == "yes") {
-                    if($check_db_need_lobs == 'yes') {
-                        $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_content=empty_clob(),block_arrangements='$block_arrangements',block_priority='$block_new_priority', block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                        $result = $this->db->Execute($sql);
-                        $num_result = $this->db->Affected_Rows();
-                        if($result === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $result3 = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$block_content,'block_id='.$block_id);
-                        if($result3 === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                    } else {
-                        $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_content='$block_content',block_arrangements='$block_arrangements',block_priority='$block_new_priority', block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                        $result = $this->db->Execute($sql);
-                        $num_result = $this->db->Affected_Rows();
-                        if($result === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $result3 = true;
-                    }
-                    $result2 = $this->db->Execute("UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_priority=block_priority-1 WHERE block_arrangements='".$block_old_arrangements."' and block_priority>'".$block_old_priority."'");
-                } else {
-                    if($check_db_need_lobs == 'yes') {
-                        $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_content=empty_clob(),block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                        $result = $this->db->Execute($sql);
-                        $num_result = $this->db->Affected_Rows();
-                        if($result === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $result3 = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$block_content,'block_id='.$block_id);
-                        if($result3 === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                    } else {
-                        $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_content='$block_content',block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                        $result = $this->db->Execute($sql);
-                        $num_result = $this->db->Affected_Rows();
-                        if($result === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $result3 = true;
-                    }
-                    $result2 = true;
-                }
-                if($result2 === false) {
-                    $error_message = $this->db->ErrorMsg();
-                    $error_code = $this->db->ErrorNo();
-                    $error[] = array("code" => $error_code,"message" => $error_message);
-                }
-                $this->db->CompleteTrans();
-                if($result === false or $result2 === false or $result3 === false) {
-                    $result = false;
-                } else {
-                    if($this->registry->main_class->check_player_entry($block_content)) {
-                        $this->registry->main_class->clearAllCache();
-                    }
-                }
-                $this->registry->main_class->assign("block_type","content");
+                $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_name = ".$data_array['block_file'].",block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                $result2 = true;
             }
-        } elseif($block_type == "rss") {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if($rss_url != "" and $rss_url != "0") {
-                $block_url = $rss_url;
+            if($result2 === false) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $block_url = $this->registry->main_class->format_striptags($block_url);
-            if(!isset($block_url) or $block_url == "") {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnotalldata|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("blockadd","no");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
+            $result = $this->db->Execute($sql);
+            $num_result = $this->db->Affected_Rows();
+            if($result === false) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $error[] = array("code" => $error_code,"message" => $error_message);
+            }
+            $this->db->CompleteTrans();
+            if($result === false or $result2 === false) {
+                $result = false;
+            }
+        } elseif($data_array['block_type'] == "content") {
+            if(empty($data_array['block_content'])) {
+                $this->error = 'edit_not_all_data';
+                return;
+            }
+            $data_array['block_content'] = $this->registry->main_class->processing_data($data_array['block_content']);
+            $data_array['block_content'] = substr(substr($data_array['block_content'],0,-1),1);
+            $this->db->StartTrans();
+            $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
+            if($needupdate == "yes") {
+                if($check_db_need_lobs == 'yes') {
+                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_content = empty_clob(),block_arrangements = '".$data_array['block_arrangements']."',block_priority = '".$block_new_priority."', block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                    $result = $this->db->Execute($sql);
+                    $num_result = $this->db->Affected_Rows();
+                    if($result === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $result3 = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$data_array['block_content'],'block_id = '.$data_array['block_id']);
+                    if($result3 === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                } else {
+                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_content = '".$data_array['block_content']."',block_arrangements = '".$data_array['block_arrangements']."',block_priority = '".$block_new_priority."', block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                    $result = $this->db->Execute($sql);
+                    $num_result = $this->db->Affected_Rows();
+                    if($result === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $result3 = true;
                 }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnotalldata|".$this->registry->language);
-                exit();
+                $result2 = $this->db->Execute("UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_priority = block_priority-1 WHERE block_arrangements = '".$block_old_arrangements."' and block_priority > '".$block_old_priority."'");
             } else {
-                if($block_url != "") {
-                    $time = $this->registry->main_class->gettime();
-                    if(!preg_match("/http:\\//i",$block_url)) {
-                        $block_url = "http://".$block_url;
+                if($check_db_need_lobs == 'yes') {
+                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_content = empty_clob(),block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                    $result = $this->db->Execute($sql);
+                    $num_result = $this->db->Affected_Rows();
+                    if($result === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    $addr = @parse_url($block_url);
-                    $fp = @fsockopen($addr['host'],80,$errno,$errstr,20);
-                    if(!$fp) {
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnourl|".$this->registry->language)) {
-                            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                            $this->registry->main_class->assign("blockadd","can'topenurl");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnourl|".$this->registry->language);
-                        exit;
+                    $result3 = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$data_array['block_content'],'block_id = '.$data_array['block_id']);
+                    if($result3 === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    @fputs($fp,"GET ".$addr['path']."?".$addr['query']." HTTP/1.0\r\n");
-                    @fputs($fp,"HOST: ".$addr['host']."\r\n\r\n");
-                    $string = "";
-                    while(!feof($fp)) {
-                        $pagetext = @fgets($fp,300);
-                        $string .= @chop($pagetext);
-                        if(!isset($rss_encoding) and preg_match("/encoding/i","$pagetext")) {
-                            $rss_encoding = explode("ENCODING=",strtoupper($pagetext));
-                            $rss_encoding = $rss_encoding[1];
-                            $rss_encoding1 = explode('"',$rss_encoding);
-                            if(!isset($rss_encoding1[1])) {
-                                $rss_encoding = explode("'",$rss_encoding);
-                            } else {
-                                $rss_encoding = $rss_encoding1;
-                            }
-                            $rss_encoding = $this->registry->main_class->format_striptags($rss_encoding[1]);
-                        }
+                } else {
+                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_content = '".$data_array['block_content']."',block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                    $result = $this->db->Execute($sql);
+                    $num_result = $this->db->Affected_Rows();
+                    if($result === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    @fputs($fp,"Connection: close\r\n\r\n");
-                    @fclose($fp);
-                    if(!isset($rss_encoding) or $rss_encoding == "") {
-                        $rss_encoding = "none";
-                    }
-                    $items = explode("</item>",$string);
+                    $result3 = true;
+                }
+                $result2 = true;
+            }
+            if($result2 === false) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $error[] = array("code" => $error_code,"message" => $error_message);
+            }
+            $this->db->CompleteTrans();
+            if($result === false or $result2 === false or $result3 === false) {
+                $result = false;
+            } else {
+                if($this->registry->main_class->check_player_entry($data_array['block_content'])) {
+                    $this->registry->main_class->clearAllCache();
+                }
+            }
+        } elseif($data_array['block_type'] == "rss") {
+            if($data_array['rss_url'] != "" and $data_array['rss_url'] != "0") {
+                $data_array['block_url'] = $data_array['rss_url'];
+            }
+            $data_array['block_url'] = $this->registry->main_class->format_striptags($data_array['block_url']);
+            if(empty($data_array['block_url'])) {
+                $this->error = 'edit_not_all_data';
+                return;
+            }
+            if($data_array['block_url'] != "") {
+                $time = $this->registry->main_class->get_time();
+                if(!preg_match("/http:\\//i",$data_array['block_url'])) {
+                    $data_array['block_url'] = "http://".$data_array['block_url'];
+                }
+                $admin_rss_action = true;
+                $get_result = $this->registry->main_class->block_rss(false,false,$data_array['block_url'],false,false,false,$admin_rss_action);
+                if(!empty($get_result['rss_link']) and $get_result['rss_link'] === 'no') {
+                    $this->error = 'edit_block_rss_url';
+                    return;
+                } elseif(!empty($get_result['rss_link']) and $get_result['rss_link'] === 'no2') {
                     $content = "";
-                    for($i = 0;$i < 8;$i++) {
-                        $link = @preg_replace('/.*<link>/i','',$items[$i]);
-                        $link = @preg_replace('/<\/link>.*/i','',$link);
-                        $link = @str_ireplace('<![CDATA[','',$link);
-                        $link = @str_ireplace(']]>','',$link);
-                        $link = @preg_replace('/&/i','&amp;',$link);
-                        $title = @preg_replace('/.*<title>/i','',$items[$i]);
-                        $title = @preg_replace('/<\/title>.*/i','',$title);
-                        $title = @str_ireplace('<![CDATA[','',$title);
-                        $title = @str_ireplace(']]>','',$title);
-                        $description = @preg_replace('/.*<description>/i','',$items[$i]);
-                        $description = @preg_replace('/<\/description>.*/i','',$description);
-                        $description = @str_ireplace('<![CDATA[','',$description);
-                        $description = @str_ireplace(']]>','',$description);
-                        $image = @preg_replace('/\/>.*/i','>',$description);
-                        if(strcasecmp($description,$image) == 0) {
-                            $image = "";
-                        }
-                        $description = @preg_replace('/.*\/>/i','',$description);
-                        $rssdate = @preg_replace('/.*<pubDate>/i','',$items[$i]);
-                        $rssdate = @preg_replace('/<\/pubDate>.*/i','',$rssdate);
-                        $rssdate = @strtotime($rssdate);
-                        if(@$items[$i] == "" and isset($cont) and $cont != 1) {
-                            $content = "";
-                            $cont = 0;
-                        } else {
-                            if(strcmp($link,$title) and $items[$i] != "") {
-                                $cont = 1;
-                                $title = $this->registry->main_class->encode_rss_text($title,$rss_encoding);
-                                $description = $this->registry->main_class->encode_rss_text($description,$rss_encoding);
-                                $link = $this->registry->main_class->format_striptags($link);
-                                $image = $this->registry->main_class->format_striptags($image,'<img>');
-                                $rssdate = $this->registry->main_class->format_striptags($rssdate);
-                                $rsslink = array(
-                                    "link" => $link,
-                                    "title" => $title,
-                                    "rssdate" => date("d.m.y H:i",$rssdate),
-                                    "description" => $description,
-                                    "image" => $image
-                                );
-                                $this->registry->main_class->assign("rsslink",$rsslink);
-                                $this->registry->main_class->assign("language",$this->registry->language);
-                                $content2 = $this->registry->main_class->fetch("systemadmin/modules/blocks/blockrss.html");
-                                $content2 = $this->registry->main_class->processing_data($content2,'need');
-                                $content2 = substr(substr($content2,0,-1),1);
-                                $content .= $content2;
-                            }
-                        }
-                    }
+                } elseif($get_result) {
+                    $content = $get_result;
                 }
-                if($content == "") {
-                    if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnourl|".$this->registry->language)) {
-                        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
-                        $this->registry->main_class->assign("blockadd","can'topenurl");
-                        $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                        $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
+            }
+            if(empty($content)) {
+                $this->error = 'edit_block_rss_url';
+                return;
+            }
+            $data_array['block_url'] = $this->registry->main_class->processing_data($data_array['block_url']);
+            $this->db->StartTrans();
+            $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
+            if($needupdate == "yes") {
+                if($check_db_need_lobs == 'yes') {
+                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_content = empty_clob(),block_url = ".$data_array['block_url'].",block_arrangements = '".$data_array['block_arrangements']."',block_priority = '".$block_new_priority."',block_refresh = '".$data_array['block_refresh']."',block_last_refresh = '".$time."',block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                    $result = $this->db->Execute($sql);
+                    $num_result = $this->db->Affected_Rows();
+                    if($result === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    $this->registry->main_class->database_close();
-                    $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editnourl|".$this->registry->language);
-                    exit;
-                }
-                $block_url = $this->registry->main_class->processing_data($block_url);
-                $this->db->StartTrans();
-                $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
-                if($needupdate == "yes") {
-                    if($check_db_need_lobs == 'yes') {
-                        $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_content=empty_clob(),block_url=$block_url,block_arrangements='$block_arrangements',block_priority='$block_new_priority',block_refresh='$block_refresh',block_lastrefresh='$time',block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                        $result = $this->db->Execute($sql);
-                        $num_result = $this->db->Affected_Rows();
-                        if($result === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $result3 = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$content,'block_id='.$block_id);
-                        if($result3 === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                    } else {
-                        $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_content='$content',block_url=$block_url,block_arrangements='$block_arrangements',block_priority='$block_new_priority',block_refresh='$block_refresh',block_lastrefresh='$time',block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                        $result = $this->db->Execute($sql);
-                        $num_result = $this->db->Affected_Rows();
-                        if($result === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $result3 = true;
+                    $result3 = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$content,'block_id = '.$data_array['block_id']);
+                    if($result3 === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    $result2 = $this->db->Execute("UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_priority=block_priority-1 WHERE block_arrangements='".$block_old_arrangements."' and block_priority>'".$block_old_priority."'");
                 } else {
-                    if($check_db_need_lobs == 'yes') {
-                        $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_content=empty_clob(),block_url=$block_url,block_refresh='$block_refresh',block_lastrefresh='$time',block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                        $result = $this->db->Execute($sql);
-                        $num_result = $this->db->Affected_Rows();
-                        if($result === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $result3 = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$content,'block_id='.$block_id);
-                        if($result3 === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                    } else {
-                        $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_customname=$block_custom_name,block_status='$block_status',block_valueview='$block_valueview',block_content='$content',block_url=$block_url,block_refresh='$block_refresh',block_lastrefresh='$time',block_termexpire=$block_termexpire,block_termexpireaction=$block_termexpireaction WHERE block_id='$block_id'";
-                        $result = $this->db->Execute($sql);
-                        $num_result = $this->db->Affected_Rows();
-                        if($result === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $result3 = true;
+                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_content = '".$content."',block_url = ".$data_array['block_url'].",block_arrangements = '".$data_array['block_arrangements']."',block_priority = '".$block_new_priority."',block_refresh = '".$data_array['block_refresh']."',block_last_refresh = '".$time."',block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                    $result = $this->db->Execute($sql);
+                    $num_result = $this->db->Affected_Rows();
+                    if($result === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    $result2 = true;
+                    $result3 = true;
                 }
-                if($result2 === false) {
-                    $error_message = $this->db->ErrorMsg();
-                    $error_code = $this->db->ErrorNo();
-                    $error[] = array("code" => $error_code,"message" => $error_message);
+                $result2 = $this->db->Execute("UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_priority = block_priority-1 WHERE block_arrangements = '".$block_old_arrangements."' and block_priority > '".$block_old_priority."'");
+            } else {
+                if($check_db_need_lobs == 'yes') {
+                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_content = empty_clob(),block_url = ".$data_array['block_url'].",block_refresh = '".$data_array['block_refresh']."',block_last_refresh = '".$time."',block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                    $result = $this->db->Execute($sql);
+                    $num_result = $this->db->Affected_Rows();
+                    if($result === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $result3 = $this->db->UpdateClob(PREFIX.'_blocks_'.$this->registry->sitelang,'block_content',$content,'block_id = '.$data_array['block_id']);
+                    if($result3 === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                } else {
+                    $sql = "UPDATE ".PREFIX."_blocks_".$this->registry->sitelang." SET block_custom_name = ".$data_array['block_custom_name'].",block_status = '".$data_array['block_status']."',block_value_view = '".$data_array['block_valueview']."',block_content = '".$content."',block_url = ".$data_array['block_url'].",block_refresh = '".$data_array['block_refresh']."',block_last_refresh = '".$time."',block_term_expire = ".$data_array['block_termexpire'].",block_term_expire_action = ".$data_array['block_termexpireaction']." WHERE block_id = '".$data_array['block_id']."'";
+                    $result = $this->db->Execute($sql);
+                    $num_result = $this->db->Affected_Rows();
+                    if($result === false) {
+                        $error_message = $this->db->ErrorMsg();
+                        $error_code = $this->db->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $result3 = true;
                 }
-                $this->db->CompleteTrans();
-                if($result === false or $result2 === false or $result3 === false) {
-                    $result = false;
-                }
-                $this->registry->main_class->assign("block_type","rss");
+                $result2 = true;
+            }
+            if($result2 === false) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $error[] = array("code" => $error_code,"message" => $error_message);
+            }
+            $this->db->CompleteTrans();
+            if($result === false or $result2 === false or $result3 === false) {
+                $result = false;
             }
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_block_type';
+            return;
         }
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITBLOCKPAGETITLE'));
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'edit_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editok|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editok|".$this->registry->language);
-            exit();
+            $this->error = 'edit_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|show");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|edit|".$block_type."|".$block_id);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|edit|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","yes");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|edit|ok|".$this->registry->language);
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|edit|".$data_array['block_type']."|".$data_array['block_id']);
+            $this->result['block_type'] = $data_array['block_type'];
         }
     }
 
 
-    public function block_rsssite() {
-        if(isset($_GET['num_page']) and intval($_GET['num_page']) !== 0) {
-            $num_page = intval($_GET['num_page']);
-            if($num_page == 0) {
-                $num_page = 1;
-            }
+    public function block_rsssite($num_page = false) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(intval($num_page) != 0) {
+            $num_page = intval($num_page);
         } else {
             $num_page = 1;
         }
         $num_string_rows = SYSTEMDK_ADMINROWS_PERPAGE;
         $offset = ($num_page - 1) * $num_string_rows;
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|rss|".$num_page."|".$this->registry->language)) {
-            $sql = "SELECT a.rss_id,a.rss_sitename,a.rss_siteurl,(SELECT count(b.rss_id) FROM ".PREFIX."_rss_".$this->registry->sitelang." b) as count_rss_id FROM ".PREFIX."_rss_".$this->registry->sitelang." a order by a.rss_id DESC";
-            $result = $this->db->SelectLimit($sql,$num_string_rows,$offset);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows == 0 and $num_page > 1) {
-                    $this->registry->main_class->database_close();
-                    header("Location: index.php?path=admin_blocks&func=block_rsssite&lang=".$this->registry->sitelang);
-                    exit();
-                }
-                if($numrows > 0) {
-                    while(!$result->EOF) {
-                        if(!isset($numrows2)) {
-                            $numrows2 = intval($result->fields['3']);
-                        }
-                        $rss_all[] = array(
-                            "rss_id" => intval($result->fields['0']),
-                            "rss_sitename" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
-                            "rss_siteurl" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']))
-                        );
-                        $result->MoveNext();
-                    }
-                    if(isset($numrows2)) {
-                        $num_pages = @ceil($numrows2 / $num_string_rows);
-                    } else {
-                        $num_pages = 0;
-                    }
-                    if($num_pages > 1) {
-                        if($num_page > 1) {
-                            $prevpage = $num_page - 1;
-                            $this->registry->main_class->assign("prevpage",$prevpage);
-                        } else {
-                            $this->registry->main_class->assign("prevpage","no");
-                        }
-                        for($i = 1;$i < $num_pages + 1;$i++) {
-                            if($i == $num_page) {
-                                $html[] = array("number" => $i,"param1" => "1");
-                            } else {
-                                $pagelink = 5;
-                                if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "2");
-                                }
-                                if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "3");
-                                }
-                                if(($i == 1) and ($num_page > $pagelink + 1)) {
-                                    $html[] = array("number" => $i,"param1" => "4");
-                                }
-                            }
-                        }
-                        if($num_page < $num_pages) {
-                            $nextpage = $num_page + 1;
-                            $this->registry->main_class->assign("nextpage",$nextpage);
-                        } else {
-                            $this->registry->main_class->assign("nextpage","no");
-                        }
-                        $this->registry->main_class->assign("html",$html);
-                        $this->registry->main_class->assign("totalrss",$numrows2);
-                        $this->registry->main_class->assign("num_pages",$num_pages);
-                    } else {
-                        $this->registry->main_class->assign("html","no");
-                    }
-                } else {
-                    $this->registry->main_class->assign("html","no");
-                }
-            } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|rsssqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONRSSBLOCKPAGETITLE'));
-                    $this->registry->main_class->assign("block_save","notsave");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|rsssqlerror|".$this->registry->language);
-                exit();
-            }
-            if(isset($rss_all)) {
-                $this->registry->main_class->assign("rss_all",$rss_all);
-            } else {
-                $this->registry->main_class->assign("rss_all","no");
-            }
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|rss|".$num_page."|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONRSSBLOCKPAGETITLE'));
-            $this->registry->main_class->assign("addrss_inbase","no");
-            $this->registry->main_class->assign("editrss","hidden");
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddrsssite.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|rss|".$num_page."|".$this->registry->language);
-    }
-
-
-    public function block_addrsssite() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|addrss|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDRSSBLOCKPAGETITLE'));
-            $this->registry->main_class->assign("addrss_inbase","no");
-            $this->registry->main_class->assign("editrss","no");
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddrsssite.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|addrss|".$this->registry->language);
-    }
-
-
-    public function block_addrsssite_inbase() {
-        if(isset($_POST['rss_sitename'])) {
-            $rss_sitename = trim($_POST['rss_sitename']);
-        }
-        if(isset($_POST['rss_siteurl'])) {
-            $rss_siteurl = trim($_POST['rss_siteurl']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDRSSBLOCKPAGETITLE'));
-        if((!isset($_POST['rss_sitename']) or !isset($_POST['rss_siteurl'])) or ($rss_sitename == "" or $rss_siteurl == "")) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|addrss|error|addrssnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("blockadd","no");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|addrss|error|addrssnotalldata|".$this->registry->language);
-            exit();
-        }
-        $rss_sitename = $this->registry->main_class->format_striptags($rss_sitename);
-        $rss_sitename = $this->registry->main_class->processing_data($rss_sitename);
-        $rss_siteurl = $this->registry->main_class->format_striptags($rss_siteurl);
-        $rss_siteurl = $this->registry->main_class->processing_data($rss_siteurl);
-        $rss_id = $this->db->GenID(PREFIX."_rss_id_".$this->registry->sitelang);
-        $sql = "INSERT INTO ".PREFIX."_rss_".$this->registry->sitelang." (rss_id,rss_sitename,rss_siteurl) VALUES ($rss_id,$rss_sitename,$rss_siteurl)";
+        $sql = "SELECT count(*) FROM ".PREFIX."_rss_".$this->registry->sitelang;
         $result = $this->db->Execute($sql);
-        if($result === false) {
-            $error_message = $this->db->ErrorMsg();
-            $error_code = $this->db->ErrorNo();
-            $error[] = array("code" => $error_code,"message" => $error_message);
+        if($result) {
+            $num_rows = intval($result->fields['0']);
+            $sql = "SELECT rss_id,rss_site_name,rss_site_url FROM ".PREFIX."_rss_".$this->registry->sitelang." order by rss_id DESC";
+            $result = $this->db->SelectLimit($sql,$num_string_rows,$offset);
         }
-        if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addrsssqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
+            } else {
+                $row_exist = 0;
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|addrsssqlerror|".$this->registry->language);
-            exit();
-        } else {
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|rss");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|addrssok|".$this->registry->language)) {
-                $this->registry->main_class->assign("addrss_inbase","yes");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddrsssite.html");
+            if($row_exist == 0 and $num_page > 1) {
+                $this->error = 'unknown_page';
+                return;
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|addrssok|".$this->registry->language);
-        }
-    }
-
-
-    public function block_editrsssite() {
-        if(isset($_GET['rss_id'])) {
-            $rss_id = intval($_GET['rss_id']);
-        }
-        if(!isset($_GET['rss_id']) or $rss_id == 0) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITRSSBLOCKPAGETITLE'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|editrss|".$rss_id."|".$this->registry->language)) {
-            $sql = "SELECT rss_id,rss_sitename,rss_siteurl FROM ".PREFIX."_rss_".$this->registry->sitelang." WHERE rss_id = ".$rss_id;
-            $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows > 0) {
-                    $rss_edit_all[] = array(
+            if($row_exist > 0) {
+                while(!$result->EOF) {
+                    $rss_all[] = array(
                         "rss_id" => intval($result->fields['0']),
                         "rss_sitename" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
                         "rss_siteurl" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']))
                     );
-                    $this->registry->main_class->assign("rss_edit_all",$rss_edit_all);
+                    $result->MoveNext();
+                }
+                if(isset($num_rows)) {
+                    $num_pages = @ceil($num_rows / $num_string_rows);
+                } else {
+                    $num_pages = 0;
+                }
+                if($num_pages > 1) {
+                    if($num_page > 1) {
+                        $prevpage = $num_page - 1;
+                        $this->result['prevpage'] = $prevpage;
+                    } else {
+                        $this->result['prevpage'] = "no";
+                    }
+                    for($i = 1;$i < $num_pages + 1;$i++) {
+                        if($i == $num_page) {
+                            $html[] = array("number" => $i,"param1" => "1");
+                        } else {
+                            $pagelink = 5;
+                            if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
+                                $html[] = array("number" => $i,"param1" => "2");
+                            }
+                            if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
+                                $html[] = array("number" => $i,"param1" => "3");
+                            }
+                            if(($i == 1) and ($num_page > $pagelink + 1)) {
+                                $html[] = array("number" => $i,"param1" => "4");
+                            }
+                        }
+                    }
+                    if($num_page < $num_pages) {
+                        $nextpage = $num_page + 1;
+                        $this->result['nextpage'] = $nextpage;
+                    } else {
+                        $this->result['nextpage'] = "no";
+                    }
+                    $this->result['html'] = $html;
+                    $this->result['totalrss'] = $num_rows;
+                    $this->result['num_pages'] = $num_pages;
+                } else {
+                    $this->result['html'] = "no";
                 }
             } else {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrsssqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->assign("block_save","notsave");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrsssqlerror|".$this->registry->language);
-                exit();
+                $this->result['html'] = "no";
             }
-            if(!isset($rss_edit_all)) {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrssnotfindrss|".$this->registry->language)) {
-                    $this->registry->main_class->assign("addrss_inbase","notfind");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddrsssite.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrssnotfindrss|".$this->registry->language);
-                exit();
-            }
+        } else {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'rss_sql_error';
+            $this->error_array = $error;
+            return;
         }
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|editrss|".$rss_id."|".$this->registry->language)) {
-            $this->registry->main_class->assign("addrss_inbase","no");
-            $this->registry->main_class->assign("editrss","yes");
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddrsssite.html");
+        if(isset($rss_all)) {
+            $this->result['rss_all'] = $rss_all;
+        } else {
+            $this->result['rss_all'] = "no";
         }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|editrss|".$rss_id."|".$this->registry->language);
+        $this->result['addrss_inbase'] = "no";
+        $this->result['editrss'] = "hidden";
     }
 
 
-    public function block_deletersssite() {
-        if(isset($_GET['rss_id'])) {
-            $rss_id = intval($_GET['rss_id']);
+    public function block_addrsssite() {
+        $this->result = false;
+        $this->result['addrss_inbase'] = "no";
+        $this->result['editrss'] = "no";
+    }
+
+
+    public function block_addrsssite_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'rss_sitename',
+                    'rss_siteurl'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+            }
         }
-        if(!isset($_GET['rss_id']) or $rss_id == 0) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_blocks&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if((!isset($array['rss_sitename']) or !isset($array['rss_siteurl'])) or ($data_array['rss_sitename'] == "" or $data_array['rss_siteurl'] == "")) {
+            $this->error = 'add_rss_not_all_data';
+            return;
         }
-        $sql = "DELETE FROM ".PREFIX."_rss_".$this->registry->sitelang." WHERE rss_id='".$rss_id."'";
+        foreach($data_array as $key => $value) {
+            $keys = array(
+                'rss_sitename',
+                'rss_siteurl'
+            );
+            if(in_array($key,$keys)) {
+                $value = $this->registry->main_class->format_striptags($value);
+                $data_array[$key] = $this->registry->main_class->processing_data($value);
+            }
+        }
+        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX."_rss_id_".$this->registry->sitelang,'rss_id');
+        $sql = "INSERT INTO ".PREFIX."_rss_".$this->registry->sitelang." (".$sequence_array['field_name_string']."rss_site_name,rss_site_url) VALUES (".$sequence_array['sequence_value_string']."".$data_array['rss_sitename'].",".$data_array['rss_siteurl'].")";
+        $result = $this->db->Execute($sql);
+        if($result === false) {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+        }
+        if($result === false) {
+            $this->error = 'add_rss_sql_error';
+            $this->error_array = $error;
+            return;
+        } else {
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|rss");
+            $this->result['addrss_inbase'] = 'add_rss_ok';
+        }
+    }
+
+
+    public function block_editrsssite($rss_id) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $rss_id = intval($rss_id);
+        if($rss_id == 0) {
+            $this->error = 'empty_rss_id';
+            return;
+        }
+        $sql = "SELECT rss_id,rss_site_name,rss_site_url FROM ".PREFIX."_rss_".$this->registry->sitelang." WHERE rss_id = ".$rss_id;
+        $result = $this->db->Execute($sql);
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
+            } else {
+                $row_exist = 0;
+            }
+            if($row_exist > 0) {
+                $rss_edit_all[] = array(
+                    "rss_id" => intval($result->fields['0']),
+                    "rss_sitename" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
+                    "rss_siteurl" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']))
+                );
+                $this->result['rss_edit_all'] = $rss_edit_all;
+            }
+        } else {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'edit_rss_sql_error';
+            $this->error_array = $error;
+            return;
+        }
+        if(!isset($rss_edit_all)) {
+            $this->error = 'edit_rss_not_found';
+            return;
+        }
+        $this->result['addrss_inbase'] = "no";
+        $this->result['editrss'] = "yes";
+    }
+
+
+    public function block_editrsssite_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'rss_sitename',
+                    'rss_siteurl'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+            }
+        }
+        if(isset($array['rss_id'])) {
+            $data_array['rss_id'] = intval($array['rss_id']);
+        }
+        if((!isset($array['rss_id']) or !isset($array['rss_sitename']) or !isset($array['rss_siteurl'])) or ($data_array['rss_id'] == 0 or $data_array['rss_sitename'] == "" or $data_array['rss_siteurl'] == "")) {
+            $this->error = 'edit_rss_not_all_data';
+            return;
+        }
+        foreach($data_array as $key => $value) {
+            $keys = array(
+                'rss_sitename',
+                'rss_siteurl'
+            );
+            if(in_array($key,$keys)) {
+                $value = $this->registry->main_class->format_striptags($value);
+                $data_array[$key] = $this->registry->main_class->processing_data($value);
+            }
+        }
+        $sql = "UPDATE ".PREFIX."_rss_".$this->registry->sitelang." SET rss_site_name = ".$data_array['rss_sitename'].",rss_site_url = ".$data_array['rss_siteurl']." WHERE rss_id = '".$data_array['rss_id']."'";
         $result = $this->db->Execute($sql);
         $num_result = $this->db->Affected_Rows();
         if($result === false) {
@@ -1822,72 +1258,31 @@ class admin_blocks extends model_base {
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONDELETERSSBLOCKPAGETITLE'));
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|delrsssqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|delrsssqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'edit_rss_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|delrssok|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|delrssok|".$this->registry->language);
-            exit();
+            $this->error = 'edit_rss_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|rss");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|editrss|".$rss_id);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|deleterssok|".$this->registry->language)) {
-                $this->registry->main_class->assign("addrss_inbase","delete");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddrsssite.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|deleterssok|".$this->registry->language);
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|editrss|".$data_array['rss_id']);
+            $this->result['addrss_inbase'] = 'edit_rss_done';
         }
     }
 
 
-    public function block_editrsssite_inbase() {
-        if(isset($_POST['rss_id'])) {
-            $rss_id = intval($_POST['rss_id']);
+    public function block_deletersssite($rss_id) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $rss_id = intval($rss_id);
+        if($rss_id == 0) {
+            $this->error = 'empty_rss_id';
+            return;
         }
-        if(isset($_POST['rss_sitename'])) {
-            $rss_sitename = trim($_POST['rss_sitename']);
-        }
-        if(isset($_POST['rss_siteurl'])) {
-            $rss_siteurl = trim($_POST['rss_siteurl']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITRSSBLOCKPAGETITLE'));
-        if((!isset($_POST['rss_id']) or !isset($_POST['rss_sitename']) or !isset($_POST['rss_siteurl'])) or ($rss_id == 0 or $rss_sitename == "" or $rss_siteurl == "")) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrssnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("blockadd","no");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddend.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrssnotalldata|".$this->registry->language);
-            exit();
-        }
-        $rss_sitename = $this->registry->main_class->format_striptags($rss_sitename);
-        $rss_sitename = $this->registry->main_class->processing_data($rss_sitename);
-        $rss_siteurl = $this->registry->main_class->format_striptags($rss_siteurl);
-        $rss_siteurl = $this->registry->main_class->processing_data($rss_siteurl);
-        $sql = "UPDATE ".PREFIX."_rss_".$this->registry->sitelang." SET rss_sitename=".$rss_sitename.",rss_siteurl=".$rss_siteurl." WHERE rss_id='".$rss_id."'";
+        $sql = "DELETE FROM ".PREFIX."_rss_".$this->registry->sitelang." WHERE rss_id = '".$rss_id."'";
         $result = $this->db->Execute($sql);
         $num_result = $this->db->Affected_Rows();
         if($result === false) {
@@ -1896,36 +1291,16 @@ class admin_blocks extends model_base {
             $error[] = array("code" => $error_code,"message" => $error_message);
         }
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrsssqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrsssqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'del_rss_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrssok|".$this->registry->language)) {
-                $this->registry->main_class->assign("block_save","notsave2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|error|editrssok|".$this->registry->language);
-            exit();
+            $this->error = 'del_rss_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|rss");
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|blocks|editrss|".$rss_id);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|editrssok|".$this->registry->language)) {
-                $this->registry->main_class->assign("addrss_inbase","update");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/blocks/blockaddrsssite.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|blocks|editrssok|".$this->registry->language);
+            $this->result['addrss_inbase'] = 'delete_rss_ok';
         }
     }
 }
-
-?>

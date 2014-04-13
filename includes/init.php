@@ -4,10 +4,10 @@
  * File:      init.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 header("Expires: Mon, 30 Nov 2009 00:39:00 GMT");
 header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");
@@ -31,51 +31,78 @@ if(GZIP === "yes") {
 if(SYSTEMDK_STATISTICS == "yes") {
     funcgentimewatch(0,0);
 }
+if(session_id() == "") {
+    //ini_set('session.cookie_lifetime',SESSION_COOKIE_LIVE);
+    //ini_set('session.gc_maxlifetime',SESSION_COOKIE_LIVE);
+    session_start();
+}
+// Include the singleton class
 include_once(__SITE_PATH.'/includes/singleton.class.php');
-//Include the controller classes
+// Include the controller base class
 include_once(__SITE_PATH.'/includes/controller_base.class.php');
+// Include the controller main class, using in all controllers
 include_once(__SITE_PATH.'/includes/controller_main.class.php');
-//Include the model classes
+// Include the model base class
 include_once(__SITE_PATH.'/includes/model_base.class.php');
+// Include the model main class for controller main class
 include_once(__SITE_PATH.'/includes/model_main.class.php');
-//Include the registry class
+// Include the registry class
 include_once(__SITE_PATH.'/includes/registry.class.php');
-//Include the router class
+// Include the router class
 include_once(__SITE_PATH.'/includes/router.class.php');
-//Include the template class
+// Include the template class
 include_once(__SITE_PATH.'/includes/template.class.php');
-//Include the db class
+// Include the db class
 include_once(__SITE_PATH.'/includes/db.class.php');
-//Include the mail class
+// Include the mail class
 include_once(__SITE_PATH.'/includes/mail.class.php');
-//Load model classes
+// Load model or controller classes
 function my_autoloader($class) {
-    //Assume that the class is defined within the model directory
+    $path_user = __SITE_PATH;
     if(defined('__SITE_ADMIN_PART') and __SITE_ADMIN_PART === 'yes') {
-        $filename = __SITE_ADMIN_PATH.'/modules/'.strtolower($class).'/model_'.strtolower($class).'.class.php';
+        $path_admin = __SITE_ADMIN_PATH;
+        $path = $path_admin;
     } else {
-        $filename = __SITE_PATH.'/modules/'.strtolower($class).'/model_'.strtolower($class).'.class.php';
+        $path = $path_user;
     }
-    //Return false if the file does not exist
+    // include controller class
+    if(preg_match('/controller_/i',$class)) {
+        $filename = $path.'/modules/'.strtolower(preg_replace('/controller_/i','',$class)).'/'.strtolower($class).'.class.php';
+    } else {
+        $filename = $path.'/modules/'.strtolower($class).'/model_'.strtolower($class).'.class.php';
+        // sometimes we need to include non-admin model when we are in admin part
+        if(file_exists($filename) == false) {
+            $filename = $path_user.'/modules/'.strtolower($class).'/model_'.strtolower($class).'.class.php';
+        }
+    }
     if(file_exists($filename) == false) {
         return false;
     }
-    // The file exists. Include it
     include_once($filename);
 }
-
 spl_autoload_register('my_autoloader');
-//Instantiate a new registry
-$registry = new registry;
+// Instantiate a new registry
+$registry = new registry();
 if(file_exists(__SITE_PATH."/themes/".SITE_THEME."/".SITE_THEME.".php")) {
     include_once(__SITE_PATH."/themes/".SITE_THEME."/".SITE_THEME.".php");
 } else {
     echo "<html><header><title>SystemDK - Fatal Error</title></header><body><br><br><center>Fatal error<br><br>SystemDK can't find theme file: ".__SITE_PATH."/themes/".SITE_THEME."/".SITE_THEME.".php</center></body></html>";
     exit();
 }
-$registry->main_class = new controller_main($registry);
+// Instantiate a new theme
+$registry->controller_theme = singleton::getinstance('controller_theme',$registry);
+// Instantiate a new main controller, using in other controllers
+$registry->main_class = singleton::getinstance('controller_main',$registry);
+function shutdown() {
+    $GLOBALS['registry']->main_class->database_close();
+}
+// Register a function for execution on shutdown
+register_shutdown_function('shutdown');
+// process main actions which are necessary
 $registry->main_class->index();
+// Instantiate a new mail class for send email needs
 $registry->mail = new mail();
+// method for statistics needs
 function funcgentimewatch($params,$smarty) {
     static $mt_previous = 0;
     $mt_current = (float)array_sum(explode(' ',microtime()));
@@ -89,6 +116,7 @@ function funcgentimewatch($params,$smarty) {
     }
 }
 
+// method for statistics needs
 function CountExecs($adodb,$sql,$inputarray) {
     global $EXECS;
     if(!is_array($inputarray)) {
@@ -100,8 +128,8 @@ function CountExecs($adodb,$sql,$inputarray) {
     }
 }
 
+// method for statistics needs
 function CountCachedExecs($adodb,$secs2cache,$sql,$inputarray) {
     global $CACHED;
     $CACHED++;
 }
-?>

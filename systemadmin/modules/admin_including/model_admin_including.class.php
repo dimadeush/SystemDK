@@ -4,88 +4,71 @@
  * File:      model_admin_including.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 class admin_including extends model_base {
 
 
-    public function index() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUENTERS'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|show|".$this->registry->language)) {
-            $filename1 = "../includes/data/header.inc";
-            @$handle1 = fopen($filename1,"r");
-            if(!$handle1) {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|cantopen|".$this->registry->language)) {
-                    $this->registry->main_class->assign("including_save","nofile");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/including/including.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|cantopen|".$this->registry->language);
-                exit();
-            }
-            @$contents1 = fread($handle1,filesize($filename1));
-            $contents1 = explode("<!-- Banner Text -->",$contents1);
-            @fclose($handle1);
-            $filename2 = "../includes/data/footer.inc";
-            @$handle2 = fopen($filename2,"r");
-            if(!$handle2) {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|cantopen|".$this->registry->language)) {
-                    $this->registry->main_class->assign("including_save","nofile");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/including/including.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|cantopen|".$this->registry->language);
-                exit();
-            }
-            @$contents2 = fread($handle2,filesize($filename2));
-            $contents2 = explode("<!-- Banner Text -->",$contents2);
-            @fclose($handle2);
-            $this->registry->main_class->assign("headerincluding",$contents1[1]);
-            $this->registry->main_class->assign("footerincluding",$contents2[1]);
+    private $error;
+    private $result;
+
+
+    public function get_property_value($property) {
+        if(isset($this->$property) and in_array($property,array('error','result'))) {
+            return $this->$property;
         }
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|show|".$this->registry->language)) {
-            $this->registry->main_class->assign("including_save","no");
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/including/including.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|show|".$this->registry->language);
+        return false;
     }
 
 
-    public function including_save() {
-        if(isset($_POST['headerincluding'])) {
-            $headerincluding = trim($_POST['headerincluding']);
+    public function index() {
+        $this->result = false;
+        $this->error = false;
+        $filename1 = "../includes/data/header.inc";
+        @$handle1 = fopen($filename1,"r");
+        if(!$handle1) {
+            $this->error = 'no_file';
+            return;
         }
-        if(isset($_POST['footerincluding'])) {
-            $footerincluding = trim($_POST['footerincluding']);
+        @$contents1 = fread($handle1,filesize($filename1));
+        $contents1 = explode("<!-- Banner Text -->",$contents1);
+        @fclose($handle1);
+        $filename2 = "../includes/data/footer.inc";
+        @$handle2 = fopen($filename2,"r");
+        if(!$handle2) {
+            $this->error = 'no_file';
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUENTERS'));
-        if(!isset($_POST['headerincluding']) or !isset($_POST['footerincluding'])) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|notalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("including_save","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/including/including.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|notalldata|".$this->registry->language);
-            exit();
+        @$contents2 = fread($handle2,filesize($filename2));
+        $contents2 = explode("<!-- Banner Text -->",$contents2);
+        @fclose($handle2);
+        $this->result['headerincluding'] = $contents1[1];
+        $this->result['footerincluding'] = $contents2[1];
+    }
+
+
+    public function including_save($post_array) {
+        if(isset($post_array['headerincluding'])) {
+            $headerincluding = trim($post_array['headerincluding']);
+        }
+        if(isset($post_array['footerincluding'])) {
+            $footerincluding = trim($post_array['footerincluding']);
+        }
+        if(!isset($post_array['headerincluding']) or !isset($post_array['footerincluding'])) {
+            $this->error = 'not_all_data';
+            return;
         }
         $headerincluding = $this->registry->main_class->checkneed_stripslashes($headerincluding);
         $footerincluding = $this->registry->main_class->checkneed_stripslashes($footerincluding);
         @chmod("../includes/data/header.inc",0777);
         @$file1 = fopen("../includes/data/header.inc","w");
+        if(!$file1) {
+            $this->error = 'no_file';
+            return;
+        }
         $content1 = "<!-- Banner Text -->\n";
         $content1 .= "$headerincluding";
         @$writefile = fwrite($file1,$content1);
@@ -93,40 +76,24 @@ class admin_including extends model_base {
         @chmod("../includes/data/header.inc",0604);
         @chmod("../includes/data/footer.inc",0777);
         if(!$writefile) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|notwrite|".$this->registry->language)) {
-                $this->registry->main_class->assign("including_save","nowrite");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/including/including.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|notwrite|".$this->registry->language);
-            exit();
+            $this->error = 'not_write';
+            return;
         }
         @$file2 = fopen("../includes/data/footer.inc","w");
+        if(!$file2) {
+            $this->error = 'no_file';
+            return;
+        }
         $content2 = "<!-- Banner Text -->\n";
         $content2 .= "$footerincluding";
         @$writefile = fwrite($file2,$content2);
         @fclose($file2);
         @chmod("../includes/data/footer.inc",0604);
         if(!$writefile) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|notwrite|".$this->registry->language)) {
-                $this->registry->main_class->assign("including_save","nowrite");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/including/including.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|error|notwrite|".$this->registry->language);
-            exit();
+            $this->error = 'not_write';
+            return;
         }
         $this->registry->main_class->systemdk_clearcache("systemadmin|modules|including|show");
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|save|ok|".$this->registry->language)) {
-            $this->registry->main_class->assign("including_save","yes");
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/including/including.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|including|save|ok|".$this->registry->language);
+        $this->result = 'yes';
     }
 }
-
-?>

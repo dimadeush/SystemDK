@@ -36,7 +36,7 @@
 <img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_MENUELEMENTMAINPAGE#}:</span></td><td bgcolor="{#color7#}" class="td2">
 <select name="mainmenu_module" class="formenter">
 {foreach $page_all as $page_all_tpl}
-<option value="{$page_all_tpl.mainpage_id}" {if $menu_all_tpl.mainmenu_module eq $page_all_tpl.mainpage_id or $menu_all_tpl.mainmenu_submodule eq $page_all_tpl.mainpage_id} selected{/if}>{$page_all_tpl.mainpage_title|truncate:40:"...":true}</option>
+<option value="{$page_all_tpl.mainpage_id}" {if $menu_all_tpl.mainmenu_add_param eq $page_all_tpl.mainpage_id} selected{/if}>{$page_all_tpl.mainpage_title|truncate:40:"...":true}</option>
 {/foreach}
 </select>
 {elseif $menu_type eq "other"}

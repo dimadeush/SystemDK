@@ -4,14 +4,13 @@
  * File:      index.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 //Define the site admin path constant
 define('__SITE_ADMIN_PART','yes');
 //define('__SITE_ADMIN_DIR',basename(realpath(dirname(__FILE__))));
 define('__SITE_ADMIN_PATH',realpath(dirname(__FILE__)));
 include_once('../index.php');
-?>

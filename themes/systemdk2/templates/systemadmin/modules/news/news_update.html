@@ -3,16 +3,16 @@
 </div>
 <center>
 <br><br>
-{if $news_update eq "add"}
+{if $news_update eq "add_ok" or $news_update eq "add_okprogram"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_ADDOK#}</span><br><br><br>
 <a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a>
-{elseif $news_update eq "addcategory"}
+{elseif $news_update eq "add_cat_ok"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CATEGORY_ADD#}</span><br><br>
 <a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NEWS_CATEGORIES#}</a>
-{elseif $news_update eq "notalldata"}
+{elseif $news_update eq "edit_not_all_data" or $news_update eq "edit_not_all_dataprogram" or $news_update eq "add_not_all_data" or $news_update eq "add_not_all_dataprogram" or $news_update eq "add_cat_not_all_data" or $news_update eq "edit_cat_not_all_data" or $news_update eq "conf_not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_NEWS_NOTALLDATA#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "notinsert"}
+{elseif $news_update eq "sql_error" or $news_update eq "show_sql_error_program" or $news_update eq "show_sql_error_current" or $news_update eq "edit_sql_errorprogram" or $news_update eq "edit_sql_error" or $news_update eq "add_sql_error" or $news_update eq "add_sql_errorprogram" or $news_update eq "show_cat_sql_error" or $news_update eq "add_cat_sql_error" or $news_update eq "edit_cat_sql_error" or $news_update eq "del_cat_sql_error" or $news_update eq "status_sql_error"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
 {nocache}
 {if $error ne "no"}
@@ -22,28 +22,28 @@
 {/if}
 {/nocache}
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "notinsert2"}
+{elseif $news_update eq "edit_ok" or $news_update eq "edit_okprogram" or $news_update eq "edit_cat_ok" or $news_update eq "del_cat_ok" or $news_update eq "status_ok"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "notfind"}
+{elseif $news_update eq "edit_not_foundprogram" or $news_update eq "edit_not_found"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOTFIND#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "notfindcat"}
+{elseif $news_update eq "edit_cat_not_found" or $news_update eq "del_cat_not_found"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOTFINDCAT#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "attack"}
+{elseif $news_update eq "edit_file" or $news_update eq "edit_fileprogram" or $news_update eq "add_file" or $news_update eq "add_fileprogram"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_UPLOADFILEATTACK#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "maxsize"}
+{elseif $news_update eq "edit_max_size" or $news_update eq "edit_max_sizeprogram" or $news_update eq "add_max_size" or $news_update eq "add_max_sizeprogram"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_NEWS_MAXSIZE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "notupload"}
+{elseif $news_update eq "edit_not_upload" or $news_update eq "edit_not_uploadprogram" or $news_update eq "add_not_upload" or $news_update eq "add_not_uploadprogram"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOTUPLOADFILE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "noteq"}
+{elseif $news_update eq "edit_not_eq" or $news_update eq "edit_not_eqprogram" or $news_update eq "add_not_eq" or $news_update eq "add_not_eqprogram"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_NEWS_NOTEQFILE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "noteqtype"}
+{elseif $news_update eq "edit_not_eq_type" or $news_update eq "edit_not_eq_typeprogram" or $news_update eq "add_not_eq_type" or $news_update eq "add_not_eq_typeprogram"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_NEWS_NOTEQFILETYPE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
 {elseif $news_update eq "on"}
@@ -55,25 +55,25 @@
 {elseif $news_update eq "delete"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_DELETEOK#}</span><br><br><br>
 <a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a>
-{elseif $news_update eq "editok"}
+{elseif $news_update eq "edit_done" or $news_update eq "edit_doneprogram"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_EDITOK#}</span><br><br><br>
 <a href="index.php?path=admin_news&amp;func=news_current&amp;lang={$site_language}" class="link">{#_NEWS_CURRENT#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_news&amp;func=news_current&amp;prog=1&amp;lang={$site_language}" class="link">{#_NEWS_PROGRAMM#}</a>
-{elseif $news_update eq "editcatok"}
+{elseif $news_update eq "edit_cat_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CATEDITOK#}</span><br><br>
 <a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NEWS_CATEGORIES#}</a>
-{elseif $news_update eq "deletecatconf"}
+{elseif $news_update eq "delete_cat_conf"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CATEGORYDELETECONFIRMDESC#}<br><br>{#_NEWS_CATEGORYDELETECONFIRM1#} "{nocache}{$category_del_name}{/nocache}" {#_NEWS_CATEGORYDELETECONFIRM2#} {nocache}{$count_del_news_id}{/nocache} {#_NEWS_CATEGORYDELETECONFIRM3#}?</span><br><br>
 <a href="index.php?path=admin_news&amp;func=category_delete&amp;category_id={$category_id}&amp;conf=1&amp;lang={$site_language}" class="link">{#_YES#}</a> | <a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NO#}</a>
-{elseif $news_update eq "delcatok"}
+{elseif $news_update eq "delete_cat_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CATDELOK#}</span><br><br>
 <a href="index.php?path=admin_news&amp;func=news_category&amp;lang={$site_language}" class="link">{#_NEWS_CATEGORIES#}</a>
-{elseif $news_update eq "nofile"}
+{elseif $news_update eq "conf_no_file"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOCONFIGFILE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "nowrite"}
+{elseif $news_update eq "conf_no_write"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_NEWS_NOCONFIGWRITEFILE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $news_update eq "writeok"}
+{elseif $news_update eq "config_ok"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_NEWS_CONFIGWRITEOK#}</span><br><br>
 <a href="index.php?path=admin_news&amp;func=index&amp;lang={$site_language}" class="link">{#_NEWS#}</a>
 {/if}

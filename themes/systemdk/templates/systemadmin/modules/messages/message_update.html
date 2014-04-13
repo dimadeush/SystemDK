@@ -3,13 +3,13 @@
 </div>
 <center>
 <br>
-{if $message_update eq "add"}
+{if $message_update eq "add_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MESSAGEADDOK#}</span><br><br>
 <a href="index.php?path=admin_messages&amp;func=index&amp;lang={$site_language}" class="link">{#_MESSAGE#}</a>
-{elseif $message_update eq "notalldata"}
+{elseif $message_update eq "add_not_all_data" or $message_update eq "edit_not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MESSAGENOTALLDATA#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $message_update eq "notinsert"}
+{elseif $message_update eq "show_sql_error" or $message_update eq "add_sql_error" or $message_update eq "status_sql_error" or $message_update eq "edit_sql_error"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
 {nocache}
 {if $error ne "no"}
@@ -19,10 +19,10 @@
 {/if}
 {/nocache}
 <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $message_update eq "notinsert2"}
+{elseif $message_update eq "status_ok" or $message_update eq "edit_ok"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $message_update eq "notfind"}
+{elseif $message_update eq "edit_not_found"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_MESSAGENOTFIND#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
 {elseif $message_update eq "on"}
@@ -34,7 +34,7 @@
 {elseif $message_update eq "delete"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MESSAGEDELETEOK#}</span><br><br>
 <a href="index.php?path=admin_messages&amp;func=index&amp;lang={$site_language}" class="link">{#_MESSAGE#}</a>
-{elseif $message_update eq "editok"}
+{elseif $message_update eq "edit_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MESSAGEEDITOK#}</span><br><br>
 <a href="index.php?path=admin_messages&amp;func=index&amp;lang={$site_language}" class="link">{#_MESSAGE#}</a>
 {/if}

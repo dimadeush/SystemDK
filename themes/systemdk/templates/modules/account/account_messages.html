@@ -1,62 +1,62 @@
 <br><br><center>
 {config_load file="$language/error.conf"}
-{if $error eq "error_login"}
+{if $account_message eq "error_login" or $account_message eq "error_reg_login"}
 <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
 <span class="textbig">{#_ERROR_LOGIN#}</span><br><br>
- {if isset($back_link) and $back_link eq "userregform"}
+ {if isset($back_link) and $back_link eq "user_reg_form"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_register/1/{else}/{$system_dir}index.php?path=account&amp;func=account_register&amp;rules=1&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
- {elseif isset($back_link) and $back_link eq "userenter"}
+ {elseif isset($back_link) and $back_link eq "user_enter"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
  {else}
  <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
  {/if}
-{elseif $error eq "error_checkkode"}
+{elseif $account_message eq "error_check_code" or $account_message eq "error_reg_check_code" or $account_message eq "error_conf_reg_check_code" or $account_message eq "error_pass_check_code" or $account_message eq "error_new_pass_conf_check_code"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_CHECKKODE#}</span><br><br>
- {if isset($back_link) and $back_link eq "userregform"}
+ {if isset($back_link) and $back_link eq "user_reg_form"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_register/1/{else}/{$system_dir}index.php?path=account&amp;func=account_register&amp;rules=1&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
- {elseif isset($back_link) and $back_link eq "userlostpass"}
+ {elseif isset($back_link) and $back_link eq "user_lost_pass"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_lostpass/{else}/{$system_dir}index.php?path=account&amp;func=account_lostpass&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
- {elseif isset($back_link) and $back_link eq "confuserreg"}
+ {elseif isset($back_link) and $back_link eq "conf_user_reg"}
  <span class="textbig">{#_ERROR_ACCOUNTTRYAGAINBYMAILURL#}</span>
  <br><br>
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
- {elseif isset($back_link) and $back_link eq "userenter"}
+ {elseif isset($back_link) and $back_link eq "user_enter"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
  {else}
  <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
  {/if}
-{elseif $error eq "error_usernotactive"}
+{elseif $account_message eq "error_user_not_active"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_USERNOTACTIVE#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $error eq "error_usernotfind"}
+{elseif $account_message eq "error_user_not_found" or $account_message eq "error_pass_not_found" or $account_message eq "error_main_user_not_found" or $account_message eq "error_edit_user_not_found"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_USERNOTFIND#}</span><br><br>
- {if isset($back_link) and $back_link eq "lostpass"}
+ {if isset($back_link) and $back_link eq "lost_pass"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_lostpass/{else}/{$system_dir}index.php?path=account&amp;func=account_lostpass&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
- {elseif isset($back_link) and $back_link eq "userenter"}
+ {elseif isset($back_link) and $back_link eq "user_enter"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
  {else}
  <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
  {/if}
-{elseif $error eq "error_userincorrectpass"}
+{elseif $account_message eq "error_user_incorrect_pass"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_USERINCORRECTPASS#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
-{elseif $error eq "error_usererrorpass"}
+{elseif $account_message eq "error_edit_pass" or $account_message eq "error_reg_pass"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_USERNOTEQPASS#}</span><br><br>
- {if isset($back_link) and $back_link eq "userregform"}
+ {if isset($back_link) and $back_link eq "user_reg_form"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_register/1/{else}/{$system_dir}index.php?path=account&amp;func=account_register&amp;rules=1&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
  {else}
  <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
  {/if}
-{elseif $error eq "error_usererrorfindsuchuser"}
+{elseif $account_message eq "error_find_such_user"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_USERFINDSUCHUSER#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
-{elseif $error eq "error_usernotupdate"}
+{elseif $account_message eq "error_sql_error" or $account_message eq "error_lost_pass_sql_error" or $account_message eq "error_edit_sql_error" or $account_message eq "error_add_conf_sql_error"}
 <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
 <span class="textbig">{#_SYSTEMERROR#}:</span><br><br>
 {nocache}
@@ -68,59 +68,59 @@
 {/nocache}
 <br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $error eq "error_usernotupdate2"}
+{elseif $account_message eq "error_edit_not_updated" or $account_message eq "error_lost_pass_not_update" or $account_message eq "error_new_pass_conf_not_update"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
- {if isset($back_link) and $back_link eq "lostpass"}
+ {if isset($back_link) and $back_link eq "lost_pass"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_lostpass/{else}/{$system_dir}index.php?path=account&amp;func=account_lostpass&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
- {elseif isset($back_link) and $back_link eq "confuserreg"}
+ {elseif isset($back_link) and $back_link eq "conf_user_reg"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
  {else}
  <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
  {/if}
-{elseif $error eq "error_usernotalldata"}
+{elseif $account_message eq "error_user_not_all_data" or $account_message eq "error_pass_not_all_data" or $account_message eq "error_edit_not_all_data" or $account_message eq "error_reg_not_all_data"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_USERNOTALLDATA#}</span><br><br>
- {if isset($back_link) and $back_link eq "userenter"}
+ {if isset($back_link) and $back_link eq "user_enter"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
  {else}
  <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
  {/if}
-{elseif $error eq "userexit"}
+{elseif $account_message eq "user_exit"}
 <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_USER_EXIT#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_ENTER#}</a>
-{elseif $error eq "user_editok"}
+{elseif $account_message eq "edit_ok"}
 <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_CHANGEDOK#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
-{elseif $error eq "error_registernotallow"}
+{elseif $account_message eq "error_register_not_allow"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_USERREGISTRATIONOFF#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $error eq "error_maxuserslimit"}
+{elseif $account_message eq "error_max_users_limit"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_USERMAXUSERSLIMIT#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $error eq "error_accountrulesnotfind"}
+{elseif $account_message eq "error_account_rules_not_found"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_ACCOUNTRULESNOTFOUND#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
-{elseif $error eq "error_accountrulesnotaccept"}
+{elseif $account_message eq "error_rules_not_accept"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_ACCOUNTRULESNOTACCEPT#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
-{elseif $error eq "error_accountruleserror"}
+{elseif $account_message eq "error_account_rules_error"}
 <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
 <span class="textbig">{#_SYSTEMERROR#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
-{elseif $error eq "error_findsuchuser"}
+{elseif $account_message eq "error_reg_found_user"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_FINDSUCHUSER#}</span><br><br>
- {if isset($back_link) and $back_link eq "userregform"}
+ {if isset($back_link) and $back_link eq "user_reg_form"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_register/1/{else}/{$system_dir}index.php?path=account&amp;func=account_register&amp;rules=1&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
  {else}
  <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
  {/if}
-{elseif $error eq "user_addactok"}
+{elseif $account_message eq "add_act_ok" or $account_message eq "add_act_lim_ok"}
 <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_NEWUSERACTIVATIONNEED#}
  {if $modules_account_useractdayslim ne "no"}
  <br><br> {#_NEWUSERACTIVATIONNEEDDAYSLIM#} {$modules_account_useractdayslim} {#_MESSAGEADMINEXPIREDAY#}
@@ -128,29 +128,29 @@
 </span>
 <br><br><table width="99%" border="0" cellpadding="0" cellspacing="0"><tr><td align="left"><span class="textbig"> {#_NEWUSERACTIVATIONNEEDNOTES#}</span></td></tr></table><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $error eq "user_addok"}
+{elseif $account_message eq "add_ok"}
 <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_NEWUSERADDOK#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_ENTER#}</a>
-{elseif $error eq "user_noactcode"}
+{elseif $account_message eq "error_no_act_code" or $account_message eq "error_new_pass_conf_no_act_code"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_ACCOUNTNOACTCODE#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $error eq "error_reguseremail"}
+{elseif $account_message eq "error_edit_email" or $account_message eq "error_reg_save_user_email"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_ACCOUNTNOTCORRECTEMAIL#}</span><br><br>
- {if isset($back_link) and $back_link eq "userregform"}
+ {if isset($back_link) and $back_link eq "user_reg_form"}
  <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/account_register/1/{else}/{$system_dir}index.php?path=account&amp;func=account_register&amp;rules=1&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
  {else}
  <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
  {/if}
-{elseif $error eq "error_onlyforunreg"}
+{elseif $account_message eq "error_only_for_unreg"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_ACCOUNTONLYFORUNREG#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $error eq "user_sendpassok"}
+{elseif $account_message eq "send_pass_ok"}
 <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_ACCOUNTNEWPASSSENDOK#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $error eq "user_newpassok"}
+{elseif $account_message eq "new_pass_conf_ok"}
 <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_CHANGEPASSWORDOK#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/account/{else}/{$system_dir}index.php?path=account&amp;lang={$site_language}{/if}" class="link">{#_ENTER#}</a>
 {/if}

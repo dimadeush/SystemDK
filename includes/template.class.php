@@ -4,30 +4,22 @@
  * File:      template.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 include_once(__SITE_PATH."/smarty/Smarty.class.php");
 class template {
 
 
-    /*The template registry
-    @access private */
     private $registry;
-    /*Array of template variables
-    @access private */
+    // Array of template variables
     //private $vars = array();
-    //The smarty template engine engine
     private $smarty;
 
 
-    /*Default constructor
-    @access public
-    @return void */
     public function __construct($registry) {
-        //Store the registry locally
         $this->registry = $registry;
         //Instantiate template engine
         $this->smarty = new Smarty();
@@ -51,10 +43,6 @@ class template {
     }
 
 
-    /*Set template variables
-    @param string $index
-    @param mixed $value
-    @return void */
     public function __set($index,$value) {
         //$this->vars[$index] = $value;
         $this->smarty->assign($value['name'],$value['value']);
@@ -72,17 +60,30 @@ class template {
 
 
     public function display($name,$group = null) {
-        $templatename = $name;
-        //Assign all the control variables to the engine
+        $template_name = $name;
+        // Assign all the control variables to the engine
         /*foreach($this->vars as $templatevariable)
          {
            $this->smarty->assign($templatevariable["name"], $templatevariable["value"]);
          }*/
+        if(isset($GLOBALS['EXECS'])) {
+            $execs = $GLOBALS['EXECS'];
+        } else {
+            $execs = 0;
+        }
+        if(isset($GLOBALS['CACHED'])) {
+            $cached = $GLOBALS['CACHED'];
+        } else {
+            $cached = 0;
+        }
+        $sql_stat = $execs + $cached;
+        $this->smarty->assign("sqlstat",$sql_stat);
+        $this->smarty->assign("sqlstatcached",$cached);
         //Display the page using template
         if(isset($group) and $group != "") {
-            $this->smarty->display($templatename,$group);
+            $this->smarty->display($template_name,$group);
         } else {
-            $this->smarty->display($templatename);
+            $this->smarty->display($template_name);
         }
         $this->registry->main_class->gzip_out();
     }
@@ -117,5 +118,3 @@ class template {
         return $this->smarty->getConfigVars($index);
     }
 }
-
-?>

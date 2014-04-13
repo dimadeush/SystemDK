@@ -58,7 +58,7 @@ function image_reload()
  <br><center><img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SHOP_MODULE_CARTNOITEMS#}</span></center>
 {/if}
 <br><br>
-{if isset($shop_message) and $shop_message eq "addok"}
+{if isset($shop_message) and $shop_message eq "add_ok"}
 <center><img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_SHOP_MODULE_ADDOK#}</span><br><br>
 <span class="textbig">{#_SHOP_MODULE_ORDERSAVEMESSAGE#} ¹{$systemdk_shop_order_id}. {#_SHOP_MODULE_ORDERSAVEMESSAGE2#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/{else}/{$system_dir}index.php?path=shop&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_MAINPAGETITLE#}</a></center><br><br>

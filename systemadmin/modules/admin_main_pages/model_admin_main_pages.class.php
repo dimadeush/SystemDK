@@ -4,239 +4,213 @@
  * File:      model_admin_main_pages.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 class admin_main_pages extends model_base {
 
 
+    private $model_main_pages;
+    private $error;
+    private $error_array;
+    private $result;
+
+
     public function __construct($registry) {
         parent::__construct($registry);
-        $this->registry->main_class->main_pages();
+        $this->model_main_pages = singleton::getinstance('main_pages',$this->registry);
     }
 
 
-    public function index() {
-        if(isset($_GET['num_page']) and intval($_GET['num_page']) !== 0) {
-            $num_page = intval($_GET['num_page']);
-            if($num_page == 0) {
-                $num_page = 1;
-            }
+    public function get_property_value($property) {
+        if(isset($this->$property) and in_array($property,array('error','error_array','result'))) {
+            return $this->$property;
+        }
+        return false;
+    }
+
+
+    public function index($num_page) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(intval($num_page) != 0) {
+            $num_page = intval($num_page);
         } else {
             $num_page = 1;
         }
         $num_string_rows = SYSTEMDK_ADMINROWS_PERPAGE;
         $offset = ($num_page - 1) * $num_string_rows;
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|show|".$num_page."|".$this->registry->language)) {
-            $sql = "SELECT a.mainpage_id,a.mainpage_author,a.mainpage_title,a.mainpage_valueview,a.mainpage_termexpire,a.mainpage_status,(SELECT count(b.mainpage_id) FROM ".PREFIX."_main_pages_".$this->registry->sitelang." b) as count_mainpage_id FROM ".PREFIX."_main_pages_".$this->registry->sitelang." a order by a.mainpage_date DESC";
+        $sql = "SELECT count(*) FROM ".PREFIX."_main_pages_".$this->registry->sitelang;
+        $result = $this->db->Execute($sql);
+        if($result) {
+            $num_rows = intval($result->fields['0']);
+            $sql = "SELECT main_page_id,main_page_author,main_page_title,main_page_value_view,main_page_term_expire,main_page_status FROM ".PREFIX."_main_pages_".$this->registry->sitelang." order by main_page_date DESC";
             $result = $this->db->SelectLimit($sql,$num_string_rows,$offset);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows == 0 and $num_page > 1) {
-                    $this->registry->main_class->database_close();
-                    header("Location: index.php?path=admin_main_pages&func=index&lang=".$this->registry->sitelang);
-                    exit();
-                }
-                if($numrows > 0) {
-                    while(!$result->EOF) {
-                        if(!isset($numrows2)) {
-                            $numrows2 = intval($result->fields['6']);
-                        }
-                        $mainpage_termexpire = intval($result->fields['4']);
-                        if(!isset($mainpage_termexpire) or $mainpage_termexpire == 0) {
-                            $mainpage_termexpire = "unlim";
-                        } else {
-                            $mainpage_termexpire = "notunlim";
-                        }
-                        $mainpage_all[] = array(
-                            "mainpage_id" => intval($result->fields['0']),
-                            "mainpage_author" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
-                            "mainpage_title" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
-                            "mainpage_valueview" => intval($result->fields['3']),
-                            "mainpage_termexpire" => $mainpage_termexpire,
-                            "mainpage_status" => intval($result->fields['5']),
-                            "count_mainpage_id" => $numrows2
-                        );
-                        $result->MoveNext();
-                    }
-                    $this->registry->main_class->assign("mainpage_all",$mainpage_all);
-                    if(isset($numrows2)) {
-                        $num_pages = @ceil($numrows2 / $num_string_rows);
+        }
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
+            } else {
+                $row_exist = 0;
+            }
+            if($row_exist == 0 and $num_page > 1) {
+                $this->error = 'unknown_page';
+                return;
+            }
+            if($row_exist > 0) {
+                while(!$result->EOF) {
+                    $mainpage_termexpire = intval($result->fields['4']);
+                    if(!isset($mainpage_termexpire) or $mainpage_termexpire == 0) {
+                        $mainpage_termexpire = "unlim";
                     } else {
-                        $num_pages = 0;
+                        $mainpage_termexpire = "notunlim";
                     }
-                    if($num_pages > 1) {
-                        if($num_page > 1) {
-                            $prevpage = $num_page - 1;
-                            $this->registry->main_class->assign("prevpage",$prevpage);
+                    $mainpage_all[] = array(
+                        "mainpage_id" => intval($result->fields['0']),
+                        "mainpage_author" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
+                        "mainpage_title" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
+                        "mainpage_valueview" => intval($result->fields['3']),
+                        "mainpage_termexpire" => $mainpage_termexpire,
+                        "mainpage_status" => intval($result->fields['5'])
+                    );
+                    $result->MoveNext();
+                }
+                $this->result['mainpage_all'] = $mainpage_all;
+                if(isset($num_rows)) {
+                    $num_pages = @ceil($num_rows / $num_string_rows);
+                } else {
+                    $num_pages = 0;
+                }
+                if($num_pages > 1) {
+                    if($num_page > 1) {
+                        $prevpage = $num_page - 1;
+                        $this->result['prevpage'] = $prevpage;
+                    } else {
+                        $this->result['prevpage'] = "no";
+                    }
+                    for($i = 1;$i < $num_pages + 1;$i++) {
+                        if($i == $num_page) {
+                            $html[] = array("number" => $i,"param1" => "1");
                         } else {
-                            $this->registry->main_class->assign("prevpage","no");
-                        }
-                        for($i = 1;$i < $num_pages + 1;$i++) {
-                            if($i == $num_page) {
-                                $html[] = array("number" => $i,"param1" => "1");
-                            } else {
-                                $pagelink = 5;
-                                if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "2");
-                                }
-                                if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "3");
-                                }
-                                if(($i == 1) and ($num_page > $pagelink + 1)) {
-                                    $html[] = array("number" => $i,"param1" => "4");
-                                }
+                            $pagelink = 5;
+                            if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
+                                $html[] = array("number" => $i,"param1" => "2");
+                            }
+                            if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
+                                $html[] = array("number" => $i,"param1" => "3");
+                            }
+                            if(($i == 1) and ($num_page > $pagelink + 1)) {
+                                $html[] = array("number" => $i,"param1" => "4");
                             }
                         }
-                        if($num_page < $num_pages) {
-                            $nextpage = $num_page + 1;
-                            $this->registry->main_class->assign("nextpage",$nextpage);
-                        } else {
-                            $this->registry->main_class->assign("nextpage","no");
-                        }
-                        $this->registry->main_class->assign("html",$html);
-                        $this->registry->main_class->assign("totalmainpages",$numrows2);
-                        $this->registry->main_class->assign("num_pages",$num_pages);
-                    } else {
-                        $this->registry->main_class->assign("html","no");
                     }
+                    if($num_page < $num_pages) {
+                        $nextpage = $num_page + 1;
+                        $this->result['nextpage'] = $nextpage;
+                    } else {
+                        $this->result['nextpage'] = "no";
+                    }
+                    $this->result['html'] = $html;
+                    $this->result['totalmainpages'] = $num_rows;
+                    $this->result['num_pages'] = $num_pages;
                 } else {
-                    $this->registry->main_class->assign("mainpage_all","no");
-                    $this->registry->main_class->assign("html","no");
+                    $this->result['html'] = "no";
                 }
             } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|showsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUPAGES'));
-                    $this->registry->main_class->assign("main_pageupdate","notinsert");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|showsqlerror|".$this->registry->language);
-                exit();
+                $this->result['mainpage_all'] = "no";
+                $this->result['html'] = "no";
             }
+        } else {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'show_sql_error';
+            $this->error_array = $error;
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|show|".$num_page."|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUPAGES'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pages.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|show|".$num_page."|".$this->registry->language);
     }
 
 
     public function mainpage_add() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->assign("mainpage_author",trim($this->registry->main_class->get_admin_login()));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|add|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDPAGEPAGETITLE'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageadd.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|add|".$this->registry->language);
+        $this->result = false;
+        $this->result['mainpage_author'] = trim($this->registry->main_class->get_user_login());
     }
 
 
-    public function mainpage_add_inbase() {
-        if(isset($_POST['mainpage_author'])) {
-            $mainpage_author = trim($_POST['mainpage_author']);
-        }
-        if(isset($_POST['mainpage_title'])) {
-            $mainpage_title = trim($_POST['mainpage_title']);
-        }
-        if(isset($_POST['mainpage_content'])) {
-            $mainpage_content = trim($_POST['mainpage_content']);
-        }
-        if(isset($_POST['mainpage_notes'])) {
-            $mainpage_notes = trim($_POST['mainpage_notes']);
-        }
-        if(isset($_POST['mainpage_status'])) {
-            $mainpage_status = intval($_POST['mainpage_status']);
-        }
-        if(isset($_POST['mainpage_termexpire'])) {
-            $mainpage_termexpire = intval($_POST['mainpage_termexpire']);
-        }
-        if(isset($_POST['mainpage_termexpireaction'])) {
-            $mainpage_termexpireaction = trim($_POST['mainpage_termexpireaction']);
-        }
-        if(isset($_POST['mainpage_valueview'])) {
-            $mainpage_valueview = intval($_POST['mainpage_valueview']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDPAGEPAGETITLE'));
-        if((!isset($_POST['mainpage_author']) or !isset($_POST['mainpage_title']) or !isset($_POST['mainpage_content']) or !isset($_POST['mainpage_notes']) or !isset($_POST['mainpage_status']) or !isset($_POST['mainpage_termexpire']) or !isset($_POST['mainpage_termexpireaction']) or !isset($_POST['mainpage_valueview'])) or ($mainpage_author == "" or $mainpage_title == "" or $mainpage_content == "")) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|addnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("main_pageupdate","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
+    public function mainpage_add_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'mainpage_author',
+                    'mainpage_title',
+                    'mainpage_content',
+                    'mainpage_notes',
+                    'mainpage_termexpireaction'
+                );
+                $keys2 = array(
+                    'mainpage_status',
+                    'mainpage_termexpire',
+                    'mainpage_valueview'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|addnotalldata|".$this->registry->language);
-            exit();
         }
-        if($mainpage_termexpire == "0") {
-            $mainpage_termexpire = 'NULL';
-            $mainpage_termexpireaction = 'NULL';
+        if((!isset($array['mainpage_author']) or !isset($array['mainpage_title']) or !isset($array['mainpage_content']) or !isset($array['mainpage_notes']) or !isset($array['mainpage_status']) or !isset($array['mainpage_termexpire']) or !isset($array['mainpage_termexpireaction']) or !isset($array['mainpage_valueview'])) or ($data_array['mainpage_author'] == "" or $data_array['mainpage_title'] == "" or $data_array['mainpage_content'] == "")) {
+            $this->error = 'add_not_all_data';
+            return;
+        }
+        if($data_array['mainpage_termexpire'] == "0") {
+            $data_array['mainpage_termexpire'] = 'NULL';
+            $data_array['mainpage_termexpireaction'] = 'NULL';
         } else {
-            $mainpage_termexpire = $this->registry->main_class->gettime() + ($mainpage_termexpire * 86400);
-            $mainpage_termexpire = "'$mainpage_termexpire'";
-            $mainpage_termexpireaction = $this->registry->main_class->format_striptags($mainpage_termexpireaction);
-            $mainpage_termexpireaction = $this->registry->main_class->processing_data($mainpage_termexpireaction);
+            $data_array['mainpage_termexpire'] = $this->registry->main_class->get_time() + ($data_array['mainpage_termexpire'] * 86400);
+            $data_array['mainpage_termexpire'] = "'".$data_array['mainpage_termexpire']."'";
+            $data_array['mainpage_termexpireaction'] = $this->registry->main_class->format_striptags($data_array['mainpage_termexpireaction']);
+            $data_array['mainpage_termexpireaction'] = $this->registry->main_class->processing_data($data_array['mainpage_termexpireaction']);
         }
-        if($mainpage_notes == "") {
-            $mainpage_notes = 'NULL';
+        if($data_array['mainpage_notes'] == "") {
+            $data_array['mainpage_notes'] = 'NULL';
         } else {
-            $mainpage_notes = $this->registry->main_class->processing_data($mainpage_notes);
+            $data_array['mainpage_notes'] = $this->registry->main_class->processing_data($data_array['mainpage_notes']);
         }
-        $now = $this->registry->main_class->gettime();
-        $mainpage_author = $this->registry->main_class->format_striptags($mainpage_author);
-        $mainpage_author = $this->registry->main_class->processing_data($mainpage_author);
-        $mainpage_title = $this->registry->main_class->format_striptags($mainpage_title);
-        $mainpage_title = $this->registry->main_class->processing_data($mainpage_title);
-        $mainpage_content = $this->registry->main_class->processing_data($mainpage_content);
-        $mainpage_content = substr(substr($mainpage_content,0,-1),1);
-        $mainpage_id = $this->db->GenID(PREFIX."_main_pages_id_".$this->registry->sitelang);
+        $now = $this->registry->main_class->get_time();
+        $data_array['mainpage_author'] = $this->registry->main_class->format_striptags($data_array['mainpage_author']);
+        $data_array['mainpage_author'] = $this->registry->main_class->processing_data($data_array['mainpage_author']);
+        $data_array['mainpage_title'] = $this->registry->main_class->format_striptags($data_array['mainpage_title']);
+        $data_array['mainpage_title'] = $this->registry->main_class->processing_data($data_array['mainpage_title']);
+        $data_array['mainpage_content'] = $this->registry->main_class->processing_data($data_array['mainpage_content']);
+        $data_array['mainpage_content'] = substr(substr($data_array['mainpage_content'],0,-1),1);
         $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
         if($check_db_need_lobs == 'yes') {
             $this->db->StartTrans();
-            $sql = "INSERT INTO ".PREFIX."_main_pages_".$this->registry->sitelang." (mainpage_id,mainpage_author,mainpage_title,mainpage_date,mainpage_content,mainpage_notes,mainpage_valueview,mainpage_status,mainpage_termexpire,mainpage_termexpireaction)  VALUES ('$mainpage_id',$mainpage_author,$mainpage_title,'$now',empty_clob(),empty_clob(),'$mainpage_valueview','$mainpage_status',$mainpage_termexpire,$mainpage_termexpireaction)";
+            $mainpage_id = $this->db->GenID(PREFIX."_main_pages_id_".$this->registry->sitelang);
+            $sql = "INSERT INTO ".PREFIX."_main_pages_".$this->registry->sitelang." (main_page_id,main_page_name_id,main_page_author,main_page_title,main_page_date,main_page_content,main_page_notes,main_page_value_view,main_page_status,main_page_term_expire,main_page_term_expire_action,main_page_meta_title,main_page_meta_keywords,main_page_meta_description)  VALUES ('".$mainpage_id."',null,".$data_array['mainpage_author'].",".$data_array['mainpage_title'].",'".$now."',empty_clob(),empty_clob(),'".$data_array['mainpage_valueview']."','".$data_array['mainpage_status']."',".$data_array['mainpage_termexpire'].",".$data_array['mainpage_termexpireaction'].",null,null,null)";
             $insert_result = $this->db->Execute($sql);
             if($insert_result === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $insert_result2 = $this->db->UpdateClob(PREFIX.'_main_pages_'.$this->registry->sitelang,'mainpage_content',$mainpage_content,'mainpage_id='.$mainpage_id);
+            $insert_result2 = $this->db->UpdateClob(PREFIX.'_main_pages_'.$this->registry->sitelang,'main_page_content',$data_array['mainpage_content'],'main_page_id='.$mainpage_id);
             if($insert_result2 === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            if($mainpage_notes != 'NULL') {
-                $mainpage_notes = substr(substr($mainpage_notes,0,-1),1);
-                $insert_result3 = $this->db->UpdateClob(PREFIX.'_main_pages_'.$this->registry->sitelang,'mainpage_notes',$mainpage_notes,'mainpage_id='.$mainpage_id);
+            if($data_array['mainpage_notes'] != 'NULL') {
+                $data_array['mainpage_notes'] = substr(substr($data_array['mainpage_notes'],0,-1),1);
+                $insert_result3 = $this->db->UpdateClob(PREFIX.'_main_pages_'.$this->registry->sitelang,'main_page_notes',$data_array['mainpage_notes'],'main_page_id='.$mainpage_id);
                 if($insert_result3 === false) {
                     $error_message = $this->db->ErrorMsg();
                     $error_code = $this->db->ErrorNo();
@@ -250,7 +224,8 @@ class admin_main_pages extends model_base {
                 $insert_result = false;
             }
         } else {
-            $sql = "INSERT INTO ".PREFIX."_main_pages_".$this->registry->sitelang." (mainpage_id,mainpage_author,mainpage_title,mainpage_date,mainpage_content,mainpage_notes,mainpage_valueview,mainpage_status,mainpage_termexpire,mainpage_termexpireaction)  VALUES ('$mainpage_id',$mainpage_author,$mainpage_title,'$now','$mainpage_content',$mainpage_notes,'$mainpage_valueview','$mainpage_status',$mainpage_termexpire,$mainpage_termexpireaction)";
+            $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX."_main_pages_id_".$this->registry->sitelang,'main_page_id');
+            $sql = "INSERT INTO ".PREFIX."_main_pages_".$this->registry->sitelang." (".$sequence_array['field_name_string']."main_page_name_id,main_page_author,main_page_title,main_page_date,main_page_content,main_page_notes,main_page_value_view,main_page_status,main_page_term_expire,main_page_term_expire_action,main_page_meta_title,main_page_meta_keywords,main_page_meta_description)  VALUES (".$sequence_array['sequence_value_string']."null,".$data_array['mainpage_author'].",".$data_array['mainpage_title'].",'".$now."','".$data_array['mainpage_content']."',".$data_array['mainpage_notes'].",'".$data_array['mainpage_valueview']."','".$data_array['mainpage_status']."',".$data_array['mainpage_termexpire'].",".$data_array['mainpage_termexpireaction'].",null,null,null)";
             $insert_result = $this->db->Execute($sql);
             if($insert_result === false) {
                 $error_message = $this->db->ErrorMsg();
@@ -259,49 +234,40 @@ class admin_main_pages extends model_base {
             }
         }
         if($insert_result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|addsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("main_pageupdate","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|addsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'add_sql_error';
+            $this->error_array = $error;
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|main_pages|show");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|add|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("main_pageupdate","add");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|add|ok|".$this->registry->language);
+            $this->result = 'add_done';
         }
     }
 
 
-    public function mainpage_status() {
-        if(isset($_GET['action'])) {
-            $action = trim($_GET['action']);
+    public function mainpage_status($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['get_action'])) {
+            $action = trim($array['get_action']);
         } else {
             $action = "";
         }
-        if(!isset($_GET['action']) and isset($_POST['action'])) {
-            $action = trim($_POST['action']);
+        if(!isset($array['get_action']) and isset($array['post_action'])) {
+            $action = trim($array['post_action']);
         }
-        if(isset($_GET['mainpage_id'])) {
-            $mainpage_id = intval($_GET['mainpage_id']);
+        if(isset($array['get_mainpage_id'])) {
+            $mainpage_id = intval($array['get_mainpage_id']);
         } else {
             $mainpage_id = 0;
         }
-        if($mainpage_id == 0 and isset($_POST['mainpage_id']) and is_array($_POST['mainpage_id']) and count($_POST['mainpage_id']) > 0) {
+        if($mainpage_id == 0 and isset($array['post_mainpage_id']) and is_array($array['post_mainpage_id']) and count($array['post_mainpage_id']) > 0) {
             $mainpage_id_is_arr = 1;
-            for($i = 0,$size = count($_POST['mainpage_id']);$i < $size;++$i) {
+            for($i = 0,$size = count($array['post_mainpage_id']);$i < $size;++$i) {
                 if($i == 0) {
-                    $mainpage_id = "'".intval($_POST['mainpage_id'][$i])."'";
+                    $mainpage_id = "'".intval($array['post_mainpage_id'][$i])."'";
                 } else {
-                    $mainpage_id .= ",'".intval($_POST['mainpage_id'][$i])."'";
+                    $mainpage_id .= ",'".intval($array['post_mainpage_id'][$i])."'";
                 }
             }
         } else {
@@ -310,12 +276,11 @@ class admin_main_pages extends model_base {
         }
         $action = $this->registry->main_class->format_striptags($action);
         if(!isset($mainpage_id) or $action == "" or $mainpage_id == "'0'") {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_main_pages&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'empty_data';
+            return;
         }
         if($action == "on") {
-            $sql = "UPDATE ".PREFIX."_main_pages_".$this->registry->sitelang." SET mainpage_status='1' WHERE mainpage_id IN (".$mainpage_id.")";
+            $sql = "UPDATE ".PREFIX."_main_pages_".$this->registry->sitelang." SET main_page_status = '1' WHERE main_page_id IN (".$mainpage_id.")";
             $result = $this->db->Execute($sql);
             if($result === false) {
                 $error_message = $this->db->ErrorMsg();
@@ -324,9 +289,8 @@ class admin_main_pages extends model_base {
             } else {
                 $num_result = $this->db->Affected_Rows();
             }
-            $this->registry->main_class->assign("main_pageupdate","on");
         } elseif($action == "off") {
-            $sql = "UPDATE ".PREFIX."_main_pages_".$this->registry->sitelang." SET mainpage_status='0' WHERE mainpage_id IN (".$mainpage_id.")";
+            $sql = "UPDATE ".PREFIX."_main_pages_".$this->registry->sitelang." SET main_page_status = '0' WHERE main_page_id IN (".$mainpage_id.")";
             $result = $this->db->Execute($sql);
             if($result === false) {
                 $error_message = $this->db->ErrorMsg();
@@ -335,10 +299,9 @@ class admin_main_pages extends model_base {
             } else {
                 $num_result = $this->db->Affected_Rows();
             }
-            $this->registry->main_class->assign("main_pageupdate","off");
         } elseif($action == "delete") {
             $this->db->StartTrans();
-            $sql = "DELETE FROM ".PREFIX."_main_pages_".$this->registry->sitelang." WHERE mainpage_id IN (".$mainpage_id.")";
+            $sql = "DELETE FROM ".PREFIX."_main_pages_".$this->registry->sitelang." WHERE main_page_id IN (".$mainpage_id.")";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
             if($result === false) {
@@ -346,15 +309,15 @@ class admin_main_pages extends model_base {
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $sql2 = "SELECT mainmenu_priority,mainmenu_module,mainmenu_submodule FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE mainmenu_module IN (".$mainpage_id.") or mainmenu_submodule IN (".$mainpage_id.") order by mainmenu_priority";
+            $sql2 = "SELECT main_menu_priority,main_menu_module,main_menu_submodule FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE main_menu_module IN (".$mainpage_id.") or main_menu_submodule IN (".$mainpage_id.") order by main_menu_priority";
             $result2 = $this->db->Execute($sql2);
             if($result2) {
                 if(isset($result2->fields['0'])) {
-                    $numrows = intval($result2->fields['0']);
+                    $row_exist = intval($result2->fields['0']);
                 } else {
-                    $numrows = 0;
+                    $row_exist = 0;
                 }
-                if($numrows > 0) {
+                if($row_exist > 0) {
                     $i = 0;
                     while(!$result2->EOF) {
                         $mainmenu_priority = intval($result2->fields['0'] - $i);
@@ -363,14 +326,14 @@ class admin_main_pages extends model_base {
                         } else {
                             $mainpage_id2 = intval($result2->fields['2']);
                         }
-                        $result3 = $this->db->Execute("UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET mainmenu_priority=mainmenu_priority-1 WHERE mainmenu_priority>".$mainmenu_priority);
+                        $result3 = $this->db->Execute("UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET main_menu_priority = main_menu_priority-1 WHERE main_menu_priority > ".$mainmenu_priority);
                         $num_result3 = $this->db->Affected_Rows();
                         if($result3 === false) {
                             $error_message = $this->db->ErrorMsg();
                             $error_code = $this->db->ErrorNo();
                             $error[] = array("code" => $error_code,"message" => $error_message);
                         }
-                        $sql4 = "DELETE FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE mainmenu_module='".$mainpage_id2."' or mainmenu_submodule='".$mainpage_id2."'";
+                        $sql4 = "DELETE FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE main_menu_module = '".$mainpage_id2."' or main_menu_submodule = '".$mainpage_id2."'";
                         $result4 = $this->db->Execute($sql4);
                         $num_result4 = $this->db->Affected_Rows();
                         if($result4 === false) {
@@ -398,200 +361,139 @@ class admin_main_pages extends model_base {
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
             $this->db->CompleteTrans();
-            $this->registry->main_class->assign("main_pageupdate","delete");
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_main_pages&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_action';
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUPAGES'));
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|statussqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("main_pageupdate","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|statussqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'status_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|statusok|".$this->registry->language)) {
-                $this->registry->main_class->assign("main_pageupdate","notinsert2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|statusok|".$this->registry->language);
-            exit();
+            $this->error = 'status_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|main_pages|show");
             if($mainpage_id_is_arr == 1) {
                 $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|main_pages|edit");
             } else {
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|main_pages|edit|".intval($_GET['mainpage_id']));
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|main_pages|edit|".intval($array['get_mainpage_id']));
             }
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|".$action."|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|".$action."|ok|".$this->registry->language);
+            $this->result = $action;
         }
     }
 
 
-    public function mainpage_edit() {
-        if(isset($_GET['mainpage_id'])) {
-            $mainpage_id = intval($_GET['mainpage_id']);
+    public function mainpage_edit($main_page_id) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $main_page_id = intval($main_page_id);
+        if($main_page_id == 0) {
+            $this->error = 'empty_data';
+            return;
         }
-        if(!isset($_GET['mainpage_id']) or $mainpage_id == 0) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_main_pages&func=index&lang=".$this->registry->sitelang);
-            exit();
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITPAGEPAGETITLE'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|edit|".$mainpage_id."|".$this->registry->language)) {
-            $sql = "SELECT mainpage_id,mainpage_author,mainpage_title,mainpage_date,mainpage_content,mainpage_readcounter,mainpage_notes,mainpage_valueview,mainpage_status,mainpage_termexpire,mainpage_termexpireaction FROM ".PREFIX."_main_pages_".$this->registry->sitelang." WHERE mainpage_id='".$mainpage_id."'";
-            $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
+        $sql = "SELECT main_page_id,main_page_author,main_page_title,main_page_date,main_page_content,main_page_notes,main_page_value_view,main_page_status,main_page_term_expire,main_page_term_expire_action FROM ".PREFIX."_main_pages_".$this->registry->sitelang." WHERE main_page_id='".$main_page_id."'";
+        $result = $this->db->Execute($sql);
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
             } else {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->assign("main_pageupdate","notinsert");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editsqlerror|".$this->registry->language);
-                exit();
+                $row_exist = 0;
             }
-            if($numrows == 0) {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editnotfind|".$this->registry->language)) {
-                    $this->registry->main_class->assign("main_pageupdate","notfind");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editnotfind|".$this->registry->language);
-                exit();
-            } else {
-                if(isset($result->fields['9']) and intval($result->fields['9']) != 0) {
-                    $mainpage_termexpire = intval($result->fields['9']);
-                    $mainpage_termexpire = date("d.m.y H:i",$mainpage_termexpire);
-                    $mainpage_termexpireday = intval(((intval($result->fields['9']) - $this->registry->main_class->gettime()) / 3600) / 24);
-                } else {
-                    $mainpage_termexpire = "";
-                    $mainpage_termexpireday = "";
-                }
-                $mainpage_content = $this->registry->main_class->extracting_data($result->fields['4']);
-                $mainpage_all[] = array(
-                    "mainpage_id" => intval($result->fields['0']),
-                    "mainpage_author" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
-                    "mainpage_title" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
-                    "mainpage_date" => intval($result->fields['3']),
-                    "mainpage_content" => $mainpage_content,
-                    "mainpage_readcounter" => intval($result->fields['5']),
-                    "mainpage_notes" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6'])),
-                    "mainpage_valueview" => intval($result->fields['7']),
-                    "mainpage_status" => intval($result->fields['8']),
-                    "mainpage_termexpire" => $mainpage_termexpire,
-                    "mainpage_termexpireaction" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['10'])),
-                    "mainpage_termexpireday" => $mainpage_termexpireday
+        } else {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'edit_sql_error';
+            $this->error_array = $error;
+            return;
+        }
+        if($row_exist == 0) {
+            $this->error = 'edit_not_found';
+            return;
+        }
+        if(isset($result->fields['8']) and intval($result->fields['8']) != 0) {
+            $mainpage_termexpire = intval($result->fields['8']);
+            $mainpage_termexpire = date("d.m.y H:i",$mainpage_termexpire);
+            $mainpage_termexpireday = intval(((intval($result->fields['8']) - $this->registry->main_class->get_time()) / 3600) / 24);
+        } else {
+            $mainpage_termexpire = "";
+            $mainpage_termexpireday = "";
+        }
+        $mainpage_content = $this->registry->main_class->extracting_data($result->fields['4']);
+        $mainpage_all[] = array(
+            "mainpage_id" => intval($result->fields['0']),
+            "mainpage_author" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
+            "mainpage_title" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
+            "mainpage_date" => intval($result->fields['3']),
+            "mainpage_content" => $mainpage_content,
+            "mainpage_notes" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5'])),
+            "mainpage_valueview" => intval($result->fields['6']),
+            "mainpage_status" => intval($result->fields['7']),
+            "mainpage_termexpire" => $mainpage_termexpire,
+            "mainpage_termexpireaction" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['9'])),
+            "mainpage_termexpireday" => $mainpage_termexpireday
+        );
+        $this->result['mainpage_all'] = $mainpage_all;
+    }
+
+
+    public function mainpage_edit_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'mainpage_author',
+                    'mainpage_title',
+                    'mainpage_content',
+                    'mainpage_notes',
+                    'mainpage_termexpireaction'
                 );
-                $this->registry->main_class->assign("mainpage_all",$mainpage_all);
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageedit.html");
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|edit|".$mainpage_id."|".$this->registry->language);
+                $keys2 = array(
+                    'mainpage_id',
+                    'mainpage_status',
+                    'mainpage_termexpire',
+                    'mainpage_valueview'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
             }
+        }
+        if((!isset($array['mainpage_id']) or !isset($array['mainpage_author']) or !isset($array['mainpage_title']) or !isset($array['mainpage_content']) or !isset($array['mainpage_notes']) or !isset($array['mainpage_status']) or !isset($array['mainpage_termexpire']) or !isset($array['mainpage_termexpireaction']) or !isset($array['mainpage_valueview'])) or ($data_array['mainpage_id'] == 0 or $data_array['mainpage_author'] == "" or $data_array['mainpage_title'] == "" or $data_array['mainpage_content'] == "")) {
+            $this->error = 'edit_not_all_data';
+            return;
+        }
+        if($data_array['mainpage_termexpire'] == "0") {
+            $data_array['mainpage_termexpire'] = 'NULL';
+            $data_array['mainpage_termexpireaction'] = 'NULL';
         } else {
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|edit|".$mainpage_id."|".$this->registry->language);
+            $data_array['mainpage_termexpire'] = $this->registry->main_class->get_time() + ($data_array['mainpage_termexpire'] * 86400);
+            $data_array['mainpage_termexpire'] = "'".$data_array['mainpage_termexpire']."'";
+            $data_array['mainpage_termexpireaction'] = $this->registry->main_class->format_striptags($data_array['mainpage_termexpireaction']);
+            $data_array['mainpage_termexpireaction'] = $this->registry->main_class->processing_data($data_array['mainpage_termexpireaction']);
         }
-    }
-
-
-    public function mainpage_edit_inbase() {
-        if(isset($_POST['mainpage_id'])) {
-            $mainpage_id = intval($_POST['mainpage_id']);
-        }
-        if(isset($_POST['mainpage_author'])) {
-            $mainpage_author = trim($_POST['mainpage_author']);
-        }
-        if(isset($_POST['mainpage_title'])) {
-            $mainpage_title = trim($_POST['mainpage_title']);
-        }
-        if(isset($_POST['mainpage_content'])) {
-            $mainpage_content = trim($_POST['mainpage_content']);
-        }
-        if(isset($_POST['mainpage_notes'])) {
-            $mainpage_notes = trim($_POST['mainpage_notes']);
-        }
-        if(isset($_POST['mainpage_status'])) {
-            $mainpage_status = intval($_POST['mainpage_status']);
-        }
-        if(isset($_POST['mainpage_termexpire'])) {
-            $mainpage_termexpire = intval($_POST['mainpage_termexpire']);
-        }
-        if(isset($_POST['mainpage_termexpireaction'])) {
-            $mainpage_termexpireaction = trim($_POST['mainpage_termexpireaction']);
-        }
-        if(isset($_POST['mainpage_valueview'])) {
-            $mainpage_valueview = intval($_POST['mainpage_valueview']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITPAGEPAGETITLE'));
-        if((!isset($_POST['mainpage_id']) or !isset($_POST['mainpage_author']) or !isset($_POST['mainpage_title']) or !isset($_POST['mainpage_content']) or !isset($_POST['mainpage_notes']) or !isset($_POST['mainpage_status']) or !isset($_POST['mainpage_termexpire']) or !isset($_POST['mainpage_termexpireaction']) or !isset($_POST['mainpage_valueview'])) or ($mainpage_id == 0 or $mainpage_author == "" or $mainpage_title == "" or $mainpage_content == "")) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("main_pageupdate","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editnotalldata|".$this->registry->language);
-            exit();
-        }
-        if($mainpage_termexpire == "0") {
-            $mainpage_termexpire = 'NULL';
-            $mainpage_termexpireaction = 'NULL';
+        if($data_array['mainpage_notes'] == "") {
+            $data_array['mainpage_notes'] = 'NULL';
         } else {
-            $mainpage_termexpire = $this->registry->main_class->gettime() + ($mainpage_termexpire * 86400);
-            $mainpage_termexpire = "'$mainpage_termexpire'";
-            $mainpage_termexpireaction = $this->registry->main_class->format_striptags($mainpage_termexpireaction);
-            $mainpage_termexpireaction = $this->registry->main_class->processing_data($mainpage_termexpireaction);
+            $data_array['mainpage_notes'] = $this->registry->main_class->processing_data($data_array['mainpage_notes']);
         }
-        if($mainpage_notes == "") {
-            $mainpage_notes = 'NULL';
-        } else {
-            $mainpage_notes = $this->registry->main_class->processing_data($mainpage_notes);
-        }
-        $mainpage_author = $this->registry->main_class->format_striptags($mainpage_author);
-        $mainpage_author = $this->registry->main_class->processing_data($mainpage_author);
-        $mainpage_title = $this->registry->main_class->format_striptags($mainpage_title);
-        $mainpage_title = $this->registry->main_class->processing_data($mainpage_title);
-        $mainpage_content = $this->registry->main_class->processing_data($mainpage_content);
-        $mainpage_content = substr(substr($mainpage_content,0,-1),1);
+        $data_array['mainpage_author'] = $this->registry->main_class->format_striptags($data_array['mainpage_author']);
+        $data_array['mainpage_author'] = $this->registry->main_class->processing_data($data_array['mainpage_author']);
+        $data_array['mainpage_title'] = $this->registry->main_class->format_striptags($data_array['mainpage_title']);
+        $data_array['mainpage_title'] = $this->registry->main_class->processing_data($data_array['mainpage_title']);
+        $data_array['mainpage_content'] = $this->registry->main_class->processing_data($data_array['mainpage_content']);
+        $data_array['mainpage_content'] = substr(substr($data_array['mainpage_content'],0,-1),1);
         $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
         if($check_db_need_lobs == 'yes') {
             $this->db->StartTrans();
-            $sql = "UPDATE ".PREFIX."_main_pages_".$this->registry->sitelang." SET mainpage_author=$mainpage_author,mainpage_title=$mainpage_title,mainpage_content=empty_clob(),mainpage_notes=empty_clob(),mainpage_status='$mainpage_status',mainpage_termexpire=$mainpage_termexpire,mainpage_termexpireaction=$mainpage_termexpireaction,mainpage_valueview='$mainpage_valueview' WHERE mainpage_id='$mainpage_id'";
+            $sql = "UPDATE ".PREFIX."_main_pages_".$this->registry->sitelang." SET main_page_author = ".$data_array['mainpage_author'].",main_page_title = ".$data_array['mainpage_title'].",main_page_content = empty_clob(),main_page_notes = empty_clob(),main_page_status = '".$data_array['mainpage_status']."',main_page_term_expire = ".$data_array['mainpage_termexpire'].",main_page_term_expire_action = ".$data_array['mainpage_termexpireaction'].",main_page_value_view = '".$data_array['mainpage_valueview']."' WHERE main_page_id = '".$data_array['mainpage_id']."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
             if($result === false) {
@@ -599,15 +501,15 @@ class admin_main_pages extends model_base {
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $result2 = $this->db->UpdateClob(PREFIX.'_main_pages_'.$this->registry->sitelang,'mainpage_content',$mainpage_content,'mainpage_id='.$mainpage_id);
+            $result2 = $this->db->UpdateClob(PREFIX.'_main_pages_'.$this->registry->sitelang,'main_page_content',$data_array['mainpage_content'],'main_page_id = '.$data_array['mainpage_id']);
             if($result2 === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            if($mainpage_notes != 'NULL') {
-                $mainpage_notes = substr(substr($mainpage_notes,0,-1),1);
-                $result3 = $this->db->UpdateClob(PREFIX.'_main_pages_'.$this->registry->sitelang,'mainpage_notes',$mainpage_notes,'mainpage_id='.$mainpage_id);
+            if($data_array['mainpage_notes'] != 'NULL') {
+                $data_array['mainpage_notes'] = substr(substr($data_array['mainpage_notes'],0,-1),1);
+                $result3 = $this->db->UpdateClob(PREFIX.'_main_pages_'.$this->registry->sitelang,'main_page_notes',$data_array['mainpage_notes'],'main_page_id = '.$data_array['mainpage_id']);
                 if($result3 === false) {
                     $error_message = $this->db->ErrorMsg();
                     $error_code = $this->db->ErrorNo();
@@ -621,7 +523,7 @@ class admin_main_pages extends model_base {
                 $result = false;
             }
         } else {
-            $sql = "UPDATE ".PREFIX."_main_pages_".$this->registry->sitelang." SET mainpage_author=$mainpage_author,mainpage_title=$mainpage_title,mainpage_content='$mainpage_content',mainpage_notes=$mainpage_notes,mainpage_status='$mainpage_status',mainpage_termexpire=$mainpage_termexpire,mainpage_termexpireaction=$mainpage_termexpireaction,mainpage_valueview='$mainpage_valueview' WHERE mainpage_id='$mainpage_id'";
+            $sql = "UPDATE ".PREFIX."_main_pages_".$this->registry->sitelang." SET main_page_author = ".$data_array['mainpage_author'].",main_page_title = ".$data_array['mainpage_title'].",main_page_content = '".$data_array['mainpage_content']."',main_page_notes = ".$data_array['mainpage_notes'].",main_page_status = '".$data_array['mainpage_status']."',main_page_term_expire = ".$data_array['mainpage_termexpire'].",main_page_term_expire_action = ".$data_array['mainpage_termexpireaction'].",main_page_value_view = '".$data_array['mainpage_valueview']."' WHERE main_page_id = '".$data_array['mainpage_id']."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
             if($result === false) {
@@ -631,37 +533,17 @@ class admin_main_pages extends model_base {
             }
         }
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("main_pageupdate","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'edit_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editok|".$this->registry->language)) {
-                $this->registry->main_class->assign("main_pageupdate","notinsert2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|error|editok|".$this->registry->language);
-            exit();
+            $this->error = 'edit_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|main_pages|show");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|main_pages|edit|".$mainpage_id);
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|main_pages|show|".$mainpage_id);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|save|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/main_pages/main_pageupdate.html");
-                $this->registry->main_class->assign("main_pageupdate","editok");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|main_pages|save|ok|".$this->registry->language);
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|main_pages|edit|".$data_array['mainpage_id']);
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|main_pages|show|".$data_array['mainpage_id']);
+            $this->result = 'edit_done';
         }
     }
 }
-
-?>

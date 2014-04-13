@@ -3,13 +3,13 @@
 </div>
 <center>
 <br>
-{if $main_pageupdate eq "add"}
+{if $main_pageupdate eq "add_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MAINPAGEADDOK#}</span><br><br>
 <a href="index.php?path=admin_main_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_MAINPAGE#}</a>
-{elseif $main_pageupdate eq "notalldata"}
+{elseif $main_pageupdate eq "add_not_all_data" or $main_pageupdate eq "edit_not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTALLDATA#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $main_pageupdate eq "notinsert"}
+{elseif $main_pageupdate eq "show_sql_error" or $main_pageupdate eq "add_sql_error" or $main_pageupdate eq "status_sql_error" or $main_pageupdate eq "edit_sql_error"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
 {nocache}
 {if $error ne "no"}
@@ -19,10 +19,10 @@
 {/if}
 {/nocache}
 <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $main_pageupdate eq "notinsert2"}
+{elseif $main_pageupdate eq "status_ok" or $main_pageupdate eq "edit_ok"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $main_pageupdate eq "notfind"}
+{elseif $main_pageupdate eq "edit_not_found"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_MAINPAGENOTFIND#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
 {elseif $main_pageupdate eq "on"}
@@ -34,7 +34,7 @@
 {elseif $main_pageupdate eq "delete"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MAINPAGEDELETEOK#}</span><br><br>
 <a href="index.php?path=admin_main_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_MAINPAGE#}</a>
-{elseif $main_pageupdate eq "editok"}
+{elseif $main_pageupdate eq "edit_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MAINPAGEEDITOK#}</span><br><br>
 <a href="index.php?path=admin_main_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_MAINPAGE#}</a>
 {/if}

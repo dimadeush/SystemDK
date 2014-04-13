@@ -69,16 +69,16 @@
 {/foreach}
 <table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text"> {#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
 {/if}
-{elseif $addrss_inbase eq "yes"}
+{elseif $addrss_inbase eq "add_rss_ok"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_BLOCKADDSITEURLOK#}</span><br><br>
 <a href="index.php?path=admin_blocks&amp;func=block_rsssite&amp;lang={$site_language}" class="link">{#_BLOCKRSSALL#} </a>
-{elseif $addrss_inbase eq "delete"}
+{elseif $addrss_inbase eq "delete_rss_ok"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_BLOCKDELETESITEURLOK#}</span><br><br>
 <a href="index.php?path=admin_blocks&amp;func=block_rsssite&amp;lang={$site_language}" class="link">{#_BLOCKRSSALL#} </a>
-{elseif $addrss_inbase eq "update"}
+{elseif $addrss_inbase eq "edit_rss_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_BLOCKUPDATESITEURLOK#}</span><br><br>
 <a href="index.php?path=admin_blocks&amp;func=block_rsssite&amp;lang={$site_language}" class="link">{#_BLOCKRSSALL#} </a>
-{elseif $addrss_inbase eq "notfind"}
+{elseif $addrss_inbase eq "edit_rss_not_found"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="textbig">{#_BLOCKRSSNOTFIND#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
 {/if}

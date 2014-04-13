@@ -4,10 +4,10 @@
  * File:      singleton.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 class singleton {
 
@@ -30,7 +30,7 @@ class singleton {
     public static function getinstance($class,$registry) {
         $instance = $class;
         if(!array_key_exists($instance,self::$objects)) {
-            if($class === 'model_theme') {
+            if($class === 'controller_theme') {
                 $class = $class.'_'.SITE_THEME;
             }
             self::$objects[$instance] = new $class($registry);
@@ -38,5 +38,3 @@ class singleton {
         return self::$objects[$instance];
     }
 }
-
-?>

@@ -3,7 +3,7 @@
 </div>
 <center>
 <br>
-{if $ban_save eq "no"}
+{if $ban_save eq "show"}
 <form action="index.php?path=admin_banip&amp;func=banip_save&amp;lang={$site_language}" method="POST">
 <table border="0" cellspacing="2"  cellpadding="0">
  <tr align="left">
@@ -22,16 +22,16 @@
 <input type="submit" value="{#_BANIPBUTTONSAVE#}">
 </form><br>
 <table width="99%" border="0" cellspacing="2"  cellpadding="0"><tr align="left"><td><span class="text">{#_BANIPBANED#}: {$ban_ip}</span></td></tr></table>
-{elseif $ban_save eq "saveok"}
+{elseif $ban_save eq "save_ok"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_BANIPSAVEOK#}</span><br><br>
 <a href="index.php?path=admin_banip&amp;func=index&amp;lang={$site_language}" class="link">{#_BANIP#}</a>
-{elseif $ban_save eq "notalldata"}
+{elseif $ban_save eq "not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_BANNOTALLDATA#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $ban_save eq "nofile"}
+{elseif $ban_save eq "no_file"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_BANNOFILE#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $ban_save eq "notwrite"}
+{elseif $ban_save eq "not_write"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_BANNOWRITE#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
 {/if}

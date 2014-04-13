@@ -3,7 +3,7 @@
 session_start();
 
 $jpeg_quality = 80;
-$count=6; // number of symbols 
+$count=6; // number of symbols
 $width=100; // width
 $height=20; // height
 $font_size_min=12; // symbol min height
@@ -60,8 +60,8 @@ if ($noise)
     }
  }
 $_SESSION["captcha"]=$str;
-header('Cache-Control: no-store, no-cache, must-revalidate'); 
-header('Cache-Control: post-check=0, pre-check=0', FALSE); 
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', FALSE);
 header('Pragma: no-cache');
 if(function_exists("imagejpeg"))
  {
@@ -79,5 +79,3 @@ elseif(function_exists("imagepng"))
    imagepng($image);
  }
 imagedestroy($image);
-
-?>

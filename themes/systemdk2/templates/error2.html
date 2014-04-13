@@ -38,10 +38,10 @@
 <span class="text">{$error_text}</span>
 {else}
 {config_load file="$language/error.conf"}
-{if $error eq "error_banip"}
+{if $error eq "error_ban_ip"}
 <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_ACCESS_DENIED#}</span><br><br>
 <span class="textbig">{#_ERROR_BANIP#}</span>
-{elseif $error eq "error_findinstall"}
+{elseif $error eq "error_find_install"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_FINDINSTALL#}</span>
 {elseif $error eq "messege_siteoff"}
@@ -51,7 +51,7 @@
  {else}
  <span class="textbig">{#_MESSEGE_SITEOFF#}</span>
  {/if}
-{elseif $error eq "error_notphp5"}
+{elseif $error eq "version_php"}
 <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
 <span class="textbig">{#_ERROR_NOTPHP5#}</span>
 {elseif $error eq "error_tagerror"}

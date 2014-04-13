@@ -4,33 +4,29 @@
  * File:      index.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
-//Define the site path constant
+// Define the site path constant
 define('__SITE_PATH',realpath(dirname(__FILE__)));
 clearstatcache();
 if(!file_exists(__SITE_PATH."/includes/data/config.inc")) {
     if(file_exists(__SITE_PATH."/install")) {
         header("Location: /install/index.php");
         exit();
-    } else {
-        echo "<html><header><title>SystemDK - Fatal Error</title></header><body><br><br><center>Fatal error<br><br>SystemDK can't find config file.</center></body></html>";
-        exit();
     }
 }
-//Include the initialization
+// Include the initialization
 include_once(__SITE_PATH.'/includes/init.php');
-//Load the router class
+// Load the router class
 $registry->router = new router($registry);
-//Set the path to the controllers directory
+// Set the path to the controllers directory
 if(defined('__SITE_ADMIN_PART') and __SITE_ADMIN_PART === 'yes') {
     $registry->router->setpath(__SITE_ADMIN_PATH.'/modules');
 } else {
     $registry->router->setpath(__SITE_PATH.'/modules');
 }
-//Use the router to handle the request.
+// Use the router to handle the request.
 $registry->router->loader();
-?>

@@ -3,7 +3,7 @@
 </div>
 <center>
 <br>
-{if $including_save eq "no"}
+{if $including_save eq "show"}
 <form action="index.php?path=admin_including&amp;func=including_save&amp;lang={$site_language}" method="POST">
 <table border="0" cellspacing="2"  cellpadding="0">
  <tr align="left">
@@ -19,13 +19,13 @@
 {elseif $including_save eq "yes"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_INCLUDINGSAVEOK#}</span><br><br>
 <a href="index.php?path=admin_including&amp;func=index&amp;lang={$site_language}" class="link">{#_INCLUDING#}</a>
-{elseif $including_save eq "nofile"}
+{elseif $including_save eq "no_file"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_INCLUDINGNOFILE#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $including_save eq "nowrite"}
+{elseif $including_save eq "not_write"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_INCLUDINGNOWRITE#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $including_save eq "notalldata"}
+{elseif $including_save eq "not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_INCLUDINGNOTALLDATA#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
 {/if}

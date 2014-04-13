@@ -3,13 +3,13 @@
 </div>
 <center>
 <br><br>
-{if $system_pagemessage eq "add"}
+{if $system_pages_message eq "add_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SYSTEMPAGEADDOK#}</span><br><br>
 <a href="index.php?path=admin_system_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_SYSTEMPAGETITLE#}</a>
-{elseif $system_pagemessage eq "notalldata"}
+{elseif $system_pages_message eq "not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMPAGENOTALLDATA#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $system_pagemessage eq "sqlerror"}
+{elseif $system_pages_message eq "sql_error"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
 {nocache}
 {if $error ne "no"}
@@ -19,19 +19,19 @@
 {/if}
 {/nocache}
 <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $system_pagemessage eq "notinsert2"}
+{elseif $system_pages_message eq "not_done"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $system_pagemessage eq "notfind"}
+{elseif $system_pages_message eq "not_found"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMPAGENOTFIND#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $system_pagemessage eq "delete"}
+{elseif $system_pages_message eq "delete_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SYSTEMPAGEDELETEOK#}</span><br><br>
 <a href="index.php?path=admin_system_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_SYSTEMPAGETITLE#}</a>
-{elseif $system_pagemessage eq "editok"}
+{elseif $system_pages_message eq "edit_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SYSTEMPAGEEDITOK#}</span><br><br>
 <a href="index.php?path=admin_system_pages&amp;func=index&amp;lang={$site_language}" class="link">{#_SYSTEMPAGETITLE#}</a>
-{elseif $system_pagemessage eq "findsuchsystempage"}
+{elseif $system_pages_message eq "find_such_system_page"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMPAGEFINDSUCHRULE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
 {/if}

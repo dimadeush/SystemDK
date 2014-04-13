@@ -2,15 +2,15 @@
 {#_SETTINGS#}</span></center>
 </div>
 <br><center>
-{if $done eq "nofile"}
+{if $done eq "no_file"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SETTINGSNOFILE#}</span><br>
 <br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $done eq "noalldata"}
+{elseif $done eq "not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SETTINGSNOALLDATA#}</span><br>
 <br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $done eq "nowrite"}
+{elseif $done eq "not_write"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SETTINGSNOWRITE#}</span><br>
 <br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
@@ -18,7 +18,7 @@
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SETTINGSSAVE#}</span><br>
 <br>
 <a href="index.php?path=admin_settings&amp;func=index&amp;lang={$site_language}" class="link">{#_SETTINGS#}</a>
-{elseif $done eq "incorrectemail"}
+{elseif $done eq "incorrect_email"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SETTINGSINCORRECTEMAIL#}</span><br>
 <br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>

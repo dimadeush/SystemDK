@@ -49,11 +49,11 @@ function image_reload()
    <td>
    <center><img src="../{#bgimage18#}" alt=""> <span class="title">{#_ADMINENTERFORM#}</span></center><br>
    <form action="index.php?lang={$site_language}" method="post">
-   <center><span class="formentername">{#_ADMINLOGIN#}:</span><br> <input type="text" name="admin_login" size="25" maxlength="25" class="formenter"></center>
-   <center><span class="formentername">{#_ADMINPASSWORD#}:</span><br> <input type="password" name="admin_password" size="25" maxlength="25" class="formenter"></center>
+   <center><span class="formentername">{#_ADMINLOGIN#}:</span><br> <input type="text" name="user_login" size="25" maxlength="25" class="formenter"></center>
+   <center><span class="formentername">{#_ADMINPASSWORD#}:</span><br> <input type="password" name="user_password" size="25" maxlength="25" class="formenter"></center>
    {nocache}
    {if $enter_check ne "no"}
-   <span class="formentername">{#_ADMINSECRETNUM#}:</span> <img src="../captcha/index.php" border='1' alt="" id="captcha"> &nbsp;<a href="javascript:image_reload();" class="link">{#_CAPTCHAUPDATE#}</a><br> 
+   <span class="formentername">{#_ADMINSECRETNUM#}:</span> <img src="../captcha/index.php" border='1' alt="" id="captcha"> &nbsp;<a href="javascript:image_reload();" class="link">{#_CAPTCHAUPDATE#}</a><br>
    <span class="formentername">{#_ADMINSECRETNUMENTER#}:</span> <input type="text" name="captcha" size="11" maxlength="6" class="formenter"><br><br>
    {/if}
    {/nocache}

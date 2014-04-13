@@ -10,7 +10,7 @@
 <a href="javascript:history.back(1)" class="link">{#_NEWSGOBACK#}</a></center><br><br>
 {else}
 {foreach $news_all as $news_all_tpl}
-{if $news_all_tpl.news_valueview ne "no" or $news_admin eq "yes"}
+{if $news_all_tpl.news_valueview ne "no" or $admin eq "yes"}
 <br><br>
 <table width="100%" cellpadding="0" cellspacing="0" border="0">
  <tr bgcolor="{#color7#}">
@@ -31,7 +31,7 @@
   </tr>
  {/if}
  <tr bgcolor="{#color7#}">
-  <td width="100%" height="17" nowrap>{if $news_admin eq "yes"}<span class="leftrightblocktext">{#_NEWSWRITE#}: {$news_all_tpl.news_author} {if $news_all_tpl.news_link ne "no"}|{/if}</span>{/if}{if $news_all_tpl.news_link ne "no"} <a href="{$news_all_tpl.news_link}" target="_blank" class="link">{#_NEWSLINK#}</a>{/if}</td><td align="right" nowrap>{if $news_admin eq "yes"}<span class="leftrightblocktext">{if $news_all_tpl.news_termexpire ne "no"}{#_NEWSTERMEXPIRE#}: [{$news_all_tpl.news_termexpire}] {#_NEWSTERMEXPIREACTION#}: [{if $news_all_tpl.news_termexpireaction eq "off"}{#_NEWSTERMEXPIREACTIONOFF#}{elseif $news_all_tpl.news_termexpireaction eq "delete"}{#_NEWSTERMEXPIREACTIONDELETE#}{/if}]{/if} {#_NEWSVIEW#}: [{if $news_all_tpl.news_valueview eq "all"}{#_NEWSVIEWALLUSERS#}{elseif $news_all_tpl.news_valueview eq "users&admins"}{#_NEWSVIEWONLYREG#}{elseif $news_all_tpl.news_valueview eq "admins"}{#_NEWSVIEWONLYADMIN#}{elseif $news_all_tpl.news_valueview eq "guests"}{#_NEWSVIEWONLYGUESTS#}{/if}]</span>{/if}</td>
+  <td width="100%" height="17" nowrap>{if $admin eq "yes"}<span class="leftrightblocktext">{#_NEWSWRITE#}: {$news_all_tpl.news_author} {if $news_all_tpl.news_link ne "no"}|{/if}</span>{/if}{if $news_all_tpl.news_link ne "no"} <a href="{$news_all_tpl.news_link}" target="_blank" class="link">{#_NEWSLINK#}</a>{/if}</td><td align="right" nowrap>{if $admin eq "yes"}<span class="leftrightblocktext">{if $news_all_tpl.news_termexpire ne "no"}{#_NEWSTERMEXPIRE#}: [{$news_all_tpl.news_termexpire}] {#_NEWSTERMEXPIREACTION#}: [{if $news_all_tpl.news_termexpireaction eq "off"}{#_NEWSTERMEXPIREACTIONOFF#}{elseif $news_all_tpl.news_termexpireaction eq "delete"}{#_NEWSTERMEXPIREACTIONDELETE#}{/if}]{/if} {#_NEWSVIEW#}: [{if $news_all_tpl.news_valueview eq "all"}{#_NEWSVIEWALLUSERS#}{elseif $news_all_tpl.news_valueview eq "users&admins"}{#_NEWSVIEWONLYREG#}{elseif $news_all_tpl.news_valueview eq "admins"}{#_NEWSVIEWONLYADMIN#}{elseif $news_all_tpl.news_valueview eq "guests"}{#_NEWSVIEWONLYGUESTS#}{/if}]</span>{/if}</td>
  </tr>
 </table><br><br>
 {/if}

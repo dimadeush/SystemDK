@@ -4,10 +4,10 @@
  * File:      controller_base.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 abstract class controller_base {
 
@@ -25,6 +25,58 @@ abstract class controller_base {
 
 
     abstract function index();
-}
 
-?>
+
+    protected function configLoad($config) {
+        $this->template->configLoad($config);
+    }
+
+
+    protected function getConfigVars($index) {
+        return $this->template->getConfigVars($index);
+    }
+
+
+    protected function assign($index,$value) {
+        $this->template->$index = array("name" => $index,"value" => $value);
+    }
+
+
+    protected function assign_array($array) {
+        if(!empty($array) and is_array($array)) {
+            foreach($array as $key => $value) {
+                $this->assign($key,$value);
+            }
+        }
+    }
+
+
+    protected function run($name) {
+        $this->template->$name();
+    }
+
+
+    protected function isCached($template,$group) {
+        return $this->template->isCached($template,$group);
+    }
+
+
+    public function clearCache($template,$group) {
+        $this->template->clearCache($template,$group);
+    }
+
+
+    public function clearAllCache() {
+        return $this->template->clearAllCache();
+    }
+
+
+    protected function fetch($template,$group = false) {
+        return $this->template->fetch($template,$group);
+    }
+
+
+    protected function display($name,$group) {
+        $this->template->display($name,$group);
+    }
+}

@@ -1,221 +1,195 @@
 <?php
+
+
 /**
  * Project:   SystemDK: PHP Content Management System
  * File:      model_admin_system_pages.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 class admin_system_pages extends model_base {
 
 
-    public function index() {
-        if(isset($_GET['num_page']) and intval($_GET['num_page']) !== 0) {
-            $num_page = intval($_GET['num_page']);
-            if($num_page == 0) {
-                $num_page = 1;
-            }
+    private $error;
+    private $error_array;
+    private $result;
+
+
+    public function get_property_value($property) {
+        if(isset($this->$property) and in_array($property,array('error','error_array','result'))) {
+            return $this->$property;
+        }
+        return false;
+    }
+
+
+    public function index($num_page = false) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(intval($num_page) != 0) {
+            $num_page = intval($num_page);
         } else {
             $num_page = 1;
         }
         $num_string_rows = SYSTEMDK_ADMINROWS_PERPAGE;
         $offset = ($num_page - 1) * $num_string_rows;
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|show|".$num_page."|".$this->registry->language)) {
-            $sql = "SELECT a.systempage_id,a.systempage_author,a.systempage_name,a.systempage_title,a.systempage_lang,(SELECT count(b.systempage_id) FROM ".PREFIX."_system_pages b) as count_systempage_id,a.systempage_date FROM ".PREFIX."_system_pages a order by a.systempage_date DESC";
+        $sql0 = "SELECT count(system_page_id) FROM ".PREFIX."_system_pages";
+        $result = $this->db->Execute($sql0);
+        if($result) {
+            $num_rows = intval($result->fields['0']);
+            $sql = "SELECT a.system_page_id,a.system_page_author,a.system_page_name,a.system_page_title,a.system_page_lang,a.system_page_date FROM ".PREFIX."_system_pages a order by a.system_page_date DESC";
             $result = $this->db->SelectLimit($sql,$num_string_rows,$offset);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows == 0 and $num_page > 1) {
-                    $this->registry->main_class->database_close();
-                    header("Location: index.php?path=admin_system_pages&func=index&lang=".$this->registry->sitelang);
-                    exit();
-                }
-                if($numrows > 0) {
-                    while(!$result->EOF) {
-                        if(!isset($numrows2)) {
-                            $numrows2 = intval($result->fields['5']);
-                        }
-                        $systempage_date = intval($result->fields['6']);
-                        $systempage_date = date("d.m.y H:i",$systempage_date);
-                        $systempage_all[] = array(
-                            "systempage_id" => intval($result->fields['0']),
-                            "systempage_author" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
-                            "systempage_name" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
-                            "systempage_title" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3'])),
-                            "systempage_lang" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4'])),
-                            "systempage_date" => $systempage_date,
-                            "count_systempage_id" => $numrows2
-                        );
-                        $result->MoveNext();
-                    }
-                    $this->registry->main_class->assign("systempage_all",$systempage_all);
-                    if(isset($numrows2)) {
-                        $num_pages = @ceil($numrows2 / $num_string_rows);
-                    } else {
-                        $num_pages = 0;
-                    }
-                    if($num_pages > 1) {
-                        if($num_page > 1) {
-                            $prevpage = $num_page - 1;
-                            $this->registry->main_class->assign("prevpage",$prevpage);
-                        } else {
-                            $this->registry->main_class->assign("prevpage","no");
-                        }
-                        for($i = 1;$i < $num_pages + 1;$i++) {
-                            if($i == $num_page) {
-                                $html[] = array("number" => $i,"param1" => "1");
-                            } else {
-                                $pagelink = 5;
-                                if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "2");
-                                }
-                                if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "3");
-                                }
-                                if(($i == 1) and ($num_page > $pagelink + 1)) {
-                                    $html[] = array("number" => $i,"param1" => "4");
-                                }
-                            }
-                        }
-                        if($num_page < $num_pages) {
-                            $nextpage = $num_page + 1;
-                            $this->registry->main_class->assign("nextpage",$nextpage);
-                        } else {
-                            $this->registry->main_class->assign("nextpage","no");
-                        }
-                        $this->registry->main_class->assign("html",$html);
-                        $this->registry->main_class->assign("totalrules",$numrows2);
-                        $this->registry->main_class->assign("num_pages",$num_pages);
-                    } else {
-                        $this->registry->main_class->assign("html","no");
-                    }
-                } else {
-                    $this->registry->main_class->assign("systempage_all","no");
-                    $this->registry->main_class->assign("html","no");
-                }
-            } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|showsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUSYSTEMPAGES'));
-                    $this->registry->main_class->assign("system_pagemessage","sqlerror");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|showsqlerror|".$this->registry->language);
-                exit();
+        }
+        if(!$result) {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+            return;
+        }
+        if(isset($result->fields['0'])) {
+            $row_exist = intval($result->fields['0']);
+        } else {
+            $row_exist = 0;
+        }
+        if($row_exist == 0 and $num_page > 1) {
+            $this->error = 'unknown_page';
+            return;
+        }
+        if($row_exist > 0) {
+            while(!$result->EOF) {
+                $systempage_date = intval($result->fields['5']);
+                $systempage_date = date("d.m.y H:i",$systempage_date);
+                $systempage_all[] = array(
+                    "systempage_id" => intval($result->fields['0']),
+                    "systempage_author" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
+                    "systempage_name" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
+                    "systempage_title" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3'])),
+                    "systempage_lang" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4'])),
+                    "systempage_date" => $systempage_date
+                );
+                $result->MoveNext();
             }
+            $this->result['systempage_all'] = $systempage_all;
+            if(isset($num_rows)) {
+                $num_pages = @ceil($num_rows / $num_string_rows);
+            } else {
+                $num_pages = 0;
+            }
+            if($num_pages > 1) {
+                if($num_page > 1) {
+                    $prevpage = $num_page - 1;
+                    $this->result['prevpage'] = $prevpage;
+                } else {
+                    $this->result['prevpage'] = "no";
+                }
+                for($i = 1;$i < $num_pages + 1;$i++) {
+                    if($i == $num_page) {
+                        $html[] = array("number" => $i,"param1" => "1");
+                    } else {
+                        $pagelink = 5;
+                        if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
+                            $html[] = array("number" => $i,"param1" => "2");
+                        }
+                        if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
+                            $html[] = array("number" => $i,"param1" => "3");
+                        }
+                        if(($i == 1) and ($num_page > $pagelink + 1)) {
+                            $html[] = array("number" => $i,"param1" => "4");
+                        }
+                    }
+                }
+                if($num_page < $num_pages) {
+                    $nextpage = $num_page + 1;
+                    $this->result['nextpage'] = $nextpage;
+                } else {
+                    $this->result['nextpage'] = "no";
+                }
+                $this->result['html'] = $html;
+                $this->result['totalrules'] = $num_rows;
+                $this->result['num_pages'] = $num_pages;
+            } else {
+                $this->result['html'] = "no";
+            }
+        } else {
+            $this->result['systempage_all'] = "no";
+            $this->result['html'] = "no";
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|show|".$num_page."|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUSYSTEMPAGES'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pages.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|show|".$num_page."|".$this->registry->language);
     }
 
 
     public function systempage_add() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->assign("systempage_author",trim($this->registry->main_class->get_admin_login()));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|add|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDRULESPAGETITLE'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pageadd.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|add|".$this->registry->language);
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $this->result['systempage_author'] = $this->registry->main_class->get_user_login();
     }
 
 
-    public function systempage_add_inbase() {
-        if(isset($_POST['systempage_title'])) {
-            $systempage_title = trim($_POST['systempage_title']);
-        }
-        if(isset($_POST['systempage_content'])) {
-            $systempage_content = trim($_POST['systempage_content']);
-        }
-        if(isset($_POST['systempage_name'])) {
-            $systempage_name = trim($_POST['systempage_name']);
-        }
-        if(isset($_POST['systempage_lang'])) {
-            $systempage_lang = trim($_POST['systempage_lang']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDRULESPAGETITLE'));
-        if((!isset($_POST['systempage_title'])or !isset($_POST['systempage_content']) or !isset($_POST['systempage_name']) or !isset($_POST['systempage_lang'])) or ($systempage_name == "" or $systempage_title == "" or $systempage_content == ""  or $systempage_lang == "")) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|addnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("system_pagemessage","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
+    public function systempage_add_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'systempage_title',
+                    'systempage_content',
+                    'systempage_name',
+                    'systempage_lang'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|addnotalldata|".$this->registry->language);
-            exit();
         }
-        $now = $this->registry->main_class->gettime();
-        $systempage_author = $this->registry->main_class->format_striptags(trim($this->registry->main_class->get_admin_login()));
+        if((!isset($array['systempage_title']) or !isset($array['systempage_content']) or !isset($array['systempage_name']) or !isset($array['systempage_lang'])) or ($data_array['systempage_name'] == "" or $data_array['systempage_title'] == "" or $data_array['systempage_content'] == "" or $data_array['systempage_lang'] == "")) {
+            $this->error = 'not_all_data';
+            return;
+        }
+        $now = $this->registry->main_class->get_time();
+        $systempage_author = $this->registry->main_class->format_striptags($this->registry->main_class->get_user_login());
         $systempage_author = $this->registry->main_class->processing_data($systempage_author,'need');
-        $systempage_title = $this->registry->main_class->format_striptags($systempage_title);
-        $systempage_title = $this->registry->main_class->processing_data($systempage_title);
-        $systempage_content = $this->registry->main_class->processing_data($systempage_content);
-        $systempage_content = substr(substr($systempage_content,0,-1),1);
-        $systempage_name = $this->registry->main_class->format_striptags($systempage_name);
-        $systempage_name = $this->registry->main_class->processing_data($systempage_name);
-        $systempage_lang = $this->registry->main_class->format_striptags($systempage_lang);
-        $systempage_lang = $this->registry->main_class->processing_data($systempage_lang);
-        $sql = "SELECT count(systempage_id) FROM ".PREFIX."_system_pages WHERE systempage_name=".$systempage_name." and systempage_lang=".$systempage_lang;
+        foreach($data_array as $key => $value) {
+            if(in_array($key,array('systempage_title','systempage_name','systempage_lang'))) {
+                $value = $this->registry->main_class->format_striptags($value);
+                $data_array[$key] = $this->registry->main_class->processing_data($value);
+            }
+        }
+        $data_array['systempage_content'] = $this->registry->main_class->processing_data($data_array['systempage_content']);
+        $data_array['systempage_content'] = substr(substr($data_array['systempage_content'],0,-1),1);
+        $sql = "SELECT count(system_page_id) FROM ".PREFIX."_system_pages WHERE system_page_name = ".$data_array['systempage_name']." and system_page_lang = ".$data_array['systempage_lang'];
         $result = $this->db->Execute($sql);
         if($result) {
             if(isset($result->fields['0'])) {
-                $numrows = intval($result->fields['0']);
+                $row_exist = intval($result->fields['0']);
             } else {
-                $numrows = 0;
+                $row_exist = 0;
             }
-            if($numrows > 0) {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|addfindsuchpage|".$this->registry->language)) {
-                    $this->registry->main_class->assign("system_pagemessage","findsuchsystempage");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|addfindsuchpage|".$this->registry->language);
-                exit();
+            if($row_exist > 0) {
+                $this->error = 'find_such_system_page';
+                return;
             }
         }
-        $systempage_id = $this->db->GenID(PREFIX."_system_pages_id");
+        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX."_system_pages_id",'system_page_id');
         $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
         if($check_db_need_lobs == 'yes') {
             $this->db->StartTrans();
-            $sql = "INSERT INTO ".PREFIX."_system_pages (systempage_id,systempage_author,systempage_name,systempage_title,systempage_date,systempage_content,systempage_lang)  VALUES ('$systempage_id',$systempage_author,$systempage_name,$systempage_title,'$now',empty_clob(),$systempage_lang)";
+            // TODO: Make meta data available
+            $sql = "INSERT INTO ".PREFIX."_system_pages (".$sequence_array['field_name_string']."system_page_author,system_page_name,system_page_title,system_page_date,system_page_content,system_page_lang,system_page_meta_title,system_page_meta_keywords,system_page_meta_description)  VALUES (".$sequence_array['sequence_value_string'].$systempage_author.",".$data_array['systempage_name'].",".$data_array['systempage_title'].",'".$now."',empty_clob(),".$data_array['systempage_lang'].",null,null,null)";
             $insert_result = $this->db->Execute($sql);
             if($insert_result === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $insert_result2 = $this->db->UpdateClob(PREFIX.'_system_pages','systempage_content',$systempage_content,'systempage_id='.$systempage_id);
+            $insert_result2 = $this->db->UpdateClob(PREFIX.'_system_pages','system_page_content',$data_array['systempage_content'],'system_page_id='.$sequence_array['sequence_value']);
             if($insert_result2 === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
@@ -224,7 +198,7 @@ class admin_system_pages extends model_base {
             }
             $this->db->CompleteTrans();
         } else {
-            $sql = "INSERT INTO ".PREFIX."_system_pages (systempage_id,systempage_author,systempage_name,systempage_title,systempage_date,systempage_content,systempage_lang)  VALUES ('$systempage_id',$systempage_author,$systempage_name,$systempage_title,'$now','$systempage_content',$systempage_lang)";
+            $sql = "INSERT INTO ".PREFIX."_system_pages (".$sequence_array['field_name_string']."system_page_author,system_page_name,system_page_title,system_page_date,system_page_content,system_page_lang,system_page_meta_title,system_page_meta_keywords,system_page_meta_description)  VALUES (".$sequence_array['sequence_value_string'].$systempage_author.",".$data_array['systempage_name'].",".$data_array['systempage_title'].",'".$now."','".$data_array['systempage_content']."',".$data_array['systempage_lang'].",null,null,null)";
             $insert_result = $this->db->Execute($sql);
             if($insert_result === false) {
                 $error_message = $this->db->ErrorMsg();
@@ -233,224 +207,151 @@ class admin_system_pages extends model_base {
             }
         }
         if($insert_result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|addsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("system_pagemessage","sqlerror");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|addsqlerror|".$this->registry->language);
-            exit();
-        } else {
-            $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|show");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|add|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("system_pagemessage","add");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|add|ok|".$this->registry->language);
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+            return;
         }
+        $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|show");
+        $this->result = 'add_done';
     }
 
 
-    public function systempage_status() {
-        if(isset($_GET['action'])) {
-            $action = trim($_GET['action']);
+    public function systempage_status($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['action'])) {
+            $action = trim($array['action']);
         }
-        if(isset($_GET['systempage_id'])) {
-            $systempage_id = intval($_GET['systempage_id']);
+        if(isset($array['systempage_id'])) {
+            $systempage_id = intval($array['systempage_id']);
         }
-        if((!isset($_GET['action']) or !isset($_GET['systempage_id'])) or ($action == "" or $systempage_id == 0)) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_system_pages&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if((!isset($array['action']) or !isset($array['systempage_id'])) or ($action == "" or $systempage_id == 0)) {
+            $this->error = 'empty_data';
+            return;
         }
         $action = $this->registry->main_class->format_striptags($action);
-        if($action == "delete") {
-            $sql = "DELETE FROM ".PREFIX."_system_pages WHERE systempage_id='".$systempage_id."'";
-            $result = $this->db->Execute($sql);
-            $num_result = $this->db->Affected_Rows();
-            if($result === false) {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-            }
-            $this->registry->main_class->assign("system_pagemessage","delete");
-        } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_system_pages&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if($action != "delete") {
+            $this->error = 'unknown_action';
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUSYSTEMPAGES'));
+        $sql = "DELETE FROM ".PREFIX."_system_pages WHERE system_page_id = '".$systempage_id."'";
+        $result = $this->db->Execute($sql);
+        $num_result = $this->db->Affected_Rows();
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|statussqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("system_pagemessage","sqlerror");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|statussqlerror|".$this->registry->language);
-            exit();
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|statusok|".$this->registry->language)) {
-                $this->registry->main_class->assign("system_pagemessage","notinsert2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|statusok|".$this->registry->language);
-            exit();
-        } else {
-            $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|show");
-            $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|edit|".$systempage_id);
-            $this->registry->main_class->systemdk_clearcache("modules|account|register|rules");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|".$action."|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|".$action."|ok|".$this->registry->language);
+            $this->error = 'not_done';
+            return;
         }
+        $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|show");
+        $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|edit|".$systempage_id);
+        $this->registry->main_class->systemdk_clearcache("modules|account|register|rules");
+        $this->result = $action.'_done';
     }
 
 
-    public function systempage_edit() {
-        if(isset($_GET['systempage_id'])) {
-            $systempage_id = intval($_GET['systempage_id']);
+    public function systempage_edit($systempage_id) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $systempage_id = intval($systempage_id);
+        if($systempage_id == 0) {
+            $this->error = 'no_id';
+            return;
         }
-        if(!isset($_GET['systempage_id']) or $systempage_id == 0) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_system_pages&func=index&lang=".$this->registry->sitelang);
-            exit();
+        // TODO: Make meta data available
+        $sql = "SELECT system_page_id,system_page_author,system_page_name,system_page_title,system_page_date,system_page_content,system_page_lang FROM ".PREFIX."_system_pages WHERE system_page_id = '".$systempage_id."'";
+        $result = $this->db->Execute($sql);
+        if(!$result) {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITRULESPAGETITLE'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|edit|".$systempage_id."|".$this->registry->language)) {
-            $sql = "SELECT systempage_id,systempage_author,systempage_name,systempage_title,systempage_date,systempage_content,systempage_lang FROM ".PREFIX."_system_pages WHERE systempage_id='".$systempage_id."'";
-            $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-            } else {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->assign("system_pagemessage","sqlerror");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editsqlerror|".$this->registry->language);
-                exit();
-            }
-            if($numrows == 0) {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editnotfind|".$this->registry->language)) {
-                    $this->registry->main_class->assign("system_pagemessage","notfind");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editnotfind|".$this->registry->language);
-                exit();
-            } else {
-                $systempage_content = $this->registry->main_class->extracting_data($result->fields['5']);
-                $systempage_all[] = array(
-                    "systempage_id" => intval($result->fields['0']),
-                    "systempage_author" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
-                    "systempage_name" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
-                    "systempage_title" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3'])),
-                    "systempage_date" => intval($result->fields['4']),
-                    "systempage_content" => $systempage_content,
-                    "systempage_lang" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']))
+        if(isset($result->fields['0'])) {
+            $row_exist = intval($result->fields['0']);
+        } else {
+            $row_exist = 0;
+        }
+        if($row_exist == 0) {
+            $this->error = 'not_found';
+            return;
+        }
+        $systempage_content = $this->registry->main_class->extracting_data($result->fields['5']);
+        $systempage_all[] = array(
+            "systempage_id" => intval($result->fields['0']),
+            "systempage_author" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
+            "systempage_name" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
+            "systempage_title" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3'])),
+            "systempage_date" => intval($result->fields['4']),
+            "systempage_content" => $systempage_content,
+            "systempage_lang" => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']))
+        );
+        $this->result['systempage_all'] = $systempage_all;
+    }
+
+
+    public function systempage_edit_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'systempage_name',
+                    'systempage_title',
+                    'systempage_content',
+                    'systempage_lang'
                 );
-                $this->registry->main_class->assign("systempage_all",$systempage_all);
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pageedit.html");
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|edit|".$systempage_id."|".$this->registry->language);
+                $keys2 = array(
+                    'systempage_id'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
             }
-        } else {
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|edit|".$systempage_id."|".$this->registry->language);
         }
-    }
-
-
-    public function systempage_edit_inbase() {
-        if(isset($_POST['systempage_id'])) {
-            $systempage_id = intval($_POST['systempage_id']);
+        if((!isset($array['systempage_id']) or !isset($array['systempage_name']) or !isset($array['systempage_title']) or !isset($array['systempage_content']) or !isset($array['systempage_lang'])) or ($data_array['systempage_id'] == 0 or $data_array['systempage_name'] == "" or $data_array['systempage_title'] == "" or $data_array['systempage_content'] == "" or $data_array['systempage_lang'] == "")) {
+            $this->error = 'not_all_data';
+            return;
         }
-        if(isset($_POST['systempage_name'])) {
-            $systempage_name = trim($_POST['systempage_name']);
-        }
-        if(isset($_POST['systempage_title'])) {
-            $systempage_title = trim($_POST['systempage_title']);
-        }
-        if(isset($_POST['systempage_content'])) {
-            $systempage_content = trim($_POST['systempage_content']);
-        }
-        if(isset($_POST['systempage_lang'])) {
-            $systempage_lang = trim($_POST['systempage_lang']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITRULESPAGETITLE'));
-        if((!isset($_POST['systempage_id']) or !isset($_POST['systempage_name']) or !isset($_POST['systempage_title']) or !isset($_POST['systempage_content']) or !isset($_POST['systempage_lang'])) or ($systempage_id == 0 or $systempage_name == "" or $systempage_title == "" or $systempage_content == "" or $systempage_lang == "")) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("system_pagemessage","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
+        $now = $this->registry->main_class->get_time();
+        foreach($data_array as $key => $value) {
+            if(in_array($key,array('systempage_title','systempage_name','systempage_lang'))) {
+                $value = $this->registry->main_class->format_striptags($value);
+                $data_array[$key] = $this->registry->main_class->processing_data($value);
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editnotalldata|".$this->registry->language);
-            exit();
         }
-        $now = $this->registry->main_class->gettime();
-        $systempage_name = $this->registry->main_class->format_striptags($systempage_name);
-        $systempage_name = $this->registry->main_class->processing_data($systempage_name);
-        $systempage_title = $this->registry->main_class->format_striptags($systempage_title);
-        $systempage_title = $this->registry->main_class->processing_data($systempage_title);
-        $systempage_content = $this->registry->main_class->processing_data($systempage_content);
-        $systempage_content = substr(substr($systempage_content,0,-1),1);
-        $systempage_lang = $this->registry->main_class->format_striptags($systempage_lang);
-        $systempage_lang = $this->registry->main_class->processing_data($systempage_lang);
-        $sql = "SELECT count(systempage_id) FROM ".PREFIX."_system_pages WHERE systempage_name=".$systempage_name." and systempage_lang=".$systempage_lang." and systempage_id!=".$systempage_id;
+        $data_array['systempage_content'] = $this->registry->main_class->processing_data($data_array['systempage_content']);
+        $data_array['systempage_content'] = substr(substr($data_array['systempage_content'],0,-1),1);
+        $sql = "SELECT count(system_page_id) FROM ".PREFIX."_system_pages WHERE system_page_name = ".$data_array['systempage_name']." and system_page_lang = ".$data_array['systempage_lang']." and system_page_id != ".$data_array['systempage_id'];
         $result = $this->db->Execute($sql);
         if($result) {
             if(isset($result->fields['0'])) {
-                $numrows = intval($result->fields['0']);
+                $row_exist = intval($result->fields['0']);
             } else {
-                $numrows = 0;
+                $row_exist = 0;
             }
-            if($numrows > 0) {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editfindsuchpage|".$this->registry->language)) {
-                    $this->registry->main_class->assign("system_pagemessage","findsuchsystempage");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editfindsuchpage|".$this->registry->language);
-                exit();
+            if($row_exist > 0) {
+                $this->error = 'find_such_system_page';
+                return;
             }
         }
         $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
         if($check_db_need_lobs == 'yes') {
             $this->db->StartTrans();
-            $sql = "UPDATE ".PREFIX."_system_pages SET systempage_name=$systempage_name,systempage_title=$systempage_title,systempage_date='$now',systempage_content=empty_clob(),systempage_lang=$systempage_lang WHERE systempage_id='$systempage_id'";
+            $sql = "UPDATE ".PREFIX."_system_pages SET system_page_name = ".$data_array['systempage_name'].",system_page_title = ".$data_array['systempage_title'].",system_page_date = '".$now."',system_page_content=empty_clob(),system_page_lang = ".$data_array['systempage_lang']." WHERE system_page_id = '".$data_array['systempage_id']."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
             if($result === false) {
@@ -458,7 +359,7 @@ class admin_system_pages extends model_base {
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $result2 = $this->db->UpdateClob(PREFIX.'_system_pages','systempage_content',$systempage_content,'systempage_id='.$systempage_id);
+            $result2 = $this->db->UpdateClob(PREFIX.'_system_pages','system_page_content',$data_array['systempage_content'],'system_page_id = '.$data_array['systempage_id']);
             if($result2 === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
@@ -467,7 +368,7 @@ class admin_system_pages extends model_base {
             }
             $this->db->CompleteTrans();
         } else {
-            $sql = "UPDATE ".PREFIX."_system_pages SET systempage_name=$systempage_name,systempage_title=$systempage_title,systempage_date='$now',systempage_content='$systempage_content',systempage_lang=$systempage_lang WHERE systempage_id='$systempage_id'";
+            $sql = "UPDATE ".PREFIX."_system_pages SET system_page_name = ".$data_array['systempage_name'].",system_page_title = ".$data_array['systempage_title'].",system_page_date = '".$now."',system_page_content = '".$data_array['systempage_content']."',system_page_lang = ".$data_array['systempage_lang']." WHERE system_page_id = '".$data_array['systempage_id']."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
             if($result === false) {
@@ -477,37 +378,16 @@ class admin_system_pages extends model_base {
             }
         }
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("system_pagemessage","sqlerror");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editok|".$this->registry->language)) {
-                $this->registry->main_class->assign("system_pagemessage","notinsert2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|error|editok|".$this->registry->language);
-            exit();
-        } else {
-            $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|show");
-            $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|edit|".$systempage_id);
-            $this->registry->main_class->systemdk_clearcache("modules|account|register|rules");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|save|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/system_pages/system_pagemessage.html");
-                $this->registry->main_class->assign("system_pagemessage","editok");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|system_pages|save|ok|".$this->registry->language);
+            $this->error = 'not_done';
+            return;
         }
+        $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|show");
+        $this->registry->main_class->systemdk_clearcache("systemadmin|modules|system_pages|edit|".$data_array['systempage_id']);
+        $this->registry->main_class->systemdk_clearcache("modules|account|register|rules");
+        $this->result = 'edit_done';
     }
 }
-
-?>

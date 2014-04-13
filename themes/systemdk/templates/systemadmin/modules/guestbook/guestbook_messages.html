@@ -2,7 +2,7 @@
 </div>
 <center>
 <br>
-{if $guestbook_message eq "sqlerror"}
+{if $guestbook_message eq "sqlerror" or $guestbook_message eq "show_current_sql_error" or $guestbook_message eq "show_pending_sql_error" or $guestbook_message eq "status_sql_error" or $guestbook_message eq "edit_sql_error"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
 {nocache}
 {if $error ne "no"}
@@ -25,21 +25,21 @@
  {else}
  <a href="index.php?path=admin_guestbook&amp;func=index&amp;pend=1&amp;lang={$site_language}" class="link">{#_GUESTBOOKPENDLIST#}</a>
  {/if}
-{elseif $guestbook_message eq "notsave"}
+{elseif $guestbook_message eq "status_ok" or $guestbook_message eq "edit_ok"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $guestbook_message eq "notfind"}
+{elseif $guestbook_message eq "edit_not_found"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_GUESTBOOKNOTFIND#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $guestbook_message eq "notalldata"}
+{elseif $guestbook_message eq "edit_not_all_data" or $guestbook_message eq "conf_not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTALLDATA#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $guestbook_message eq "incorrectemail"}
+{elseif $guestbook_message eq "edit_incorrect_email"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_GUESTBOOKINCORRECTEMAIL#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $guestbook_message eq "editokcurrent" or $guestbook_message eq "editokpending"}
+{elseif $guestbook_message eq "edit_ok_current" or $guestbook_message eq "edit_ok_pending"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_GUESTBOOKEDITOK#}</span><br><br>
- {if $guestbook_message eq "editokcurrent"}
+ {if $guestbook_message eq "edit_ok_current"}
  <a href="index.php?path=admin_guestbook&amp;func=index&amp;lang={$site_language}" class="link">{#_GUESTBOOKTITLE#}</a>
  {else}
  <a href="index.php?path=admin_guestbook&amp;func=index&amp;pend=1&amp;lang={$site_language}" class="link">{#_GUESTBOOKPENDLIST#}</a>
@@ -47,13 +47,13 @@
 {elseif $guestbook_message eq "add"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_GUESTBOOKADDOK#}</span><br><br>
 <a href="index.php?path=admin_guestbook&amp;func=index&amp;pend=1&amp;lang={$site_language}" class="link">{#_GUESTBOOKPENDLIST#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_guestbook&amp;func=index&amp;lang={$site_language}" class="link">{#_GUESTBOOKTITLE#}</a>
-{elseif $guestbook_message eq "nofile"}
+{elseif $guestbook_message eq "conf_no_file"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_GUESTBOOKCONFIGNOFILE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $guestbook_message eq "nowrite"}
+{elseif $guestbook_message eq "conf_no_write"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_GUESTBOOKCONFIGNOTWRITE#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $guestbook_message eq "writeok"}
+{elseif $guestbook_message eq "config_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_GUESTBOOKCONFIGWRITEOK#}</span><br><br>
 <a href="index.php?path=admin_guestbook&amp;func=index&amp;lang={$site_language}" class="link">{#_GUESTBOOK#}</a>
 {/if}

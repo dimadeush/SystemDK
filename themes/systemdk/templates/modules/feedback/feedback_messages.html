@@ -1,26 +1,26 @@
 <br><br><center>
 {config_load file="$language/error.conf"}
-{if $message eq "notalldata"}
+{if $feedback_message eq "not_all_data"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_USERNOTALLDATA#}</span><br><br>
 <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
-{elseif $message eq "checkkode"}
+{elseif $feedback_message eq "check_code"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_CHECKKODE#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/feedback/{else}/{$system_dir}index.php?path=feedback&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
-{elseif $message eq "useremail"}
+{elseif $feedback_message eq "user_email"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_ERROR_ACCOUNTNOTCORRECTEMAIL#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/feedback/{else}/{$system_dir}index.php?path=feedback&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
-{elseif $message eq "findsuchuser"}
+{elseif $feedback_message eq "find_such_user"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_FEEDBACKFINDSUCHUSER#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/feedback/{else}/{$system_dir}index.php?path=feedback&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
-{elseif $message eq "messagelength"}
+{elseif $feedback_message eq "message_length"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_FEEDBACKMESSAGETOOBIG#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/feedback/{else}/{$system_dir}index.php?path=feedback&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
-{elseif $message eq "notinsert"}
+{elseif $feedback_message eq "not_insert"}
 <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
 <span class="textbig">{#_SYSTEMERROR#}:</span><br><br>
 {nocache}
@@ -32,10 +32,10 @@
 {/nocache}
 <br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $message eq "sendok"}
+{elseif $feedback_message eq "send_ok"}
 <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_FEEDBACKMESSAGESENDOK#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>
-{elseif $message eq "maillimit"}
+{elseif $feedback_message eq "mail_limit"}
 <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
 <span class="textbig">{#_FEEDBACKMAILLIMIT#}</span><br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_GOONMAINPAGELINK#}</a>

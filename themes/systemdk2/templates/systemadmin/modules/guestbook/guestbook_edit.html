@@ -35,10 +35,10 @@
 <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_GUESTBOOKPOSTSTATUS#}:</span> </td><td bgcolor="{#color7#}" class="td2"><select name="post_status" class="formenter"> {if $adminmodules_guestbook_pending eq "yes"}<option value="0" {if $posts_all_tpl.post_status eq "0"} selected {/if}>{#_GUESTBOOKSTATUSPENDING#}</option><option value="1">{#_GUESTBOOKSTATUSON#}</option>{else}<option value="1" {if $posts_all_tpl.post_status eq "1"} selected {/if}>{#_GUESTBOOKSTATUSON#}</option><option value="2" {if $posts_all_tpl.post_status eq "2"} selected {/if}>{#_GUESTBOOKSTATUSOFF#}</option>{/if}</select></td>
 </tr>
 <tr align="left">
-<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_GUESTBOOKUNSWER#}:</span> </td><td bgcolor="{#color7#}" class="td2"><textarea name="post_unswer" rows="9" cols="75" class="formenter">{$posts_all_tpl.post_unswer}</textarea></td>
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_GUESTBOOKANSWER#}:</span> </td><td bgcolor="{#color7#}" class="td2"><textarea name="post_answer" rows="9" cols="75" class="formenter">{$posts_all_tpl.post_answer}</textarea></td>
 </tr>
 <tr align="left">
-<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_GUESTBOOKPOSTUNSWERDATE#}:</span> </td><td bgcolor="{#color7#}" class="td2">{if $posts_all_tpl.post_unswer_date ne "no"}<input type="date" name="post_unswer_date" value="{$posts_all_tpl.post_unswer_date}" maxlength="10" class="formenter">&nbsp;<input type="text" name="post_unswer_hour" value="{$posts_all_tpl.post_unswer_hour}" maxlength="2" size="4" class="formenter"><span class="text">{#_GUESTBOOKHOURS#}</span>&nbsp;<input type="text" name="post_unswer_minute" value="{$posts_all_tpl.post_unswer_minute}" maxlength="2" size="4" class="formenter"><span class="text">{#_GUESTBOOKMINUTES#}</span>{else}<span class="text">{#_GUESTBOOKANSWERNO#}</span><input type="hidden" name="post_unswer_date" value="no">{/if}</td>
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_GUESTBOOKPOSTANSWERDATE#}:</span> </td><td bgcolor="{#color7#}" class="td2">{if $posts_all_tpl.post_answer_date ne "no"}<input type="date" name="post_answer_date" value="{$posts_all_tpl.post_answer_date}" maxlength="10" class="formenter">&nbsp;<input type="text" name="post_answer_hour" value="{$posts_all_tpl.post_answer_hour}" maxlength="2" size="4" class="formenter"><span class="text">{#_GUESTBOOKHOURS#}</span>&nbsp;<input type="text" name="post_answer_minute" value="{$posts_all_tpl.post_answer_minute}" maxlength="2" size="4" class="formenter"><span class="text">{#_GUESTBOOKMINUTES#}</span>{else}<span class="text">{#_GUESTBOOKANSWERNO#}</span><input type="hidden" name="post_answer_date" value="no">{/if}</td>
 </tr>
 <tr>
 <td colspan="2" align="center"><br><input type="submit" value="{#_GUESTBOOKBUTTONSAVE#}" class="button"></td>
@@ -59,7 +59,7 @@ $.tools.dateinput.localize("{$language}",  {
 
  $(":date").dateinput({
  lang: '{$language}',
- format: 'dd.mm.yy',
+ format: 'dd.mm.yyyy',
  selectors: true,
  firstDay: 1
  }

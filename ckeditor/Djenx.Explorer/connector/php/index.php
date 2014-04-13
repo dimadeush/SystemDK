@@ -30,7 +30,7 @@ function checkAllow_DjenxExplorer()
 	//return true;	// !!! for example  (в рабочем проекте напишите свой обработчик)
 
 	if (session_start()) {
-		if (isset($_SESSION['systemdk_if_admin']) && $_SESSION['systemdk_if_admin'] == 'yes') {
+		if (isset($_SESSION['systemdk_is_admin']) && $_SESSION['systemdk_is_admin'] == 'yes') {
 			return true;
 		}
 	}

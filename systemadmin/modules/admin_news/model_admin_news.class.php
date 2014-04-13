@@ -4,26 +4,39 @@
  * File:      model_admin_news.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 class admin_news extends model_base {
 
 
+    private $model_news;
+    private $error;
+    private $error_array;
+    private $result;
+
+
     public function __construct($registry) {
         parent::__construct($registry);
-        $this->registry->main_class->modules_news_programm();
+        $this->model_news = singleton::getinstance('news',$registry);
+    }
+
+
+    public function get_property_value($property) {
+        if(isset($this->$property) and in_array($property,array('error','error_array','result'))) {
+            return $this->$property;
+        }
+        return false;
     }
 
 
     public function index() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONNEWSPAGETITLE'));
-        $sql = "SELECT (SELECT count(a.news_id) FROM ".PREFIX."_news_".$this->registry->sitelang." a) as count1, (SELECT count(b.news_id) FROM ".PREFIX."_news_auto_".$this->registry->sitelang." b) as count2 ".$this->registry->main_class->check_db_need_from_clause();
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $sql = "SELECT (SELECT count(*) FROM ".PREFIX."_news_".$this->registry->sitelang." WHERE news_auto = '0') as count1, (SELECT count(*) FROM ".PREFIX."_news_".$this->registry->sitelang." WHERE news_auto = '1') as count2 ".$this->registry->main_class->check_db_need_from_clause();
         $result = $this->db->Execute($sql);
         if($result) {
             if(isset($result->fields['0'])) {
@@ -32,576 +45,449 @@ class admin_news extends model_base {
                 $count_news = 0;
             }
             if(isset($result->fields['1'])) {
-                $count_waitnews = intval($result->fields['1']);
+                $count_wait_news = intval($result->fields['1']);
             } else {
-                $count_waitnews = 0;
+                $count_wait_news = 0;
             }
         } else {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|sqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|sqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+            return;
         }
-        $this->registry->main_class->assign("modules_news_num_news",$count_news);
-        $this->registry->main_class->assign("modules_news_num_programmnews",$count_waitnews);
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|show|".$this->registry->language)) {
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|show|".$this->registry->language);
+        $this->result['modules_news_num_news'] = $count_news;
+        $this->result['modules_news_num_programmnews'] = $count_wait_news;
     }
 
 
-    public function news_current() {
-        if(isset($_GET['prog']) and intval($_GET['prog']) != 0 and intval($_GET['prog']) == 1) {
-            $temp = "programm";
-            $tbl = "_auto";
+    public function news_current($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['prog']) and intval($array['prog']) != 0 and intval($array['prog']) == 1) {
+            $temp = "program";
+            $news_auto = '1';
             $sql_order = "ASC";
         } else {
             $temp = "current";
-            $tbl = "";
+            $news_auto = '0';
             $sql_order = "DESC";
         }
-        if(isset($_GET['num_page']) and intval($_GET['num_page']) !== 0) {
-            $num_page = intval($_GET['num_page']);
-            if($num_page == 0) {
-                $num_page = 1;
-            }
+        if(isset($array['num_page']) and intval($array['num_page']) != 0) {
+            $num_page = intval($array['num_page']);
         } else {
             $num_page = 1;
         }
         $num_string_rows = SYSTEMDK_ADMINROWS_PERPAGE;
         $offset = ($num_page - 1) * $num_string_rows;
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|show".$temp."|".$num_page."|".$this->registry->language)) {
-            $sql = "SELECT a.news_id,a.news_author,a.news_category_id,a.news_title,a.news_date,a.news_valueview,a.news_status,a.news_termexpire,a.news_termexpireaction,a.news_onhome,b.news_category_name,(SELECT count(c.news_id) FROM ".PREFIX."_news".$tbl."_".$this->registry->sitelang." c) as count_news_id FROM ".PREFIX."_news".$tbl."_".$this->registry->sitelang." a LEFT OUTER JOIN ".PREFIX."_news_categories_".$this->registry->sitelang." b on a.news_category_id=b.news_category_id order by a.news_date ".$sql_order;
+        $sql = "SELECT count(*) FROM ".PREFIX."_news_".$this->registry->sitelang." WHERE news_auto = '".$news_auto."'";
+        $result = $this->db->Execute($sql);
+        if($result) {
+            $num_rows = intval($result->fields['0']);
+            $sql = "SELECT a.news_id,a.news_author,a.news_category_id,a.news_title,a.news_date,a.news_value_view,a.news_status,a.news_term_expire,a.news_term_expire_action,a.news_on_home,b.news_category_name FROM ".PREFIX."_news_".$this->registry->sitelang." a LEFT OUTER JOIN ".PREFIX."_news_categories_".$this->registry->sitelang." b on a.news_category_id = b.news_category_id WHERE a.news_auto = '".$news_auto."' order by a.news_date ".$sql_order;
             $result = $this->db->SelectLimit($sql,$num_string_rows,$offset);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows == 0 and $num_page > 1) {
-                    $this->registry->main_class->database_close();
-                    header("Location: index.php?path=admin_news&func=news_current&lang=".$this->registry->sitelang);
-                    exit();
-                }
-                if($numrows > 0) {
-                    while(!$result->EOF) {
-                        if(!isset($numrows2)) {
-                            $numrows2 = intval($result->fields['11']);
-                        }
-                        $news_id = intval($result->fields['0']);
-                        $news_author = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
-                        $news_category_id = intval($result->fields['2']);
-                        if($news_category_id != 0 and isset($result->fields['10']) and trim($result->fields['10']) != "") {
-                            $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['10']));
-                        } else {
-                            $news_category_name = "no";
-                        }
-                        $news_title = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
-                        $news_date = intval($result->fields['4']);
-                        $news_date = date("d.m.y H:i",$news_date);
-                        $news_valueview = intval($result->fields['5']);
-                        $news_status = intval($result->fields['6']);
-                        $news_termexpire = intval($result->fields['7']);
-                        if(!isset($news_termexpire) or $news_termexpire == "" or $news_termexpire == 0) {
-                            $news_termexpire = "unlim";
-                        } else {
-                            $news_termexpire = "notunlim";
-                        }
-                        $news_termexpireaction = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['8']));
-                        $news_onhome = intval($result->fields['9']);
-                        $news_all[] = array(
-                            "news_id" => $news_id,
-                            "news_author" => $news_author,
-                            "news_category_id" => $news_category_id,
-                            "news_category_name" => $news_category_name,
-                            "news_title" => $news_title,
-                            "news_date" => $news_date,
-                            "news_valueview" => $news_valueview,
-                            "news_status" => $news_status,
-                            "news_termexpire" => $news_termexpire,
-                            "news_termexpireaction" => $news_termexpireaction,
-                            "news_onhome" => $news_onhome,
-                            "count_news_id" => $numrows2
-                        );
-                        $result->MoveNext();
-                    }
-                    $this->registry->main_class->assign("news_all",$news_all);
-                    if(isset($numrows2)) {
-                        $num_pages = @ceil($numrows2 / $num_string_rows);
-                    } else {
-                        $num_pages = 0;
-                    }
-                    if($num_pages > 1) {
-                        if($num_page > 1) {
-                            $prevpage = $num_page - 1;
-                            $this->registry->main_class->assign("prevpage",$prevpage);
-                        } else {
-                            $this->registry->main_class->assign("prevpage","no");
-                        }
-                        for($i = 1;$i < $num_pages + 1;$i++) {
-                            if($i == $num_page) {
-                                $html[] = array("number" => $i,"param1" => "1");
-                            } else {
-                                $pagelink = 5;
-                                if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "2");
-                                }
-                                if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "3");
-                                }
-                                if(($i == 1) and ($num_page > $pagelink + 1)) {
-                                    $html[] = array("number" => $i,"param1" => "4");
-                                }
-                            }
-                        }
-                        if($num_page < $num_pages) {
-                            $nextpage = $num_page + 1;
-                            $this->registry->main_class->assign("nextpage",$nextpage);
-                        } else {
-                            $this->registry->main_class->assign("nextpage","no");
-                        }
-                        $this->registry->main_class->assign("html",$html);
-                        $this->registry->main_class->assign("totalnews",$numrows2);
-                        $this->registry->main_class->assign("num_pages",$num_pages);
-                    } else {
-                        $this->registry->main_class->assign("html","no");
-                    }
-                } else {
-                    $this->registry->main_class->assign("news_all","no");
-                    $this->registry->main_class->assign("html","no");
-                }
+        }
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
             } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|showsqlerror".$temp."|".$this->registry->language)) {
-                    if($temp != "programm") {
-                        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONCURRNEWSPAGETITLE'));
-                    } else {
-                        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONPROGNEWSPAGETITLE'));
-                    }
-                    $this->registry->main_class->assign("news_update","notinsert");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|showsqlerror".$temp."|".$this->registry->language);
-                exit();
+                $row_exist = 0;
             }
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|show".$temp."|".$num_page."|".$this->registry->language)) {
-            if($temp != "programm") {
-                $this->registry->main_class->assign("adminmodules_news_programm","no");
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONCURRNEWSPAGETITLE'));
-            } else {
-                $this->registry->main_class->assign("adminmodules_news_programm","yes");
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONPROGNEWSPAGETITLE'));
+            if($row_exist == 0 and $num_page > 1) {
+                $this->error = 'unknown_page';
+                return;
             }
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_current.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|show".$temp."|".$num_page."|".$this->registry->language);
-    }
-
-
-    public function news_edit() {
-        if(isset($_GET['news_id'])) {
-            $news_id = intval($_GET['news_id']);
-        }
-        if(!isset($_GET['news_id']) or $news_id == 0) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_news&func=index&lang=".$this->registry->sitelang);
-            exit();
-        }
-        if(isset($_GET['prog']) and intval($_GET['prog']) != 0 and intval($_GET['prog']) == 1) {
-            $temp = "programm";
-            $tbl = "_auto";
-            $this->registry->main_class->assign("include_jquery","yes");
-            $this->registry->main_class->assign("include_jquery_data","dateinput");
-        } else {
-            $temp = "";
-            $tbl = "";
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if($temp != "programm") {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITCURRNEWSPAGETITLE'));
-        } else {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITPROGNEWSPAGETITLE'));
-        }
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|edit".$temp."|".$news_id."|".$this->registry->language)) {
-            $sql = "SELECT news_id,news_author,news_category_id,news_title,news_date,news_images,news_short_text,news_content,news_readcounter,news_notes,news_valueview,news_status,news_termexpire,news_termexpireaction,news_onhome,news_link FROM ".PREFIX."_news".$tbl."_".$this->registry->sitelang." WHERE news_id='".$news_id."'";
-            $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows > 0) {
+            if($row_exist > 0) {
+                while(!$result->EOF) {
                     $news_id = intval($result->fields['0']);
                     $news_author = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
                     $news_category_id = intval($result->fields['2']);
+                    if($news_category_id != 0 and isset($result->fields['10']) and trim($result->fields['10']) != "") {
+                        $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['10']));
+                    } else {
+                        $news_category_name = "no";
+                    }
                     $news_title = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
                     $news_date = intval($result->fields['4']);
-                    if($temp == "programm") {
-                        $news_date2 = date("d.m.y",$news_date);
+                    $news_date = date("d.m.Y H:i",$news_date);
+                    $news_valueview = intval($result->fields['5']);
+                    $news_status = intval($result->fields['6']);
+                    $news_termexpire = intval($result->fields['7']);
+                    if(!isset($news_termexpire) or $news_termexpire == "" or $news_termexpire == 0) {
+                        $news_termexpire = "unlim";
                     } else {
-                        $news_date2 = date("d.m.y H:i",$news_date);
+                        $news_termexpire = "notunlim";
                     }
-                    $news_hour = date("H",$news_date);
-                    $news_minute = date("i",$news_date);
-                    $news_images = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5']));
-                    if(!isset($news_images) or $news_images == "" or $news_images == 0) {
-                        $news_images = "no";
-                    }
-                    $news_short_text = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']));
-                    $news_content = $this->registry->main_class->extracting_data($result->fields['7']);
-                    $news_readcounter = intval($result->fields['8']);
-                    $news_notes = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['9']));
-                    $news_valueview = intval($result->fields['10']);
-                    $news_status = intval($result->fields['11']);
-                    $news_termexpire = intval($result->fields['12']);
-                    if(isset($news_termexpire) and $news_termexpire !== "" and $news_termexpire !== 0) {
-                        $news_termexpireday = intval((($news_termexpire - $this->registry->main_class->gettime()) / 3600) / 24);
-                        $news_termexpire = date("d.m.y H:i",$news_termexpire);
-                    } else {
-                        $news_termexpire = "";
-                        $news_termexpireday = "";
-                    }
-                    $news_termexpireaction = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['13']));
-                    $news_onhome = intval($result->fields['14']);
-                    $news_link = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['15']));
-                    $sql2 = "SELECT news_category_id,news_category_name FROM ".PREFIX."_news_categories_".$this->registry->sitelang;
-                    $result2 = $this->db->Execute($sql2);
-                    if($result2) {
-                        if(isset($result2->fields['0'])) {
-                            $numrows2 = intval($result2->fields['0']);
-                        } else {
-                            $numrows2 = 0;
-                        }
-                        if($numrows2 > 0) {
-                            while(!$result2->EOF) {
-                                $news_category_id2 = intval($result2->fields['0']);
-                                $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result2->fields['1']));
-                                $category_all[] = array(
-                                    "news_category_id" => $news_category_id2,
-                                    "news_category_name" => $news_category_name
-                                );
-                                $result2->MoveNext();
-                            }
-                            $this->registry->main_class->assign("category_all",$category_all);
-                        } else {
-                            $this->registry->main_class->assign("category_all","no");
-                        }
-                    } else {
-                        $error_message = $this->db->ErrorMsg();
-                        $error_code = $this->db->ErrorNo();
-                        $error[] = array("code" => $error_code,"message" => $error_message);
-                        $this->registry->main_class->assign("error",$error);
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editsqlerror".$temp."|".$this->registry->language)) {
-                            $this->registry->main_class->assign("news_update","notinsert");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editsqlerror".$temp."|".$this->registry->language);
-                        exit();
-                    }
-                    require_once('../modules/news/news_config.inc');
+                    $news_termexpireaction = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['8']));
+                    $news_onhome = intval($result->fields['9']);
                     $news_all[] = array(
                         "news_id" => $news_id,
                         "news_author" => $news_author,
                         "news_category_id" => $news_category_id,
+                        "news_category_name" => $news_category_name,
                         "news_title" => $news_title,
                         "news_date" => $news_date,
-                        "news_hour" => $news_hour,
-                        "news_minute" => $news_minute,
-                        "news_date2" => $news_date2,
-                        "news_images" => $news_images,
-                        "news_short_text" => $news_short_text,
-                        "news_content" => $news_content,
-                        "news_readcounter" => $news_readcounter,
-                        "news_notes" => $news_notes,
                         "news_valueview" => $news_valueview,
                         "news_status" => $news_status,
                         "news_termexpire" => $news_termexpire,
-                        "news_termexpireday" => $news_termexpireday,
                         "news_termexpireaction" => $news_termexpireaction,
-                        "news_onhome" => $news_onhome,
-                        "news_link" => $news_link,
-                        "image_path" => MODULE_NEWS_IMAGE_PATH
+                        "news_onhome" => $news_onhome
                     );
-                    $this->registry->main_class->assign("news_all",$news_all);
+                    $result->MoveNext();
+                }
+                $this->result['news_all'] = $news_all;
+                if(isset($num_rows)) {
+                    $num_pages = @ceil($num_rows / $num_string_rows);
                 } else {
-                    if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnotfind".$temp."|".$this->registry->language)) {
-                        $this->registry->main_class->assign("news_update","notfind");
-                        $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                        $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
+                    $num_pages = 0;
+                }
+                if($num_pages > 1) {
+                    if($num_page > 1) {
+                        $prevpage = $num_page - 1;
+                        $this->result['prevpage'] = $prevpage;
+                    } else {
+                        $this->result['prevpage'] = "no";
                     }
-                    $this->registry->main_class->database_close();
-                    $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnotfind".$temp."|".$this->registry->language);
-                    exit();
+                    for($i = 1;$i < $num_pages + 1;$i++) {
+                        if($i == $num_page) {
+                            $html[] = array("number" => $i,"param1" => "1");
+                        } else {
+                            $pagelink = 5;
+                            if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
+                                $html[] = array("number" => $i,"param1" => "2");
+                            }
+                            if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
+                                $html[] = array("number" => $i,"param1" => "3");
+                            }
+                            if(($i == 1) and ($num_page > $pagelink + 1)) {
+                                $html[] = array("number" => $i,"param1" => "4");
+                            }
+                        }
+                    }
+                    if($num_page < $num_pages) {
+                        $nextpage = $num_page + 1;
+                        $this->result['nextpage'] = $nextpage;
+                    } else {
+                        $this->result['nextpage'] = "no";
+                    }
+                    $this->result['html'] = $html;
+                    $this->result['totalnews'] = $num_rows;
+                    $this->result['num_pages'] = $num_pages;
+                } else {
+                    $this->result['html'] = "no";
                 }
             } else {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editsqlerror".$temp."|".$this->registry->language)) {
-                    $this->registry->main_class->assign("news_update","notinsert");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editsqlerror".$temp."|".$this->registry->language);
-                exit();
+                $this->result['news_all'] = "no";
+                $this->result['html'] = "no";
             }
+        } else {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'show_sql_error_'.$temp;
+            $this->error_array = $error;
+            return;
         }
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|edit".$temp."|".$news_id."|".$this->registry->language)) {
-            if($temp != "programm") {
-                $this->registry->main_class->assign("adminmodules_news_programm","no");
-            } else {
-                $this->registry->main_class->assign("adminmodules_news_programm","yes");
-            }
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_edit.html");
+        if($temp != "program") {
+            $this->result['adminmodules_news_program'] = "no";
+        } else {
+            $this->result['adminmodules_news_program'] = "yes";
         }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|edit".$temp."|".$news_id."|".$this->registry->language);
     }
 
 
-    public function news_edit_inbase() {
-        if(isset($_POST['news_id'])) {
-            $news_id = intval($_POST['news_id']);
+    public function news_edit($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['news_id'])) {
+            $news_id = intval($array['news_id']);
         }
-        if(isset($_POST['news_author'])) {
-            $news_author = trim($_POST['news_author']);
+        if(!isset($array['news_id']) or $news_id == 0) {
+            $this->error = 'empty_data';
+            return;
         }
-        if(isset($_POST['news_category_id'])) {
-            $news_category_id = intval($_POST['news_category_id']);
-        }
-        if(isset($_POST['news_title'])) {
-            $news_title = trim($_POST['news_title']);
-        }
-        if(isset($_POST['news_date'])) {
-            if(isset($_POST['prog']) and intval($_POST['prog']) != 0 and intval($_POST['prog']) == 1) {
-                $news_date = trim($_POST['news_date']);
-            } else {
-                $news_date = intval($_POST['news_date']);
-            }
-        }
-        if(isset($_POST['news_newdate'])) {
-            $news_newdate = trim($_POST['news_newdate']);
-        }
-        if(isset($_POST['delete_picture'])) {
-            $delete_picture = trim($_POST['delete_picture']);
-        }
-        if(isset($_POST['news_short_text'])) {
-            $news_short_text = trim($_POST['news_short_text']);
-        }
-        if(isset($_POST['news_content'])) {
-            $news_content = trim($_POST['news_content']);
-        }
-        if(isset($_POST['news_readcounter'])) {
-            $news_readcounter = intval($_POST['news_readcounter']);
-        }
-        if(isset($_POST['news_notes'])) {
-            $news_notes = trim($_POST['news_notes']);
-        }
-        if(isset($_POST['news_valueview'])) {
-            $news_valueview = intval($_POST['news_valueview']);
-        }
-        if(isset($_POST['news_status'])) {
-            $news_status = intval($_POST['news_status']);
-        }
-        if(isset($_POST['news_termexpire'])) {
-            $news_termexpire = intval($_POST['news_termexpire']);
-        }
-        if(isset($_POST['news_termexpireaction'])) {
-            $news_termexpireaction = trim($_POST['news_termexpireaction']);
-        }
-        if(isset($_POST['news_onhome'])) {
-            $news_onhome = intval($_POST['news_onhome']);
-        }
-        if(isset($_POST['news_link'])) {
-            $news_link = trim($_POST['news_link']);
-        }
-        if(isset($_POST['prog']) and intval($_POST['prog']) != 0 and intval($_POST['prog']) == 1) {
-            $temp = "programm";
-            $tbl = "_auto";
+        if(isset($array['prog']) and intval($array['prog']) != 0 and intval($array['prog']) == 1) {
+            $temp = "program";
+            $this->result['include_jquery'] = 'yes';
+            $this->result['include_jquery_data'] = 'dateinput';
         } else {
             $temp = "";
-            $tbl = "";
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if($temp != "programm") {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITCURRNEWSPAGETITLE'));
-        } else {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITPROGNEWSPAGETITLE'));
-        }
-        if((!isset($_POST['news_id']) or !isset($_POST['news_author']) or !isset($_POST['news_category_id']) or !isset($_POST['news_title']) or !isset($_POST['news_date']) or !isset($_POST['news_newdate']) or !isset($_POST['delete_picture']) or !isset($_POST['news_short_text']) or !isset($_POST['news_content']) or !isset($_POST['news_readcounter']) or !isset($_POST['news_notes']) or !isset($_POST['news_valueview']) or !isset($_POST['news_status']) or !isset($_POST['news_termexpire']) or !isset($_POST['news_termexpireaction']) or !isset($_POST['news_onhome']) or !isset($_POST['news_link'])) or ($news_id == 0 or $news_author == "" or $news_title == "" or ((isset($_POST['prog']) and intval($_POST['prog']) != 0 and intval($_POST['prog']) == 1 and $news_date == "") or (!isset($_POST['prog']) and $news_date == 0)) or $news_newdate == "" or $delete_picture == "" or $news_short_text == "" or $news_content == "")) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnotalldata".$temp."|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnotalldata".$temp."|".$this->registry->language);
-            exit();
-        }
-        if($temp != "programm" and isset($news_newdate) and $news_newdate == 'yes') {
-            $news_date = $this->registry->main_class->gettime();
-        } elseif($temp == "programm") {
-            $news_date = $this->registry->main_class->format_striptags($news_date);
-            if(isset($_POST['news_hour'])) {
-                $news_hour = intval($_POST['news_hour']);
+        $sql = "SELECT news_id,news_author,news_category_id,news_title,news_date,news_images,news_short_text,news_content,news_read_counter,news_notes,news_value_view,news_status,news_term_expire,news_term_expire_action,news_on_home,news_link FROM ".PREFIX."_news_".$this->registry->sitelang." WHERE news_id = '".$news_id."'";
+        $result = $this->db->Execute($sql);
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
             } else {
-                $news_hour = 0;
+                $row_exist = 0;
             }
-            if(isset($_POST['news_minute'])) {
-                $news_minute = intval($_POST['news_minute']);
+            if($row_exist > 0) {
+                $news_id = intval($result->fields['0']);
+                $news_author = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                $news_category_id = intval($result->fields['2']);
+                $news_title = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
+                $news_date = intval($result->fields['4']);
+                if($temp == "program") {
+                    $news_date2 = date("d.m.Y",$news_date);
+                } else {
+                    $news_date2 = date("d.m.Y H:i",$news_date);
+                }
+                $news_hour = date("H",$news_date);
+                $news_minute = date("i",$news_date);
+                $news_images = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5']));
+                if(!isset($news_images) or $news_images == "" or $news_images == 0) {
+                    $news_images = "no";
+                }
+                $news_short_text = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']));
+                $news_content = $this->registry->main_class->extracting_data($result->fields['7']);
+                $news_readcounter = intval($result->fields['8']);
+                $news_notes = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['9']));
+                $news_valueview = intval($result->fields['10']);
+                $news_status = intval($result->fields['11']);
+                $news_termexpire = intval($result->fields['12']);
+                if(!empty($news_termexpire)) {
+                    $news_termexpireday = intval((($news_termexpire - $news_date) / 3600) / 24);
+                    if($news_termexpireday < 1) {
+                        $news_termexpireday = 1;
+                    }
+                    $news_termexpire = date("d.m.Y H:i",$news_termexpire);
+                } else {
+                    $news_termexpire = "";
+                    $news_termexpireday = "";
+                }
+                $news_termexpireaction = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['13']));
+                $news_onhome = intval($result->fields['14']);
+                $news_link = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['15']));
+                $sql2 = "SELECT news_category_id,news_category_name FROM ".PREFIX."_news_categories_".$this->registry->sitelang;
+                $result2 = $this->db->Execute($sql2);
+                if($result2) {
+                    if(isset($result2->fields['0'])) {
+                        $row_exist = intval($result2->fields['0']);
+                    } else {
+                        $row_exist = 0;
+                    }
+                    if($row_exist > 0) {
+                        while(!$result2->EOF) {
+                            $news_category_id2 = intval($result2->fields['0']);
+                            $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result2->fields['1']));
+                            $category_all[] = array(
+                                "news_category_id" => $news_category_id2,
+                                "news_category_name" => $news_category_name
+                            );
+                            $result2->MoveNext();
+                        }
+                        $this->result['category_all'] = $category_all;
+                    } else {
+                        $this->result['category_all'] = "no";
+                    }
+                } else {
+                    $error_message = $this->db->ErrorMsg();
+                    $error_code = $this->db->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                    $this->error = 'edit_sql_error'.$temp;
+                    $this->error_array = $error;
+                    return;
+                }
+                require_once('../modules/news/news_config.inc');
+                $news_all[] = array(
+                    "news_id" => $news_id,
+                    "news_author" => $news_author,
+                    "news_category_id" => $news_category_id,
+                    "news_title" => $news_title,
+                    "news_date" => $news_date,
+                    "news_hour" => $news_hour,
+                    "news_minute" => $news_minute,
+                    "news_date2" => $news_date2,
+                    "news_images" => $news_images,
+                    "news_short_text" => $news_short_text,
+                    "news_content" => $news_content,
+                    "news_readcounter" => $news_readcounter,
+                    "news_notes" => $news_notes,
+                    "news_valueview" => $news_valueview,
+                    "news_status" => $news_status,
+                    "news_termexpire" => $news_termexpire,
+                    "news_termexpireday" => $news_termexpireday,
+                    "news_termexpireaction" => $news_termexpireaction,
+                    "news_onhome" => $news_onhome,
+                    "news_link" => $news_link,
+                    "image_path" => MODULE_NEWS_IMAGE_PATH
+                );
+                $this->result['news_all'] = $news_all;
             } else {
-                $news_minute = 0;
+                $this->error = 'edit_not_found'.$temp;
+                return;
             }
-            $news_date = $news_date.".".$news_hour.".".$news_minute;
-            $news_date = $this->registry->main_class->timetounix($news_date);
-        }
-        if($news_termexpire == 0) {
-            $news_termexpire = 'NULL';
-            $news_termexpireaction = 'NULL';
         } else {
-            if($temp == "programm") {
-                $news_termexpire = $news_date + ($news_termexpire * 86400);
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'edit_sql_error'.$temp;
+            $this->error_array = $error;
+            return;
+        }
+        if($temp != "program") {
+            $this->result['adminmodules_news_programm'] = "no";
+        } else {
+            $this->result['adminmodules_news_programm'] = "yes";
+        }
+    }
+
+
+    public function news_edit_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'news_author',
+                    'news_title',
+                    'news_newdate',
+                    'delete_picture',
+                    'news_short_text',
+                    'news_content',
+                    'news_notes',
+                    'news_termexpireaction',
+                    'news_link',
+                    'news_images'
+                );
+                $keys2 = array(
+                    'news_id',
+                    'news_category_id',
+                    'prog',
+                    'news_readcounter',
+                    'news_valueview',
+                    'news_status',
+                    'news_termexpire',
+                    'news_onhome',
+                    'news_hour',
+                    'news_minute'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
+            }
+        }
+        if(isset($array['news_date'])) {
+            if(isset($array['prog']) and intval($array['prog']) != 0 and intval($array['prog']) == 1) {
+                $data_array['news_date'] = trim($array['news_date']);
             } else {
-                $news_termexpire = $this->registry->main_class->gettime() + ($news_termexpire * 86400);
+                $data_array['news_date'] = intval($array['news_date']);
             }
-            $news_termexpire = "'$news_termexpire'";
-            $news_termexpireaction = $this->registry->main_class->format_striptags($news_termexpireaction);
-            $news_termexpireaction = $this->registry->main_class->processing_data($news_termexpireaction);
         }
-        if($news_notes == "") {
-            $news_notes = 'NULL';
+        if(isset($array['prog']) and intval($array['prog']) != 0 and intval($array['prog']) == 1) {
+            $temp = "program";
         } else {
-            $news_notes = $this->registry->main_class->processing_data($news_notes);
+            $temp = "";
         }
-        if($news_link == "") {
-            $news_link = 'NULL';
+        if((!isset($array['news_id']) or !isset($array['news_author']) or !isset($array['news_category_id']) or !isset($array['news_title']) or !isset($array['news_date']) or !isset($array['news_newdate']) or !isset($array['delete_picture']) or !isset($array['news_short_text']) or !isset($array['news_content']) or !isset($array['news_readcounter']) or !isset($array['news_notes']) or !isset($array['news_valueview']) or !isset($array['news_status']) or !isset($array['news_termexpire']) or !isset($array['news_termexpireaction']) or !isset($array['news_onhome']) or !isset($array['news_link'])) or ($data_array['news_id'] == 0 or $data_array['news_author'] == "" or $data_array['news_title'] == "" or ((isset($array['prog']) and intval($array['prog']) != 0 and intval($array['prog']) == 1 and $data_array['news_date'] == "") or (!isset($array['prog']) and $data_array['news_date'] == 0)) or $data_array['news_newdate'] == "" or $data_array['delete_picture'] == "" or $data_array['news_short_text'] == "" or $data_array['news_content'] == "")) {
+            $this->error = 'edit_not_all_data'.$temp;
+            return;
+        }
+        if($temp != "program" and isset($data_array['news_newdate']) and $data_array['news_newdate'] == 'yes') {
+            $data_array['news_date'] = $this->registry->main_class->get_time();
+        } elseif($temp == "program") {
+            $data_array['news_date'] = $this->registry->main_class->format_striptags($data_array['news_date']);
+            if(isset($array['news_hour'])) {
+                $data_array['news_hour'] = intval($array['news_hour']);
+            } else {
+                $data_array['news_hour'] = 0;
+            }
+            if(isset($array['news_minute'])) {
+                $data_array['news_minute'] = intval($array['news_minute']);
+            } else {
+                $data_array['news_minute'] = 0;
+            }
+            $data_array['news_date'] = $data_array['news_date']." ".sprintf("%02d",$data_array['news_hour']).":".sprintf("%02d",$data_array['news_minute']);
+            $data_array['news_date'] = $this->registry->main_class->time_to_unix($data_array['news_date']);
+        }
+        if($data_array['news_termexpire'] == 0) {
+            $data_array['news_termexpire'] = 'NULL';
+            $data_array['news_termexpireaction'] = 'NULL';
         } else {
-            $news_link = $this->registry->main_class->format_striptags($news_link);
-            $news_link = $this->registry->main_class->processing_data($news_link);
+            //if($temp == "program") {
+            $data_array['news_termexpire'] = $data_array['news_date'] + ($data_array['news_termexpire'] * 86400);
+            /*} else {
+                $data_array['news_termexpire'] = $this->registry->main_class->get_time() + ($data_array['news_termexpire'] * 86400);
+            }*/
+            $data_array['news_termexpire'] = "'".$data_array['news_termexpire']."'";
+            $data_array['news_termexpireaction'] = $this->registry->main_class->format_striptags($data_array['news_termexpireaction']);
+            $data_array['news_termexpireaction'] = $this->registry->main_class->processing_data($data_array['news_termexpireaction']);
         }
-        $news_author = $this->registry->main_class->format_striptags($news_author);
-        $news_author = $this->registry->main_class->processing_data($news_author);
-        $news_title = $this->registry->main_class->format_striptags($news_title);
-        $news_title = $this->registry->main_class->processing_data($news_title);
-        $news_short_text = $this->registry->main_class->processing_data($news_short_text);
-        $news_short_text = substr(substr($news_short_text,0,-1),1);
-        $news_content = $this->registry->main_class->processing_data($news_content);
-        $news_content = substr(substr($news_content,0,-1),1);
+        if($data_array['news_notes'] == "") {
+            $data_array['news_notes'] = 'NULL';
+        } else {
+            $data_array['news_notes'] = $this->registry->main_class->processing_data($data_array['news_notes']);
+        }
+        if($data_array['news_link'] == "") {
+            $data_array['news_link'] = 'NULL';
+        } else {
+            $data_array['news_link'] = $this->registry->main_class->format_striptags($data_array['news_link']);
+            $data_array['news_link'] = $this->registry->main_class->processing_data($data_array['news_link']);
+        }
+        $data_array['news_author'] = $this->registry->main_class->format_striptags($data_array['news_author']);
+        $data_array['news_author'] = $this->registry->main_class->processing_data($data_array['news_author']);
+        $data_array['news_title'] = $this->registry->main_class->format_striptags($data_array['news_title']);
+        $data_array['news_title'] = $this->registry->main_class->processing_data($data_array['news_title']);
+        $data_array['news_short_text'] = $this->registry->main_class->processing_data($data_array['news_short_text']);
+        $data_array['news_short_text'] = substr(substr($data_array['news_short_text'],0,-1),1);
+        $data_array['news_content'] = $this->registry->main_class->processing_data($data_array['news_content']);
+        $data_array['news_content'] = substr(substr($data_array['news_content'],0,-1),1);
         require_once('../modules/news/news_config.inc');
-        if($delete_picture == 'yes') {
-            $news_images = trim($_POST['news_images']);
-            $news_images = $this->registry->main_class->format_striptags($news_images);
-            @unlink("../".MODULE_NEWS_IMAGE_PATH."/".$news_images);
-            $news_images = 'NULL';
-        } elseif($delete_picture == 'new_file') {
+        if($data_array['delete_picture'] == 'yes') {
+            $data_array['news_images'] = $array['news_images'];
+            $data_array['news_images'] = $this->registry->main_class->format_striptags($data_array['news_images']);
+            @unlink("../".MODULE_NEWS_IMAGE_PATH."/".$data_array['news_images']);
+            $data_array['news_images'] = 'NULL';
+        } elseif($data_array['delete_picture'] == 'new_file') {
             if(isset($_FILES['news_images']['name']) and trim($_FILES['news_images']['name']) !== '') {
                 if(is_uploaded_file($_FILES['news_images']['tmp_name'])) {
                     if($_FILES['news_images']['size'] > MODULE_NEWS_IMAGE_MAX_SIZE) {
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editmaxsize".$temp."|".$this->registry->language)) {
-                            $this->registry->main_class->assign("news_update","maxsize");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editmaxsize".$temp."|".$this->registry->language);
-                        exit();
+                        $this->error = 'edit_max_size'.$temp;
+                        return;
                     }
                     if(($_FILES['news_images']['type'] == "image/gif") || ($_FILES['news_images']['type'] == "image/pjpeg") || ($_FILES['news_images']['type'] == "image/jpeg") || ($_FILES['news_images']['type'] == "image/png") || ($_FILES['news_images']['type'] == "image/bmp")) {
                         $file_name = $_FILES['news_images']['name'];
                         $data_kod = time();
-                        $news_images = $data_kod."_".$file_name;
-                        $result_file = @copy($_FILES['news_images']['tmp_name'],"../".MODULE_NEWS_IMAGE_PATH."/".$news_images);
+                        $data_array['news_images'] = $data_kod."_".$file_name;
+                        $result_file = @move_uploaded_file($_FILES['news_images']['tmp_name'],"../".MODULE_NEWS_IMAGE_PATH."/".$data_array['news_images']);
                         if(!$result_file) {
-                            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnotupload".$temp."|".$this->registry->language)) {
-                                $this->registry->main_class->assign("news_update","notupload");
-                                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                            }
-                            $this->registry->main_class->database_close();
-                            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnotupload".$temp."|".$this->registry->language);
-                            exit();
+                            $this->error = 'edit_not_upload'.$temp;
+                            return;
                         }
-                        $size2 = @getimagesize("../".MODULE_NEWS_IMAGE_PATH."/".$news_images);
+                        $size2 = @getimagesize("../".MODULE_NEWS_IMAGE_PATH."/".$data_array['news_images']);
                         if(($size2[0] > MODULE_NEWS_IMAGE_MAX_WIDTH) or ($size2[1] > MODULE_NEWS_IMAGE_MAX_HEIGHT)) {
-                            @unlink("../".MODULE_NEWS_IMAGE_PATH."/".$news_images);
-                            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnoteq".$temp."|".$this->registry->language)) {
-                                $this->registry->main_class->assign("news_update","noteq");
-                                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                            }
-                            $this->registry->main_class->database_close();
-                            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnoteq".$temp."|".$this->registry->language);
-                            exit();
+                            @unlink("../".MODULE_NEWS_IMAGE_PATH."/".$data_array['news_images']);
+                            $this->error = 'edit_not_eq'.$temp;
+                            return;
                         }
                     } else {
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnoteqtype".$temp."|".$this->registry->language)) {
-                            $this->registry->main_class->assign("news_update","noteqtype");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editnoteqtype".$temp."|".$this->registry->language);
-                        exit();
+                        $this->error = 'edit_not_eq_type'.$temp;
+                        return;
                     }
                 } else {
-                    if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editfile".$temp."|".$this->registry->language)) {
-                        $this->registry->main_class->assign("news_update","attack");
-                        $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                        $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                    }
-                    $this->registry->main_class->database_close();
-                    $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editfile".$temp."|".$this->registry->language);
-                    exit();
+                    $this->error = 'edit_file'.$temp;
+                    return;
                 }
-                $news_images = "'$news_images'";
+                $data_array['news_images'] = "'".$data_array['news_images']."'";
             } else {
-                $news_images = 'NULL';
+                $data_array['news_images'] = 'NULL';
             }
         } else {
-            $news_images = trim($_POST['news_images']);
-            $news_images = $this->registry->main_class->format_striptags($news_images);
-            $news_images = $this->registry->main_class->processing_data($news_images);
+            $data_array['news_images'] = trim($array['news_images']);
+            $data_array['news_images'] = $this->registry->main_class->format_striptags($data_array['news_images']);
+            $data_array['news_images'] = $this->registry->main_class->processing_data($data_array['news_images']);
         }
         $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
         if($check_db_need_lobs == 'yes') {
             $this->db->StartTrans();
-            $sql = "UPDATE ".PREFIX."_news".$tbl."_".$this->registry->sitelang." SET news_author=$news_author,news_category_id='$news_category_id',news_title=$news_title,news_date='$news_date',news_images=$news_images,news_short_text=empty_clob(),news_content=empty_clob(),news_readcounter='$news_readcounter',news_notes=empty_clob(),news_valueview='$news_valueview',news_status='$news_status',news_termexpire=$news_termexpire,news_termexpireaction=$news_termexpireaction,news_onhome='$news_onhome',news_link=$news_link WHERE news_id='$news_id'";
+            $sql = "UPDATE ".PREFIX."_news_".$this->registry->sitelang." SET news_author = ".$data_array['news_author'].",news_category_id = '".$data_array['news_category_id']."',news_title = ".$data_array['news_title'].",news_date = '".$data_array['news_date']."',news_images = ".$data_array['news_images'].",news_short_text = empty_clob(),news_content = empty_clob(),news_read_counter = '".$data_array['news_readcounter']."',news_notes = empty_clob(),news_value_view = '".$data_array['news_valueview']."',news_status = '".$data_array['news_status']."',news_term_expire = ".$data_array['news_termexpire'].",news_term_expire_action = ".$data_array['news_termexpireaction'].",news_on_home = '".$data_array['news_onhome']."',news_link = ".$data_array['news_link']." WHERE news_id = '".$data_array['news_id']."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
             if($result === false) {
@@ -609,21 +495,21 @@ class admin_news extends model_base {
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $result2 = $this->db->UpdateClob(PREFIX.'_news'.$tbl."_".$this->registry->sitelang,'news_short_text',$news_short_text,'news_id='.$news_id);
+            $result2 = $this->db->UpdateClob(PREFIX.'_news_'.$this->registry->sitelang,'news_short_text',$data_array['news_short_text'],'news_id = '.$data_array['news_id']);
             if($result2 === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $result3 = $this->db->UpdateClob(PREFIX.'_news'.$tbl."_".$this->registry->sitelang,'news_content',$news_content,'news_id='.$news_id);
+            $result3 = $this->db->UpdateClob(PREFIX.'_news_'.$this->registry->sitelang,'news_content',$data_array['news_content'],'news_id = '.$data_array['news_id']);
             if($result3 === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            if($news_notes != 'NULL') {
-                $news_notes = substr(substr($news_notes,0,-1),1);
-                $result4 = $this->db->UpdateClob(PREFIX.'_news'.$tbl."_".$this->registry->sitelang,'news_notes',$news_notes,'news_id='.$news_id);
+            if($data_array['news_notes'] != 'NULL') {
+                $data_array['news_notes'] = substr(substr($data_array['news_notes'],0,-1),1);
+                $result4 = $this->db->UpdateClob(PREFIX.'_news_'.$this->registry->sitelang,'news_notes',$data_array['news_notes'],'news_id = '.$data_array['news_id']);
                 if($result4 === false) {
                     $error_message = $this->db->ErrorMsg();
                     $error_code = $this->db->ErrorNo();
@@ -637,7 +523,7 @@ class admin_news extends model_base {
                 $result = false;
             }
         } else {
-            $sql = "UPDATE ".PREFIX."_news".$tbl."_".$this->registry->sitelang." SET news_author=$news_author,news_category_id='$news_category_id',news_title=$news_title,news_date='$news_date',news_images=$news_images,news_short_text='$news_short_text',news_content='$news_content',news_readcounter='$news_readcounter',news_notes=$news_notes,news_valueview='$news_valueview',news_status='$news_status',news_termexpire=$news_termexpire,news_termexpireaction=$news_termexpireaction,news_onhome='$news_onhome',news_link=$news_link WHERE news_id='$news_id'";
+            $sql = "UPDATE ".PREFIX."_news_".$this->registry->sitelang." SET news_author = ".$data_array['news_author'].",news_category_id = '".$data_array['news_category_id']."',news_title = ".$data_array['news_title'].",news_date = '".$data_array['news_date']."',news_images = ".$data_array['news_images'].",news_short_text = '".$data_array['news_short_text']."',news_content = '".$data_array['news_content']."',news_read_counter = '".$data_array['news_readcounter']."',news_notes = ".$data_array['news_notes'].",news_value_view = '".$data_array['news_valueview']."',news_status = '".$data_array['news_status']."',news_term_expire = ".$data_array['news_termexpire'].",news_term_expire_action = ".$data_array['news_termexpireaction'].",news_on_home = '".$data_array['news_onhome']."',news_link = ".$data_array['news_link']." WHERE news_id = '".$data_array['news_id']."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
             if($result === false) {
@@ -647,317 +533,232 @@ class admin_news extends model_base {
             }
         }
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editsqlerror".$temp."|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editsqlerror".$temp."|".$this->registry->language);
-            exit();
+            $this->error = 'edit_sql_error'.$temp;
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editok".$temp."|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editok".$temp."|".$this->registry->language);
-            exit();
+            $this->error = 'edit_ok'.$temp;
+            return;
         } else {
-            if($temp == "programm") {
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogramm");
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogramm|".$news_id);
+            if($temp == "program") {
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogram");
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogram|".$data_array['news_id']);
             } else {
                 $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcurrent");
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit|".$news_id);
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".$news_id);
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".$news_id."admin");
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".$news_id."user");
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit|".$data_array['news_id']);
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".$data_array['news_id']);
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".$data_array['news_id']."admin");
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".$data_array['news_id']."user");
                 $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show");
             }
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|editok".$temp."|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                $this->registry->main_class->assign("news_update","editok");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|editok".$temp."|".$this->registry->language);
+            $this->result = 'edit_done'.$temp;
         }
     }
 
 
-    public function news_add() {
-        if(isset($_GET['prog']) and intval($_GET['prog']) != 0 and intval($_GET['prog']) == 1) {
-            $temp = "programm";
-            $this->registry->main_class->assign("include_jquery","yes");
-            $this->registry->main_class->assign("include_jquery_data","dateinput");
+    public function news_add($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['prog']) and intval($array['prog']) != 0 and intval($array['prog']) == 1) {
+            $temp = "program";
+            $this->result['include_jquery'] = "yes";
+            $this->result['include_jquery_data'] = "dateinput";
         } else {
             $temp = "";
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if($temp != "programm") {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDCURRNEWSPAGETITLE'));
+        $sql = "SELECT news_category_id,news_category_name FROM ".PREFIX."_news_categories_".$this->registry->sitelang;
+        $result = $this->db->Execute($sql);
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
+            } else {
+                $row_exist = 0;
+            }
+            if($row_exist > 0) {
+                while(!$result->EOF) {
+                    $news_category_id = intval($result->fields['0']);
+                    $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                    $category_all[] = array(
+                        "news_category_id" => $news_category_id,
+                        "news_category_name" => $news_category_name
+                    );
+                    $result->MoveNext();
+                }
+                $this->result['category_all'] = $category_all;
+            } else {
+                $this->result['category_all'] = "no";
+            }
         } else {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDPROGNEWSPAGETITLE'));
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'add_sql_error'.$temp;
+            $this->error_array = $error;
+            return;
         }
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news".$temp."|add|".$this->registry->language)) {
-            $sql = "SELECT news_category_id,news_category_name FROM ".PREFIX."_news_categories_".$this->registry->sitelang;
-            $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows > 0) {
-                    while(!$result->EOF) {
-                        $news_category_id = intval($result->fields['0']);
-                        $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
-                        $category_all[] = array(
-                            "news_category_id" => $news_category_id,
-                            "news_category_name" => $news_category_name
-                        );
-                        $result->MoveNext();
-                    }
-                    $this->registry->main_class->assign("category_all",$category_all);
-                } else {
-                    $this->registry->main_class->assign("category_all","no");
-                }
-            } else {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addsqlerror".$temp."|".$this->registry->language)) {
-                    $this->registry->main_class->assign("news_update","notinsert");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addsqlerror".$temp."|".$this->registry->language);
-                exit();
-            }
+        if($temp != "program") {
+            $this->result['adminmodules_news_programm'] = "no";
+        } else {
+            $this->result['adminmodules_news_programm'] = "yes";
         }
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news".$temp."|add|".$this->registry->language)) {
-            if($temp != "programm") {
-                $this->registry->main_class->assign("adminmodules_news_programm","no");
-            } else {
-                $this->registry->main_class->assign("adminmodules_news_programm","yes");
-            }
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_add.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news".$temp."|add|".$this->registry->language);
     }
 
 
-    public function news_add_inbase() {
-        if(isset($_POST['news_category_id'])) {
-            $news_category_id = intval($_POST['news_category_id']);
+    public function news_add_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'news_title',
+                    'news_short_text',
+                    'news_content',
+                    'news_notes',
+                    'news_termexpireaction',
+                    'news_link',
+                    'news_date'
+                );
+                $keys2 = array(
+                    'news_category_id',
+                    'news_valueview',
+                    'news_status',
+                    'news_termexpire',
+                    'news_onhome',
+                    'prog',
+                    'news_hour',
+                    'news_minute'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
+            }
         }
-        if(isset($_POST['news_title'])) {
-            $news_title = trim($_POST['news_title']);
-        }
-        if(isset($_POST['news_short_text'])) {
-            $news_short_text = trim($_POST['news_short_text']);
-        }
-        if(isset($_POST['news_content'])) {
-            $news_content = trim($_POST['news_content']);
-        }
-        if(isset($_POST['news_notes'])) {
-            $news_notes = trim($_POST['news_notes']);
-        }
-        if(isset($_POST['news_valueview'])) {
-            $news_valueview = intval($_POST['news_valueview']);
-        }
-        if(isset($_POST['news_status'])) {
-            $news_status = intval($_POST['news_status']);
-        }
-        if(isset($_POST['news_termexpire'])) {
-            $news_termexpire = intval($_POST['news_termexpire']);
-        }
-        if(isset($_POST['news_termexpireaction'])) {
-            $news_termexpireaction = trim($_POST['news_termexpireaction']);
-        }
-        if(isset($_POST['news_onhome'])) {
-            $news_onhome = intval($_POST['news_onhome']);
-        }
-        if(isset($_POST['news_link'])) {
-            $news_link = trim($_POST['news_link']);
-        }
-        if(isset($_POST['news_date'])) {
-            $news_date = trim($_POST['news_date']);
-        }
-        if(isset($_POST['prog']) and intval($_POST['prog']) != 0 and intval($_POST['prog']) == 1) {
-            $temp = "programm";
-            $tbl = "_auto";
+        if(isset($array['prog']) and intval($array['prog']) != 0 and intval($array['prog']) == 1) {
+            $temp = "program";
+            $news_auto = '1';
         } else {
             $temp = "";
-            $tbl = "";
+            $news_auto = '0';
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if($temp != "programm") {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDCURRNEWSPAGETITLE'));
-        } else {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDPROGNEWSPAGETITLE'));
+        if((!isset($array['news_category_id']) or !isset($array['news_title']) or !isset($array['news_short_text']) or !isset($array['news_content']) or !isset($array['news_notes']) or !isset($array['news_valueview']) or !isset($array['news_status']) or !isset($array['news_termexpire']) or !isset($array['news_termexpireaction']) or !isset($array['news_onhome']) or !isset($array['news_link'])) or ($data_array['news_title'] == "" or $data_array['news_short_text'] == "" or $data_array['news_content'] == "" or (isset($array['prog']) and intval($array['prog']) != 0 and intval($array['prog']) == 1 and (!isset($data_array['news_date']) or $data_array['news_date'] == "")))) {
+            $this->error = 'add_not_all_data'.$temp;
+            return;
         }
-        if((!isset($_POST['news_category_id']) or !isset($_POST['news_title']) or !isset($_POST['news_short_text']) or !isset($_POST['news_content']) or !isset($_POST['news_notes']) or !isset($_POST['news_valueview']) or !isset($_POST['news_status']) or !isset($_POST['news_termexpire']) or !isset($_POST['news_termexpireaction']) or !isset($_POST['news_onhome']) or !isset($_POST['news_link'])) or ($news_title == "" or $news_short_text == "" or $news_content == "" or (isset($_POST['prog']) and intval($_POST['prog']) != 0 and intval($_POST['prog']) == 1 and (!isset($news_date) or $news_date == "")))) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addnotalldata".$temp."|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addnotalldata".$temp."|".$this->registry->language);
-            exit();
-        }
-        if($temp == "programm") {
-            $news_date = $this->registry->main_class->format_striptags($news_date);
-            if(isset($_POST['news_hour'])) {
-                $news_hour = intval($_POST['news_hour']);
+        if($temp == "program") {
+            $data_array['news_date'] = $this->registry->main_class->format_striptags($data_array['news_date']);
+            if(isset($array['news_hour'])) {
+                $data_array['news_hour'] = intval($array['news_hour']);
             } else {
-                $news_hour = 0;
+                $data_array['news_hour'] = 0;
             }
-            if(isset($_POST['news_minute'])) {
-                $news_minute = intval($_POST['news_minute']);
+            if(isset($array['news_minute'])) {
+                $data_array['news_minute'] = intval($array['news_minute']);
             } else {
-                $news_minute = 0;
+                $data_array['news_minute'] = 0;
             }
-            $news_date = $news_date.".".$news_hour.".".$news_minute;
-            $now = $this->registry->main_class->timetounix($news_date);
+            $data_array['news_date'] = $data_array['news_date']." ".sprintf("%02d",$data_array['news_hour']).":".sprintf("%02d",$data_array['news_minute']);
+            $now = $this->registry->main_class->time_to_unix($data_array['news_date']);
         } else {
-            $now = $this->registry->main_class->gettime();
+            $now = $this->registry->main_class->get_time();
         }
-        if($news_termexpire == 0) {
-            $news_termexpire = 'NULL';
-            $news_termexpireaction = 'NULL';
+        if($data_array['news_termexpire'] == 0) {
+            $data_array['news_termexpire'] = 'NULL';
+            $data_array['news_termexpireaction'] = 'NULL';
         } else {
-            if($temp == "programm") {
-                $news_termexpire = $now + ($news_termexpire * 86400);
+            if($temp == "program") {
+                $data_array['news_termexpire'] = $now + ($data_array['news_termexpire'] * 86400);
             } else {
-                $news_termexpire = $this->registry->main_class->gettime() + ($news_termexpire * 86400);
+                $data_array['news_termexpire'] = $this->registry->main_class->get_time() + ($data_array['news_termexpire'] * 86400);
             }
-            $news_termexpire = "'$news_termexpire'";
-            $news_termexpireaction = $this->registry->main_class->format_striptags($news_termexpireaction);
-            $news_termexpireaction = $this->registry->main_class->processing_data($news_termexpireaction);
+            $data_array['news_termexpire'] = "'".$data_array['news_termexpire']."'";
+            $data_array['news_termexpireaction'] = $this->registry->main_class->format_striptags($data_array['news_termexpireaction']);
+            $data_array['news_termexpireaction'] = $this->registry->main_class->processing_data($data_array['news_termexpireaction']);
         }
-        if($news_notes == "") {
-            $news_notes = 'NULL';
+        if($data_array['news_notes'] == "") {
+            $data_array['news_notes'] = 'NULL';
         } else {
-            $news_notes = $this->registry->main_class->processing_data($news_notes);
+            $data_array['news_notes'] = $this->registry->main_class->processing_data($data_array['news_notes']);
         }
-        if($news_link == "") {
-            $news_link = 'NULL';
+        if($data_array['news_link'] == "") {
+            $data_array['news_link'] = 'NULL';
         } else {
-            $news_link = $this->registry->main_class->format_striptags($news_link);
-            $news_link = $this->registry->main_class->processing_data($news_link);
+            $data_array['news_link'] = $this->registry->main_class->format_striptags($data_array['news_link']);
+            $data_array['news_link'] = $this->registry->main_class->processing_data($data_array['news_link']);
         }
-        $news_author = trim($this->registry->main_class->get_admin_login());
+        $news_author = trim($this->registry->main_class->get_user_login());
         $news_author = $this->registry->main_class->format_striptags($news_author);
         $news_author = $this->registry->main_class->processing_data($news_author);
-        $news_title = $this->registry->main_class->format_striptags($news_title);
-        $news_title = $this->registry->main_class->processing_data($news_title);
-        $news_short_text = $this->registry->main_class->processing_data($news_short_text);
-        $news_short_text = substr(substr($news_short_text,0,-1),1);
-        $news_content = $this->registry->main_class->processing_data($news_content);
-        $news_content = substr(substr($news_content,0,-1),1);
+        $data_array['news_title'] = $this->registry->main_class->format_striptags($data_array['news_title']);
+        $data_array['news_title'] = $this->registry->main_class->processing_data($data_array['news_title']);
+        $data_array['news_short_text'] = $this->registry->main_class->processing_data($data_array['news_short_text']);
+        $data_array['news_short_text'] = substr(substr($data_array['news_short_text'],0,-1),1);
+        $data_array['news_content'] = $this->registry->main_class->processing_data($data_array['news_content']);
+        $data_array['news_content'] = substr(substr($data_array['news_content'],0,-1),1);
         require_once('../modules/news/news_config.inc');
         if(isset($_FILES['news_images']['name']) and trim($_FILES['news_images']['name']) !== '') {
             if(is_uploaded_file($_FILES['news_images']['tmp_name'])) {
                 if($_FILES['news_images']['size'] > MODULE_NEWS_IMAGE_MAX_SIZE) {
-                    if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addmaxsize".$temp."|".$this->registry->language)) {
-                        $this->registry->main_class->assign("news_update","maxsize");
-                        $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                        $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                    }
-                    $this->registry->main_class->database_close();
-                    $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addmaxsize".$temp."|".$this->registry->language);
-                    exit();
+                    $this->error = 'add_max_size'.$temp;
+                    return;
                 }
                 if(($_FILES['news_images']['type'] == "image/gif") || ($_FILES['news_images']['type'] == "image/pjpeg") || ($_FILES['news_images']['type'] == "image/jpeg") || ($_FILES['news_images']['type'] == "image/png") || ($_FILES['news_images']['type'] == "image/bmp")) {
                     $file_name = $_FILES['news_images']['name'];
                     $data_kod = time();
                     $news_images = $data_kod."_".$file_name;
-                    $result_file = @copy($_FILES['news_images']['tmp_name'],"../".MODULE_NEWS_IMAGE_PATH."/".$news_images);
+                    $result_file = @move_uploaded_file($_FILES['news_images']['tmp_name'],"../".MODULE_NEWS_IMAGE_PATH."/".$news_images);
                     if(!$result_file) {
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addnotupload".$temp."|".$this->registry->language)) {
-                            $this->registry->main_class->assign("news_update","notupload");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addnotupload".$temp."|".$this->registry->language);
-                        exit();
+                        $this->error = 'add_not_upload'.$temp;
+                        return;
                     }
                     $size2 = @getimagesize("../".MODULE_NEWS_IMAGE_PATH."/".$news_images);
                     if(($size2[0] > MODULE_NEWS_IMAGE_MAX_WIDTH) or ($size2[1] > MODULE_NEWS_IMAGE_MAX_HEIGHT)) {
                         @unlink("../".MODULE_NEWS_IMAGE_PATH."/".$news_images);
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addnoteq".$temp."|".$this->registry->language)) {
-                            $this->registry->main_class->assign("news_update","noteq");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addnoteq".$temp."|".$this->registry->language);
-                        exit();
+                        $this->error = 'add_not_eq'.$temp;
+                        return;
                     }
                 } else {
-                    if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addnoteqtype".$temp."|".$this->registry->language)) {
-                        $this->registry->main_class->assign("news_update","noteqtype");
-                        $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                        $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                    }
-                    $this->registry->main_class->database_close();
-                    $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addnoteqtype".$temp."|".$this->registry->language);
-                    exit();
+                    $this->error = 'add_not_eq_type'.$temp;
+                    return;
                 }
             } else {
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addfile".$temp."|".$this->registry->language)) {
-                    $this->registry->main_class->assign("news_update","attack");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addfile".$temp."|".$this->registry->language);
-                exit();
+                $this->error = 'add_file'.$temp;
+                return;
             }
             $news_images = "'$news_images'";
         } else {
             $news_images = 'NULL';
         }
-        $news_id = $this->db->GenID(PREFIX."_news_id_".$this->registry->sitelang);
         $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
         if($check_db_need_lobs == 'yes') {
             $this->db->StartTrans();
-            $sql = "INSERT INTO ".PREFIX."_news".$tbl."_".$this->registry->sitelang." (news_id,news_author,news_category_id,news_title,news_date,news_images,news_short_text,news_content,news_notes,news_valueview,news_status,news_termexpire,news_termexpireaction,news_onhome,news_link)  VALUES ('$news_id',$news_author,'$news_category_id',$news_title,'$now',$news_images,empty_clob(),empty_clob(),empty_clob(),'$news_valueview','$news_status',$news_termexpire,$news_termexpireaction,'$news_onhome',$news_link)";
+            $news_id = $this->db->GenID(PREFIX."_news_id_".$this->registry->sitelang);
+            $sql = "INSERT INTO ".PREFIX."_news_".$this->registry->sitelang." (news_id,news_auto,news_author,news_category_id,news_title,news_date,news_images,news_short_text,news_content,news_read_counter,news_notes,news_value_view,news_status,news_term_expire,news_term_expire_action,news_on_home,news_link,news_meta_title,news_meta_keywords,news_meta_description)  VALUES ('".$news_id."','".$news_auto."',".$news_author.",'".$data_array['news_category_id']."',".$data_array['news_title'].",'".$now."',".$news_images.",empty_clob(),empty_clob(),'0',empty_clob(),'".$data_array['news_valueview']."','".$data_array['news_status']."',".$data_array['news_termexpire'].",".$data_array['news_termexpireaction'].",'".$data_array['news_onhome']."',".$data_array['news_link'].",NULL,NULL,NULL)";
             $result = $this->db->Execute($sql);
             if($result === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $result2 = $this->db->UpdateClob(PREFIX.'_news'.$tbl."_".$this->registry->sitelang,'news_short_text',$news_short_text,'news_id='.$news_id);
+            $result2 = $this->db->UpdateClob(PREFIX.'_news_'.$this->registry->sitelang,'news_short_text',$data_array['news_short_text'],'news_id = '.$news_id);
             if($result2 === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $result3 = $this->db->UpdateClob(PREFIX.'_news'.$tbl."_".$this->registry->sitelang,'news_content',$news_content,'news_id='.$news_id);
+            $result3 = $this->db->UpdateClob(PREFIX.'_news_'.$this->registry->sitelang,'news_content',$data_array['news_content'],'news_id = '.$news_id);
             if($result3 === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            if($news_notes != 'NULL') {
-                $news_notes = substr(substr($news_notes,0,-1),1);
-                $result4 = $this->db->UpdateClob(PREFIX.'_news'.$tbl."_".$this->registry->sitelang,'news_notes',$news_notes,'news_id='.$news_id);
+            if($data_array['news_notes'] != 'NULL') {
+                $data_array['news_notes'] = substr(substr($data_array['news_notes'],0,-1),1);
+                $result4 = $this->db->UpdateClob(PREFIX.'_news_'.$this->registry->sitelang,'news_notes',$data_array['news_notes'],'news_id = '.$news_id);
                 if($result4 === false) {
                     $error_message = $this->db->ErrorMsg();
                     $error_code = $this->db->ErrorNo();
@@ -971,7 +772,8 @@ class admin_news extends model_base {
                 $result = false;
             }
         } else {
-            $sql = "INSERT INTO ".PREFIX."_news".$tbl."_".$this->registry->sitelang." (news_id,news_author,news_category_id,news_title,news_date,news_images,news_short_text,news_content,news_notes,news_valueview,news_status,news_termexpire,news_termexpireaction,news_onhome,news_link)  VALUES ('$news_id',$news_author,'$news_category_id',$news_title,'$now',$news_images,'$news_short_text','$news_content',$news_notes,'$news_valueview','$news_status',$news_termexpire,$news_termexpireaction,'$news_onhome',$news_link)";
+            $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX."_news_id_".$this->registry->sitelang,'news_id');
+            $sql = "INSERT INTO ".PREFIX."_news_".$this->registry->sitelang." (".$sequence_array['field_name_string']."news_auto,news_author,news_category_id,news_title,news_date,news_images,news_short_text,news_content,news_read_counter,news_notes,news_value_view,news_status,news_term_expire,news_term_expire_action,news_on_home,news_link,news_meta_title,news_meta_keywords,news_meta_description)  VALUES (".$sequence_array['sequence_value_string']."'".$news_auto."',".$news_author.",'".$data_array['news_category_id']."',".$data_array['news_title'].",'".$now."',".$news_images.",'".$data_array['news_short_text']."','".$data_array['news_content']."','0',".$data_array['news_notes'].",'".$data_array['news_valueview']."','".$data_array['news_status']."',".$data_array['news_termexpire'].",".$data_array['news_termexpireaction'].",'".$data_array['news_onhome']."',".$data_array['news_link'].",NULL,NULL,NULL)";
             $result = $this->db->Execute($sql);
             if($result === false) {
                 $error_message = $this->db->ErrorMsg();
@@ -980,606 +782,354 @@ class admin_news extends model_base {
             }
         }
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addsqlerror".$temp."|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addsqlerror".$temp."|".$this->registry->language);
-            exit();
+            $this->error = 'add_sql_error'.$temp;
+            $this->error_array = $error;
+            return;
         } else {
-            if($temp == "programm") {
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogramm");
+            if($temp == "program") {
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogram");
             } else {
                 $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcurrent");
                 $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show");
             }
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|addok".$temp."|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                $this->registry->main_class->assign("news_update","add");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|addok".$temp."|".$this->registry->language);
+            $this->result = 'add_ok'.$temp;
         }
     }
 
 
-    public function news_category() {
-        if(isset($_GET['num_page']) and intval($_GET['num_page']) !== 0) {
-            $num_page = intval($_GET['num_page']);
-            if($num_page == 0) {
-                $num_page = 1;
-            }
+    public function news_category($num_page) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(intval($num_page) != 0) {
+            $num_page = intval($num_page);
         } else {
             $num_page = 1;
         }
         $num_string_rows = SYSTEMDK_ADMINROWS_PERPAGE;
         $offset = ($num_page - 1) * $num_string_rows;
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|showcat|".$num_page."|".$this->registry->language)) {
-            $sql = "SELECT a.news_category_id,a.news_category_name,(SELECT count(b.news_category_id) FROM ".PREFIX."_news_categories_".$this->registry->sitelang." b) as count_category_id FROM ".PREFIX."_news_categories_".$this->registry->sitelang." a order by a.news_category_id DESC";
+        $sql = "SELECT count(*) FROM ".PREFIX."_news_categories_".$this->registry->sitelang;
+        $result = $this->db->Execute($sql);
+        if($result) {
+            $num_rows = intval($result->fields['0']);
+            $sql = "SELECT news_category_id,news_category_name FROM ".PREFIX."_news_categories_".$this->registry->sitelang." order by news_category_id DESC";
             $result = $this->db->SelectLimit($sql,$num_string_rows,$offset);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
+        }
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
+            } else {
+                $row_exist = 0;
+            }
+            if($row_exist == 0 and $num_page > 1) {
+                $this->error = 'unknown_page';
+                return;
+            }
+            if($row_exist > 0) {
+                while(!$result->EOF) {
+                    $news_category_id = intval($result->fields['0']);
+                    $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                    $category_all[] = array(
+                        "news_category_id" => $news_category_id,
+                        "news_category_name" => $news_category_name
+                    );
+                    $result->MoveNext();
+                }
+                $this->result['category_all'] = $category_all;
+                if(isset($num_rows)) {
+                    $num_pages = @ceil($num_rows / $num_string_rows);
                 } else {
-                    $numrows = 0;
+                    $num_pages = 0;
                 }
-                if($numrows == 0 and $num_page > 1) {
-                    $this->registry->main_class->database_close();
-                    header("Location: index.php?path=admin_news&func=news_category&lang=".$this->registry->sitelang);
-                    exit();
-                }
-                if($numrows > 0) {
-                    while(!$result->EOF) {
-                        if(!isset($numrows2)) {
-                            $numrows2 = intval($result->fields['2']);
-                        }
-                        $news_category_id = intval($result->fields['0']);
-                        $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
-                        $category_all[] = array(
-                            "news_category_id" => $news_category_id,
-                            "news_category_name" => $news_category_name,
-                            "count_categories_id" => $numrows2
-                        );
-                        $result->MoveNext();
-                    }
-                    $this->registry->main_class->assign("category_all",$category_all);
-                    if(isset($numrows2)) {
-                        $num_pages = @ceil($numrows2 / $num_string_rows);
+                if($num_pages > 1) {
+                    if($num_page > 1) {
+                        $prevpage = $num_page - 1;
+                        $this->result['prevpage'] = $prevpage;
                     } else {
-                        $num_pages = 0;
+                        $this->result['prevpage'] = "no";
                     }
-                    if($num_pages > 1) {
-                        if($num_page > 1) {
-                            $prevpage = $num_page - 1;
-                            $this->registry->main_class->assign("prevpage",$prevpage);
+                    for($i = 1;$i < $num_pages + 1;$i++) {
+                        if($i == $num_page) {
+                            $html[] = array("number" => $i,"param1" => "1");
                         } else {
-                            $this->registry->main_class->assign("prevpage","no");
-                        }
-                        for($i = 1;$i < $num_pages + 1;$i++) {
-                            if($i == $num_page) {
-                                $html[] = array("number" => $i,"param1" => "1");
-                            } else {
-                                $pagelink = 5;
-                                if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "2");
-                                }
-                                if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
-                                    $html[] = array("number" => $i,"param1" => "3");
-                                }
-                                if(($i == 1) and ($num_page > $pagelink + 1)) {
-                                    $html[] = array("number" => $i,"param1" => "4");
-                                }
+                            $pagelink = 5;
+                            if(($i > $num_page) and ($i < $num_page + $pagelink) or ($i < $num_page) and ($i > $num_page - $pagelink)) {
+                                $html[] = array("number" => $i,"param1" => "2");
+                            }
+                            if(($i == $num_pages) and ($num_page < $num_pages - $pagelink)) {
+                                $html[] = array("number" => $i,"param1" => "3");
+                            }
+                            if(($i == 1) and ($num_page > $pagelink + 1)) {
+                                $html[] = array("number" => $i,"param1" => "4");
                             }
                         }
-                        if($num_page < $num_pages) {
-                            $nextpage = $num_page + 1;
-                            $this->registry->main_class->assign("nextpage",$nextpage);
-                        } else {
-                            $this->registry->main_class->assign("nextpage","no");
-                        }
-                        $this->registry->main_class->assign("html",$html);
-                        $this->registry->main_class->assign("totalcategories",$numrows2);
-                        $this->registry->main_class->assign("num_pages",$num_pages);
-                    } else {
-                        $this->registry->main_class->assign("html","no");
                     }
+                    if($num_page < $num_pages) {
+                        $nextpage = $num_page + 1;
+                        $this->result['nextpage'] = $nextpage;
+                    } else {
+                        $this->result['nextpage'] = "no";
+                    }
+                    $this->result['html'] = $html;
+                    $this->result['totalcategories'] = $num_rows;
+                    $this->result['num_pages'] = $num_pages;
                 } else {
-                    $this->registry->main_class->assign("category_all","no");
-                    $this->registry->main_class->assign("html","no");
+                    $this->result['html'] = "no";
                 }
             } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|showcatsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONCATNEWSPAGETITLE'));
-                    $this->registry->main_class->assign("news_update","notinsert");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|showcatsqlerror|".$this->registry->language);
-                exit();
+                $this->result['category_all'] = "no";
+                $this->result['html'] = "no";
             }
+        } else {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'show_cat_sql_error';
+            $this->error_array = $error;
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|showcat|".$num_page."|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONCATNEWSPAGETITLE'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_categories.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|showcat|".$num_page."|".$this->registry->language);
     }
 
 
     public function category_add() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|addcat|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDCATNEWSPAGETITLE'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/news/category_add.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|addcat|".$this->registry->language);
+        //
     }
 
 
-    public function category_add_inbase() {
-        if(isset($_POST['category_name'])) {
-            $category_name = trim($_POST['category_name']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDCATNEWSPAGETITLE'));
-        if((!isset($_POST['category_name'])) or ($category_name == "")) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addcatnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addcatnotalldata|".$this->registry->language);
-            exit();
+    public function category_add_inbase($category_name) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $category_name = trim($category_name);
+        if(empty($category_name)) {
+            $this->error = 'add_cat_not_all_data';
+            return;
         }
         $category_name = $this->registry->main_class->format_striptags($category_name);
         $category_name = $this->registry->main_class->processing_data($category_name);
-        $news_category_id = $this->db->GenID(PREFIX."_news_categories_id_".$this->registry->sitelang);
-        $sql = "INSERT INTO ".PREFIX."_news_categories_".$this->registry->sitelang."(news_category_id,news_category_name) VALUES ('$news_category_id',$category_name)";
+        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX."_news_categories_id_".$this->registry->sitelang,'news_category_id');
+        $sql = "INSERT INTO ".PREFIX."_news_categories_".$this->registry->sitelang."(".$sequence_array['field_name_string']."news_category_name,news_category_meta_title,news_category_meta_keywords,news_category_meta_description) VALUES (".$sequence_array['sequence_value_string']."".$category_name.",null,null,null)";
         $result = $this->db->Execute($sql);
         if($result === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addcatsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|addcatsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'add_cat_sql_error';
+            $this->error_array = $error;
+            return;
+        }
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcat");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogram");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|add");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|newsprogram|add");
+        $this->result = 'add_cat_ok';
+    }
+
+
+    public function category_edit($category_id) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $category_id = intval($category_id);
+        if(empty($category_id)) {
+            $this->error = 'empty_data';
+            return;
+        }
+        $sql = "SELECT news_category_id,news_category_name FROM ".PREFIX."_news_categories_".$this->registry->sitelang." WHERE news_category_id = '".$category_id."'";
+        $result = $this->db->Execute($sql);
+        if(!$result) {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'edit_cat_sql_error';
+            $this->error_array = $error;
+            return;
+        }
+        if(isset($result->fields['0'])) {
+            $row_exist = intval($result->fields['0']);
         } else {
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcat");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogramm");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|add");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|newsprogramm|add");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|addcatok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                $this->registry->main_class->assign("news_update","addcategory");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|addcatok|".$this->registry->language);
+            $row_exist = 0;
         }
+        if($row_exist < 1) {
+            $this->error = 'edit_cat_not_found';
+            return;
+        }
+        while(!$result->EOF) {
+            $news_category_id = intval($result->fields['0']);
+            $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+            $category_all[] = array(
+                "news_category_id" => $news_category_id,
+                "news_category_name" => $news_category_name
+            );
+            $result->MoveNext();
+        }
+        $this->result['category_all'] = $category_all;
     }
 
 
-    public function category_edit() {
-        if(isset($_GET['category_id'])) {
-            $category_id = intval($_GET['category_id']);
+    public function category_edit_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['category_name'])) {
+            $category_name = trim($array['category_name']);
         }
-        if((!isset($_GET['category_id'])) or ($category_id == 0)) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_news&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if(isset($array['category_id'])) {
+            $category_id = intval($array['category_id']);
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITCATNEWSPAGETITLE'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|editcat|".$category_id."|".$this->registry->language)) {
-            $sql = "SELECT news_category_id,news_category_name FROM ".PREFIX."_news_categories_".$this->registry->sitelang." WHERE news_category_id='".$category_id."'";
-            $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows > 0) {
-                    while(!$result->EOF) {
-                        $news_category_id = intval($result->fields['0']);
-                        $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
-                        $category_all[] = array(
-                            "news_category_id" => $news_category_id,
-                            "news_category_name" => $news_category_name
-                        );
-                        $result->MoveNext();
-                    }
-                    $this->registry->main_class->assign("category_all",$category_all);
-                } else {
-                    if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatnotfind|".$this->registry->language)) {
-                        $this->registry->main_class->assign("news_update","notfindcat");
-                        $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                        $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                    }
-                    $this->registry->main_class->database_close();
-                    $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatnotfind|".$this->registry->language);
-                    exit();
-                }
-            } else {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->assign("news_update","notinsert");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatsqlerror|".$this->registry->language);
-                exit();
-            }
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/news/category_edit.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|editcat|".$category_id."|".$this->registry->language);
-    }
-
-
-    public function category_edit_inbase() {
-        if(isset($_POST['category_name'])) {
-            $category_name = trim($_POST['category_name']);
-        }
-        if(isset($_POST['category_id'])) {
-            $category_id = intval($_POST['category_id']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITCATNEWSPAGETITLE'));
-        if((!isset($_POST['category_name']) or !isset($_POST['category_id'])) or ($category_name == "" or $category_id == 0)) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatnotalldata|".$this->registry->language);
-            exit();
+        if((!isset($array['category_name']) or !isset($array['category_id'])) or ($category_name == "" or $category_id == 0)) {
+            $this->error = 'edit_cat_not_all_data';
+            return;
         }
         $category_name = $this->registry->main_class->format_striptags($category_name);
         $category_name = $this->registry->main_class->processing_data($category_name);
-        $sql = "UPDATE ".PREFIX."_news_categories_".$this->registry->sitelang." SET news_category_name=$category_name WHERE news_category_id='$category_id'";
+        $sql = "UPDATE ".PREFIX."_news_categories_".$this->registry->sitelang." SET news_category_name = ".$category_name." WHERE news_category_id = '".$category_id."'";
         $result = $this->db->Execute($sql);
         $num_result = $this->db->Affected_Rows();
         if($result === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'edit_cat_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatok|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|editcatok|".$this->registry->language);
-            exit();
-        } else {
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcurrent");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogramm");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogramm");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|add");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|newsprogramm|add");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcat");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editcat|".$category_id);
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|".$category_id);
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|".$category_id);
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|".$category_id);
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|no");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|no");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|no");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|editcatok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                $this->registry->main_class->assign("news_update","editcatok");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|editcatok|".$this->registry->language);
+            $this->error = 'edit_cat_ok';
+            return;
         }
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcurrent");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogram");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogram");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|add");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|newsprogram|add");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcat");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editcat|".$category_id);
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|".$category_id);
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|".$category_id);
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|".$category_id);
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|no");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|no");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|no");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread");
+        $this->result = 'edit_cat_done';
     }
 
 
-    public function category_delete() {
-        if(isset($_GET['category_id'])) {
-            $category_id = intval($_GET['category_id']);
+    public function category_delete($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['category_id'])) {
+            $category_id = intval($array['category_id']);
         }
-        if(isset($_GET['conf'])) {
-            $conf = intval($_GET['conf']);
+        if(isset($array['conf'])) {
+            $conf = intval($array['conf']);
         }
-        if((!isset($_GET['conf']) or !isset($_GET['category_id'])) or ($category_id == 0)) {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONDELCATNEWSPAGETITLE'));
-                $this->registry->main_class->assign("news_update","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatnotalldata|".$this->registry->language);
-            exit();
+        if((!isset($array['conf']) or !isset($array['category_id'])) or ($category_id == 0)) {
+            $this->error = 'del_cat_not_all_data';
+            return;
         }
-        if($conf == 0) {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONDELCATNEWSPAGETITLE'));
-            $sql = "SELECT a.news_category_id,a.news_category_name,count(b.news_category_id) as check_num FROM ".PREFIX."_news_categories_".$this->registry->sitelang." a LEFT OUTER JOIN (SELECT news_category_id FROM ".PREFIX."_news_".$this->registry->sitelang." UNION ALL SELECT news_category_id FROM ".PREFIX."_news_auto_".$this->registry->sitelang.") b on a.news_category_id=b.news_category_id WHERE a.news_category_id='".$category_id."' group by  a.news_category_id,a.news_category_name";
+        if(empty($conf)) {
+            $sql = "SELECT a.news_category_id,a.news_category_name,count(b.news_category_id) as check_num FROM ".PREFIX."_news_categories_".$this->registry->sitelang." a LEFT OUTER JOIN (SELECT news_category_id FROM ".PREFIX."_news_".$this->registry->sitelang.") b on a.news_category_id = b.news_category_id WHERE a.news_category_id = '".$category_id."' group by  a.news_category_id,a.news_category_name";
             $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows > 0) {
-                    $news_category_id = intval($result->fields['0']);
-                    $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
-                    $check_num = intval($result->fields['2']);
-                    $this->registry->main_class->assign("category_id",$category_id);
-                    $this->registry->main_class->assign("category_del_name",$news_category_name);
-                    $this->registry->main_class->assign("count_del_news_id",$check_num);
-                    if($check_num == 0) {
-                        $this->db->StartTrans();
-                        $sql = "DELETE FROM ".PREFIX."_news_categories_".$this->registry->sitelang." WHERE news_category_id='".$category_id."'";
-                        $result2 = $this->db->Execute($sql);
-                        $num_result = $this->db->Affected_Rows();
-                        if($result2 === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $sql = "DELETE FROM ".PREFIX."_news_".$this->registry->sitelang." WHERE news_category_id='".$category_id."'";
-                        $result3 = $this->db->Execute($sql);
-                        if($result3 === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        $sql = "DELETE FROM ".PREFIX."_news_auto_".$this->registry->sitelang." WHERE news_category_id='".$category_id."'";
-                        $result4 = $this->db->Execute($sql);
-                        if($result4 === false) {
-                            $error_message = $this->db->ErrorMsg();
-                            $error_code = $this->db->ErrorNo();
-                            $error[] = array("code" => $error_code,"message" => $error_message);
-                        }
-                        if($result2 === false or $result3 === false or $result4 === false) {
-                            $result = false;
-                        }
-                        $this->db->CompleteTrans();
-                        if($result === false) {
-                            $this->registry->main_class->assign("error",$error);
-                            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatsqlerror|".$this->registry->language)) {
-                                $this->registry->main_class->assign("news_update","notinsert");
-                                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                            }
-                            $this->registry->main_class->database_close();
-                            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatsqlerror|".$this->registry->language);
-                            exit();
-                        } elseif($result !== false and $num_result == 0) {
-                            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatok|".$this->registry->language)) {
-                                $this->registry->main_class->assign("news_update","notinsert2");
-                                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                            }
-                            $this->registry->main_class->database_close();
-                            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatok|".$this->registry->language);
-                            exit();
-                        } else {
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcurrent");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogramm");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogramm");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|add");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|newsprogramm|add");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcat");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editcat|".$category_id);
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|".$category_id);
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|".$category_id);
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|".$category_id);
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|no");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|no");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|no");
-                            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread");
-                            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|deletecatok|".$this->registry->language)) {
-                                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                                $this->registry->main_class->assign("news_update","delcatok");
-                            }
-                            $this->registry->main_class->database_close();
-                            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|deletecatok|".$this->registry->language);
-                        }
-                        exit();
-                    }
-                } else {
-                    if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatnotfind|".$this->registry->language)) {
-                        $this->registry->main_class->assign("news_update","notfindcat");
-                        $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                        $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                    }
-                    $this->registry->main_class->database_close();
-                    $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatnotfind|".$this->registry->language);
-                    exit();
-                }
+            if(!$result) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $error[] = array("code" => $error_code,"message" => $error_message);
+                $this->error = 'del_cat_sql_error';
+                $this->error_array = $error;
+                return;
+            }
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
             } else {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->assign("news_update","notinsert");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatsqlerror|".$this->registry->language);
-                exit();
+                $row_exist = 0;
             }
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|deletecatconf|".$category_id."|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","deletecatconf");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
+            if($row_exist < 1) {
+                $this->error = 'del_cat_not_found';
+                return;
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|deletecatconf|".$category_id."|".$this->registry->language);
-            exit();
-        } elseif($conf == 1) {
-            $this->db->StartTrans();
-            $sql = "DELETE FROM ".PREFIX."_news_categories_".$this->registry->sitelang." WHERE news_category_id='".$category_id."'";
-            $result = $this->db->Execute($sql);
-            $num_result = $this->db->Affected_Rows();
-            if($result === false) {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
+            $news_category_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+            $check_num = intval($result->fields['2']);
+            $this->result['category_id'] = $category_id;
+            $this->result['category_del_name'] = $news_category_name;
+            $this->result['count_del_news_id'] = $check_num;
+            if($check_num > 0) {
+                $this->result['news_update'] = 'delete_cat_conf';
+                return;
             }
-            $sql = "DELETE FROM ".PREFIX."_news_".$this->registry->sitelang." WHERE news_category_id='".$category_id."'";
-            $result2 = $this->db->Execute($sql);
-            if($result2 === false) {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-            }
-            $sql = "DELETE FROM ".PREFIX."_news_auto_".$this->registry->sitelang." WHERE news_category_id='".$category_id."'";
-            $result3 = $this->db->Execute($sql);
-            if($result3 === false) {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-            }
-            if($result === false or $result2 === false or $result3 === false) {
-                $result = false;
-            }
-            $this->db->CompleteTrans();
-        } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_news&func=index&lang=".$this->registry->sitelang);
-            exit();
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONDELCATNEWSPAGETITLE'));
+        $this->db->StartTrans();
+        $sql = "DELETE FROM ".PREFIX."_news_categories_".$this->registry->sitelang." WHERE news_category_id = '".$category_id."'";
+        $result = $this->db->Execute($sql);
+        $num_result = $this->db->Affected_Rows();
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatsqlerror|".$this->registry->language);
-            exit();
-        } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatok|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|delcatok|".$this->registry->language);
-            exit();
-        } else {
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcurrent");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogramm");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogramm");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|add");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|newsprogramm|add");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcat");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editcat|".$category_id);
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|".$category_id);
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|".$category_id);
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|".$category_id);
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|no");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|no");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|no");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|deletecatok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-                $this->registry->main_class->assign("news_update","delcatok");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|deletecatok|".$this->registry->language);
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
         }
+        $sql = "DELETE FROM ".PREFIX."_news_".$this->registry->sitelang." WHERE news_category_id = '".$category_id."'";
+        $result2 = $this->db->Execute($sql);
+        if($result2 === false) {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+        }
+        if($result === false or $result2 === false) {
+            $result = false;
+        }
+        $this->db->CompleteTrans();
+        if($result === false) {
+            $this->error = 'del_cat_sql_error';
+            $this->error_array = $error;
+            return;
+        } elseif($result !== false and $num_result == 0) {
+            $this->error = 'del_cat_ok';
+            return;
+        }
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcurrent");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogram");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogram");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|add");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|newsprogram|add");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcat");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editcat|".$category_id);
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|".$category_id);
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|".$category_id);
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|".$category_id);
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|user|no");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|admin|no");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show|guest|no");
+        $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread");
+        $this->result['news_update'] = 'delete_cat_done';
     }
 
 
-    public function news_status() {
-        if(isset($_GET['action'])) {
-            $action = trim($_GET['action']);
-        } else {
-            $action = "";
+    public function news_status($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $action = "";
+        if(isset($array['get_action'])) {
+            $action = trim($array['get_action']);
         }
-        if(!isset($_GET['action']) and isset($_POST['action'])) {
-            $action = trim($_POST['action']);
+        if(!isset($array['get_action']) and isset($array['post_action'])) {
+            $action = trim($array['post_action']);
         }
-        if(isset($_GET['news_id'])) {
-            $news_id = intval($_GET['news_id']);
-        } else {
-            $news_id = 0;
+        $news_id = 0;
+        if(isset($array['get_news_id'])) {
+            $news_id = intval($array['get_news_id']);
         }
-        if($news_id == 0 and isset($_POST['news_id']) and is_array($_POST['news_id']) and count($_POST['news_id']) > 0) {
+        if($news_id == 0 and isset($array['post_news_id']) and is_array($array['post_news_id']) and count($array['post_news_id']) > 0) {
             $news_id_is_arr = 1;
-            for($i = 0,$size = count($_POST['news_id']);$i < $size;++$i) {
+            for($i = 0,$size = count($array['post_news_id']);$i < $size;++$i) {
                 if($i == 0) {
-                    $news_id = "'".intval($_POST['news_id'][$i])."'";
+                    $news_id = "'".intval($array['post_news_id'][$i])."'";
                 } else {
-                    $news_id .= ",'".intval($_POST['news_id'][$i])."'";
+                    $news_id .= ",'".intval($array['post_news_id'][$i])."'";
                 }
             }
         } else {
@@ -1588,204 +1138,134 @@ class admin_news extends model_base {
         }
         $action = $this->registry->main_class->format_striptags($action);
         if(!isset($news_id) or $action == "" or $news_id == "'0'") {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_news&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'empty_data';
+            return;
         }
-        if((isset($_GET['prog']) and intval($_GET['prog']) != 0 and intval($_GET['prog']) == 1) or (isset($_POST['prog']) and intval($_POST['prog']) != 0 and intval($_POST['prog']) == 1)) {
-            $temp = "programm";
-            $tbl = "_auto";
-        } else {
-            $temp = "";
-            $tbl = "";
+        $temp = "";
+        if(isset($array['prog']) and intval($array['prog']) != 0 and intval($array['prog']) == 1) {
+            $temp = "program";
         }
         if($action == "on") {
-            $sql = "UPDATE ".PREFIX."_news".$tbl."_".$this->registry->sitelang." SET news_status='1' WHERE news_id in (".$news_id.")";
+            $sql = "UPDATE ".PREFIX."_news_".$this->registry->sitelang." SET news_status = '1' WHERE news_id in (".$news_id.")";
             $result = $this->db->Execute($sql);
-            $this->registry->main_class->assign("news_update","on");
         } elseif($action == "off") {
-            $sql = "UPDATE ".PREFIX."_news".$tbl."_".$this->registry->sitelang." SET news_status='0' WHERE news_id IN (".$news_id.")";
+            $sql = "UPDATE ".PREFIX."_news_".$this->registry->sitelang." SET news_status = '0' WHERE news_id IN (".$news_id.")";
             $result = $this->db->Execute($sql);
-            $this->registry->main_class->assign("news_update","off");
         } elseif($action == "delete") {
-            $sql = "DELETE FROM ".PREFIX."_news".$tbl."_".$this->registry->sitelang." WHERE news_id IN (".$news_id.")";
+            $sql = "DELETE FROM ".PREFIX."_news_".$this->registry->sitelang." WHERE news_id IN (".$news_id.")";
             $result = $this->db->Execute($sql);
-            $this->registry->main_class->assign("news_update","delete");
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_news&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_action';
+            return;
         }
         if($result) {
             $num_result = $this->db->Affected_Rows();
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONNEWSPAGETITLE'));
         if($result === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|newsstatsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|newsstatsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'status_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|newsstatok|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notinsert2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|newsstatok|".$this->registry->language);
-            exit();
-        } else {
-            if($temp == "programm") {
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogramm");
-                if($news_id_is_arr == 1) {
-                    $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogramm");
-                } else {
-                    $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogramm|".intval($_GET['news_id']));
-                }
-            } else {
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcurrent");
-                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show");
-                if($news_id_is_arr == 1) {
-                    $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit");
-                    $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread");
-                } else {
-                    $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit|".intval($_GET['news_id']));
-                    $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".intval($_GET['news_id']));
-                    $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".intval($_GET['news_id'])."admin");
-                    $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".intval($_GET['news_id'])."user");
-                }
-            }
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news".$temp."|".$action."|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news".$temp."|".$action."|ok|".$this->registry->language);
+            $this->error = 'status_ok';
+            return;
         }
+        if($temp == "program") {
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showprogram");
+            if($news_id_is_arr == 1) {
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogram");
+            } else {
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|editprogram|".intval($array['get_news_id']));
+            }
+        } else {
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|showcurrent");
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show");
+            if($news_id_is_arr == 1) {
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit");
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread");
+            } else {
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|edit|".intval($array['get_news_id']));
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".intval($array['get_news_id']));
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".intval($array['get_news_id'])."admin");
+                $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread|".intval($array['get_news_id'])."user");
+            }
+        }
+        $this->result = $action;
     }
 
 
     public function news_config() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONCONFNEWSPAGETITLE'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|config|".$this->registry->language)) {
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_config.html");
-            require_once('../modules/news/news_config.inc');
-            $this->registry->main_class->assign("systemdk_news_num_news",trim(MODULE_NEWS_NUM_NEWS));
-            $this->registry->main_class->assign("systemdk_news_image_path",trim(MODULE_NEWS_IMAGE_PATH));
-            $this->registry->main_class->assign("systemdk_news_image_position",trim(MODULE_NEWS_IMAGE_POSITION));
-            $this->registry->main_class->assign("systemdk_news_image_max_size",trim(MODULE_NEWS_IMAGE_MAX_SIZE));
-            $this->registry->main_class->assign("systemdk_news_image_max_width",trim(MODULE_NEWS_IMAGE_MAX_WIDTH));
-            $this->registry->main_class->assign("systemdk_news_image_max_height",trim(MODULE_NEWS_IMAGE_MAX_HEIGHT));
-            $this->registry->main_class->assign("systemdk_news_image_width",trim(MODULE_NEWS_IMAGE_WIDTH));
-            $this->registry->main_class->assign("systemdk_news_image_width2",trim(MODULE_NEWS_IMAGE_WIDTH2));
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|config|".$this->registry->language);
+        $this->result = false;
+        require_once('../modules/news/news_config.inc');
+        $this->result['systemdk_news_num_news'] = trim(MODULE_NEWS_NUM_NEWS);
+        $this->result['systemdk_news_image_path'] = trim(MODULE_NEWS_IMAGE_PATH);
+        $this->result['systemdk_news_image_position'] = trim(MODULE_NEWS_IMAGE_POSITION);
+        $this->result['systemdk_news_image_max_size'] = trim(MODULE_NEWS_IMAGE_MAX_SIZE);
+        $this->result['systemdk_news_image_max_width'] = trim(MODULE_NEWS_IMAGE_MAX_WIDTH);
+        $this->result['systemdk_news_image_max_height'] = trim(MODULE_NEWS_IMAGE_MAX_HEIGHT);
+        $this->result['systemdk_news_image_width'] = trim(MODULE_NEWS_IMAGE_WIDTH);
+        $this->result['systemdk_news_image_width2'] = trim(MODULE_NEWS_IMAGE_WIDTH2);
     }
 
 
-    public function news_config_save() {
-        if(isset($_POST['systemdk_news_num_news'])) {
-            $systemdk_news_num_news = intval($_POST['systemdk_news_num_news']);
-        }
-        if(isset($_POST['systemdk_news_image_path'])) {
-            $systemdk_news_image_path = trim($_POST['systemdk_news_image_path']);
-        }
-        if(isset($_POST['systemdk_news_image_position'])) {
-            $systemdk_news_image_position = trim($_POST['systemdk_news_image_position']);
-        }
-        if(isset($_POST['systemdk_news_image_max_size'])) {
-            $systemdk_news_image_max_size = intval($_POST['systemdk_news_image_max_size']);
-        }
-        if(isset($_POST['systemdk_news_image_max_width'])) {
-            $systemdk_news_image_max_width = intval($_POST['systemdk_news_image_max_width']);
-        }
-        if(isset($_POST['systemdk_news_image_max_height'])) {
-            $systemdk_news_image_max_height = intval($_POST['systemdk_news_image_max_height']);
-        }
-        if(isset($_POST['systemdk_news_image_width'])) {
-            $systemdk_news_image_width = intval($_POST['systemdk_news_image_width']);
-        }
-        if(isset($_POST['systemdk_news_image_width2'])) {
-            $systemdk_news_image_width2 = intval($_POST['systemdk_news_image_width2']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONCONFNEWSPAGETITLE'));
-        if((!isset($_POST['systemdk_news_num_news']) or !isset($_POST['systemdk_news_image_path']) or !isset($_POST['systemdk_news_image_position']) or !isset($_POST['systemdk_news_image_max_size']) or !isset($_POST['systemdk_news_image_max_width']) or !isset($_POST['systemdk_news_image_max_height']) or !isset($_POST['systemdk_news_image_width']) or !isset($_POST['systemdk_news_image_width2'])) or ($systemdk_news_num_news == 0 or $systemdk_news_image_path == "" or $systemdk_news_image_position == "" or $systemdk_news_image_max_size == 0 or $systemdk_news_image_max_width == 0 or $systemdk_news_image_max_height == 0 or $systemdk_news_image_width == 0 or $systemdk_news_image_width2 == 0)) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|confnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
+    public function news_config_save($array) {
+        $this->result = false;
+        $this->error = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'systemdk_news_image_path',
+                    'systemdk_news_image_position'
+                );
+                $keys2 = array(
+                    'systemdk_news_num_news',
+                    'systemdk_news_image_max_size',
+                    'systemdk_news_image_max_width',
+                    'systemdk_news_image_max_height',
+                    'systemdk_news_image_width',
+                    'systemdk_news_image_width2'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|confnotalldata|".$this->registry->language);
-            exit();
         }
-        $systemdk_news_image_path = $this->registry->main_class->format_htmlspecchars_stripslashes_striptags($systemdk_news_image_path);
-        $systemdk_news_image_position = $this->registry->main_class->format_htmlspecchars_stripslashes_striptags($systemdk_news_image_position);
+        if((!isset($array['systemdk_news_num_news']) or !isset($array['systemdk_news_image_path']) or !isset($array['systemdk_news_image_position']) or !isset($array['systemdk_news_image_max_size']) or !isset($array['systemdk_news_image_max_width']) or !isset($array['systemdk_news_image_max_height']) or !isset($array['systemdk_news_image_width']) or !isset($array['systemdk_news_image_width2'])) or ($data_array['systemdk_news_num_news'] == 0 or $data_array['systemdk_news_image_path'] == "" or $data_array['systemdk_news_image_position'] == "" or $data_array['systemdk_news_image_max_size'] == 0 or $data_array['systemdk_news_image_max_width'] == 0 or $data_array['systemdk_news_image_max_height'] == 0 or $data_array['systemdk_news_image_width'] == 0 or $data_array['systemdk_news_image_width2'] == 0)) {
+            $this->error = 'conf_not_all_data';
+            return;
+        }
+        $data_array['systemdk_news_image_path'] = $this->registry->main_class->format_htmlspecchars_stripslashes_striptags($data_array['systemdk_news_image_path']);
+        $data_array['systemdk_news_image_position'] = $this->registry->main_class->format_htmlspecchars_stripslashes_striptags($data_array['systemdk_news_image_position']);
         @chmod("../modules/news/news_config.inc",0777);
         $file = @fopen("../modules/news/news_config.inc","w");
         if(!$file) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|confnofile|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","nofile");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|confnofile|".$this->registry->language);
-            exit();
+            $this->error = 'conf_no_file';
+            return;
         }
         $content = "<?php\n";
-        $content .= 'define("MODULE_NEWS_NUM_NEWS","'.$systemdk_news_num_news."\");\n";
-        $content .= 'define("MODULE_NEWS_IMAGE_PATH","'.$systemdk_news_image_path."\");\n";
-        $content .= 'define("MODULE_NEWS_IMAGE_POSITION","'.$systemdk_news_image_position."\");\n";
-        $content .= 'define("MODULE_NEWS_IMAGE_MAX_SIZE","'.$systemdk_news_image_max_size."\");\n";
-        $content .= 'define("MODULE_NEWS_IMAGE_MAX_WIDTH","'.$systemdk_news_image_max_width."\");\n";
-        $content .= 'define("MODULE_NEWS_IMAGE_MAX_HEIGHT","'.$systemdk_news_image_max_height."\");\n";
-        $content .= 'define("MODULE_NEWS_IMAGE_WIDTH","'.$systemdk_news_image_width."\");\n";
-        $content .= 'define("MODULE_NEWS_IMAGE_WIDTH2","'.$systemdk_news_image_width2."\");\n";
-        $content .= "?>\n";
+        $content .= 'define("MODULE_NEWS_NUM_NEWS","'.$data_array['systemdk_news_num_news']."\");\n";
+        $content .= 'define("MODULE_NEWS_IMAGE_PATH","'.$data_array['systemdk_news_image_path']."\");\n";
+        $content .= 'define("MODULE_NEWS_IMAGE_POSITION","'.$data_array['systemdk_news_image_position']."\");\n";
+        $content .= 'define("MODULE_NEWS_IMAGE_MAX_SIZE","'.$data_array['systemdk_news_image_max_size']."\");\n";
+        $content .= 'define("MODULE_NEWS_IMAGE_MAX_WIDTH","'.$data_array['systemdk_news_image_max_width']."\");\n";
+        $content .= 'define("MODULE_NEWS_IMAGE_MAX_HEIGHT","'.$data_array['systemdk_news_image_max_height']."\");\n";
+        $content .= 'define("MODULE_NEWS_IMAGE_WIDTH","'.$data_array['systemdk_news_image_width']."\");\n";
+        $content .= 'define("MODULE_NEWS_IMAGE_WIDTH2","'.$data_array['systemdk_news_image_width2']."\");\n";
         $writefile = @fwrite($file,$content);
+        @fclose($file);
+        @chmod("../modules/news/news_config.inc",0604);
         if(!$writefile) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|confnowrite|".$this->registry->language)) {
-                $this->registry->main_class->assign("news_update","nowrite");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|error|confnowrite|".$this->registry->language);
-            exit();
+            $this->error = 'conf_no_write';
+            return;
         }
         $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|show");
         $this->registry->main_class->clearCache(null,$this->registry->sitelang."|modules|news|newsread");
         $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|news|config");
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|configok|".$this->registry->language)) {
-            $this->registry->main_class->assign("news_update","writeok");
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/news/news_update.html");
-        }
-        @fclose($file);
-        @chmod("../modules/news/news_config.inc",0604);
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|news|configok|".$this->registry->language);
+        $this->result = 'config_ok';
     }
 }
-
-?>

@@ -3,22 +3,25 @@
 </div>
 <center>
 <br>
-{if $admin_edit eq "notfind"}
+{if $admin_edit eq "not_found"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_ADMINNOTFIND#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $admin_edit eq "notalldata"}
+{elseif $admin_edit eq "not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_ADMINNOTALLDATA#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $admin_edit eq "findsuchadmin"}
+{elseif $admin_edit eq "incorrect_email"}
+<img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_ADMININCORRECTEMAIL#}</span><br><br>
+<a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $admin_edit eq "find_such_admin"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_ADMINFINDSUCHADMIN#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
 {elseif $admin_edit eq "accesserror"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_ADMINACCESSERROR#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $admin_edit eq "adderrorpass"}
+{elseif $admin_edit eq "add_error_pass"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_ADMINPASSNOTEQ#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $admin_edit eq "notinsert"}
+{elseif $admin_edit eq "sql_error"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
 {nocache}
 {if $error ne "no"}
@@ -28,10 +31,10 @@
 {/if}
 {/nocache}
 <br><a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $admin_edit eq "notinsert2"}
+{elseif $admin_edit eq "not_done"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
 <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $admin_edit eq "editok"}
+{elseif $admin_edit eq "edit_ok"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_ADMINEDITOK#}</span><br><br>
 <a href="index.php?lang={$site_language}" class="link">{#_MENUADMINISTRATION#}</a>
 {elseif $admin_edit eq "nomodule"}

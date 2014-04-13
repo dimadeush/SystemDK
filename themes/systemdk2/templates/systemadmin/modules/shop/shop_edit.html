@@ -23,7 +23,6 @@
 <br>
 <form enctype="multipart/form-data" action="index.php?path=admin_shop&amp;func=shop_edit_inbase&amp;lang={$site_language}" method="POST">
 <input type="hidden" name="item_id" value="{$item_all_tpl.item_id}">
-<input type="hidden" name="item_position" value="{$item_all_tpl.item_position}">
 {if $adminmodules_shop_depth eq "categ"}
 <input type="hidden" name="depth" value="1">
 {elseif $adminmodules_shop_depth eq "subcateg"}
@@ -96,7 +95,7 @@ $.tools.dateinput.localize("{$language}",  {
 
  $(":date").dateinput({
  lang: '{$language}',
- format: 'dd.mm.yy',
+ format: 'dd.mm.yyyy',
  selectors: true,
  firstDay: 1
  }

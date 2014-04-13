@@ -9,7 +9,7 @@
   <tr>
   {/if}
   <td align="center" width="16%" style="padding-bottom: 4px; padding-top: 4px; CURSOR:POINTER;" bgcolor="{#color7#}" onmouseover="this.style.backgroundColor='{#color10#}'" onmouseout="this.style.backgroundColor='{#color7#}'" onclick="location.href='index.php?path=admin_{$additional_modules_tpl.module_name}&amp;lang={$site_language}'">
-    <a href="index.php?path=admin_{$additional_modules_tpl.module_name}&amp;lang={$site_language}" class="link">{if $display_admin_graphic ne "no"}<img src="../themes/systemdk/images/systemadmin/{$additional_modules_tpl.module_name}.gif" border="0" alt="{$additional_modules_tpl.module_customname}" title="{$additional_modules_tpl.module_customname}" height="30" width="30"><br>{/if}{$additional_modules_tpl.module_customname}</a>
+    <a href="#" class="link">{if $display_admin_graphic ne "no"}<img src="../themes/systemdk/images/systemadmin/{$additional_modules_tpl.module_name}.gif" border="0" alt="{$additional_modules_tpl.module_customname}" title="{$additional_modules_tpl.module_customname}" height="30" width="30"><br>{/if}{$additional_modules_tpl.module_customname}</a>
     {if $additional_modules_tpl.module_ordinal_number eq "5"}
     </td></tr>
     {else}
@@ -26,22 +26,22 @@
 </table>
 <br>
 <br>
-{if $module_edit_save eq "save_ok"}
+{if $module_edit_save eq "edit_done"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MODULEPARAMSSAVE#}</span><br>
 <br><a href="index.php?path=admin_modules&amp;func=index&amp;lang={$site_language}" class="link">{#_ALLMODULESINSYSTEM#}</a>
-{elseif $module_edit_save eq "save_status"}
+{elseif $module_edit_save eq "on" or $module_edit_save eq "off"}
 <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_MODULEPARAMSSAVE#}</span><br>
 <br><a href="index.php?path=admin_modules&amp;func=index&amp;lang={$site_language}" class="link">{#_ALLMODULESINSYSTEM#}</a>
-{elseif $module_edit_save eq "nosuchmodule"}
+{elseif $module_edit_save eq "edit_not_found"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MODULENOSUCHMODULE#}</span><br>
 <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $module_edit_save eq "noalldata"}
+{elseif $module_edit_save eq "edit_not_all_data"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MODULENOTALLDATA#}</span><br>
 <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $module_edit_save eq "findinbase"}
+{elseif $module_edit_save eq "edit_found"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_MODULECUSTOMNAMEFINDINBASE#}</span><br>
 <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $module_edit_save eq "notsave"}
+{elseif $module_edit_save eq "show_sql_error" or $module_edit_save eq "edit_sql_error" or $module_edit_save eq "status_sql_error"}
 <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br>
 {nocache}
 {if $error ne "no"}
@@ -51,7 +51,7 @@
 {/if}
 {/nocache}
 <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
-{elseif $module_edit_save eq "notsave2"}
+{elseif $module_edit_save eq "edit_ok" or $module_edit_save eq "status_ok"}
 <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br>
 <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
 {else}

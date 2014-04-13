@@ -4,70 +4,31 @@
  * File:      model_admin_modules.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 class admin_modules extends model_base {
 
 
-    public function index() {
-        $this->allmodules();
-        $this->display_menu();
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|show|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUMODULES'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/modules/modules.html");
+    private $error;
+    private $error_array;
+    private $result;
+
+
+    public function get_property_value($property) {
+        if(isset($this->$property) and in_array($property,array('error','error_array','result'))) {
+            return $this->$property;
         }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|show|".$this->registry->language);
+        return false;
     }
 
 
-    private function display_menu() {
-        $this->registry->main_class->configLoad($this->registry->language."/systemadmin/modules/modules/modules.conf");
-        $sql = "SELECT module_id,module_name,module_customname FROM ".PREFIX."_modules_".$this->registry->sitelang." WHERE module_name not in ('account','feedback','main_pages') order by module_id ASC";
-        $result = $this->db->Execute($sql);
-        if($result) {
-            if(isset($result->fields['1'])) {
-                $numrows = intval($result->fields['0']);
-            } else {
-                $numrows = 0;
-            }
-            if($numrows > 0) {
-                $module_ordinal_number = 0;
-                while(!$result->EOF) {
-                    $module_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
-                    $module_customname = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
-                    $additional_modules[] = array(
-                        "module_name" => $module_name,
-                        "module_customname" => $module_customname,
-                        "module_ordinal_number" => $module_ordinal_number
-                    );
-                    if($module_ordinal_number == 5) {
-                        $module_ordinal_number = 0;
-                    } else {
-                        $module_ordinal_number = $module_ordinal_number + 1;
-                    }
-                    $result->MoveNext();
-                }
-                $this->registry->main_class->assign("display_admin_graphic",DISPLAY_ADMIN_GRAPHIC);
-                $this->registry->main_class->assign("display_menu","yes");
-                $this->registry->main_class->assign("additional_modules",$additional_modules);
-            } else {
-                $this->registry->main_class->assign("display_menu","no");
-            }
-        } else {
-            $this->registry->main_class->assign("display_menu","no");
-        }
-    }
-
-
-    private function allmodules() {
+    public function index($cached = false) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
         $handle = opendir('../modules');
         while(false !== ($file = readdir($handle))) {
             if((!preg_match("/[.]/i",$file))) {
@@ -81,30 +42,30 @@ class admin_modules extends model_base {
             $modlist[$i] = $this->registry->main_class->processing_data($modlist[$i]);
             $modlist[$i] = substr(substr($modlist[$i],0,-1),1);
             if($modlist[$i] != "") {
-                $sql = "SELECT module_id FROM ".PREFIX."_modules_".$this->registry->sitelang." WHERE module_name='".$modlist[$i]."'";
+                $sql = "SELECT module_id FROM ".PREFIX."_modules_".$this->registry->sitelang." WHERE module_name = '".$modlist[$i]."'";
                 $result = $this->db->Execute($sql);
                 if($result) {
                     if(isset($result->fields['0'])) {
-                        $numrows = intval($result->fields['0']);
+                        $row_exist = intval($result->fields['0']);
                     } else {
-                        $numrows = 0;
+                        $row_exist = 0;
                     }
-                    if($numrows > 0) {
+                    if($row_exist > 0) {
                         $module_id = $result->fields['0'];
                         $module_id = intval($module_id);
                     } else {
                         $module_id = 0;
                     }
                     if($module_id == 0) {
-                        $module_id = $this->db->GenID(PREFIX."_modules_id_".$this->registry->sitelang);
-                        $result = $this->db->Execute("INSERT INTO ".PREFIX."_modules_".$this->registry->sitelang." VALUES ('$module_id', '$modlist[$i]', '$modlist[$i]', NULL, '0', '0')");
-                        $num_result = $this->db->Affected_Rows();
+                        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX."_modules_id_".$this->registry->sitelang,'module_id');
+                        $result = $this->db->Execute("INSERT INTO ".PREFIX."_modules_".$this->registry->sitelang." (".$sequence_array['field_name_string']."module_name,module_custom_name,module_version,module_status,module_value_view) VALUES (".$sequence_array['sequence_value_string']." '".$modlist[$i]."', '".$modlist[$i]."', NULL, '0', '0')");
                         if($result === false) {
                             $error_message = $this->db->ErrorMsg();
                             $error_code = $this->db->ErrorNo();
                             $error[] = array("code" => $error_code,"message" => $error_message);
                         } else {
                             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|modules|show");
+                            $cached = false;
                         }
                     }
                 } else {
@@ -118,11 +79,11 @@ class admin_modules extends model_base {
         $result2 = $this->db->Execute($sql);
         if($result2) {
             if(isset($result2->fields['1'])) {
-                $numrows = intval($result2->fields['1']);
+                $row_exist = intval($result2->fields['1']);
             } else {
-                $numrows = 0;
+                $row_exist = 0;
             }
-            if($numrows > 0) {
+            if($row_exist > 0) {
                 while(!$result2->EOF) {
                     $module_name = $this->registry->main_class->extracting_data($result2->fields['0']);
                     $delete = "yes";
@@ -138,9 +99,9 @@ class admin_modules extends model_base {
                     if($delete == "yes") {
                         $module_name = $this->registry->main_class->processing_data($module_name);
                         if(!isset($delete_module_name)) {
-                            $delete_module_name = "module_name=".$module_name."";
+                            $delete_module_name = "module_name = ".$module_name."";
                         } else {
-                            $delete_module_name .= " or module_name=".$module_name."";
+                            $delete_module_name .= " or module_name = ".$module_name."";
                         }
                     }
                     $result2->MoveNext();
@@ -160,18 +121,19 @@ class admin_modules extends model_base {
                 $error[] = array("code" => $error_code,"message" => $error_message);
             } elseif($num_result3 > 0) {
                 $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|modules|show");
+                $cached = false;
             }
         }
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|show|".$this->registry->language)) {
-            $sql = "SELECT module_id, module_name, module_customname, module_version, module_status, module_valueview FROM ".PREFIX."_modules_".$this->registry->sitelang." ORDER BY module_name ASC";
+        if(!$cached) {
+            $sql = "SELECT module_id, module_name, module_custom_name, module_version, module_status, module_value_view FROM ".PREFIX."_modules_".$this->registry->sitelang." ORDER BY module_name ASC";
             $result = $this->db->Execute($sql);
             if($result) {
                 if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
+                    $row_exist = intval($result->fields['0']);
                 } else {
-                    $numrows = 0;
+                    $row_exist = 0;
                 }
-                if($numrows > 0) {
+                if($row_exist > 0) {
                     while(!$result->EOF) {
                         $module_id = intval($result->fields['0']);
                         $module_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
@@ -189,258 +151,223 @@ class admin_modules extends model_base {
                         );
                         $result->MoveNext();
                     }
-                    $this->registry->main_class->assign("module_all",$module_all);
+                    $this->result['module_all'] = $module_all;
                 } else {
-                    $this->registry->main_class->assign("module_all","no");
+                    $this->result['module_all'] = "no";
                 }
             } else {
-                $this->registry->main_class->assign("module_all","no");
+                $this->result['module_all'] = "no";
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
         }
         if(isset($error)) {
-            $this->registry->main_class->assign("error",$error);
+            $this->error = 'show_sql_error';
+            $this->error_array = $error;
         } else {
-            $this->registry->main_class->assign("error","no");
+            $this->result['error'] = "no";
         }
     }
 
 
-    public function edit_module() {
-        if(isset($_GET['module_id'])) {
-            $module_id = intval($_GET['module_id']);
-        }
-        if(!isset($_GET['module_id']) or $module_id == 0) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_modules&func=index&lang=".$this->registry->sitelang);
-            exit();
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMODULEPAGETITLE'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|edit|".$module_id."|".$this->registry->language)) {
-            $sql = "SELECT module_id, module_name, module_customname, module_version, module_status, module_valueview FROM ".PREFIX."_modules_".$this->registry->sitelang." WHERE module_id='".$module_id."'";
-            $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
-                } else {
-                    $numrows = 0;
-                }
-                if($numrows > 0) {
-                    $module_id = intval($result->fields['0']);
+    public function display_menu() {
+        $sql = "SELECT module_id,module_name,module_custom_name FROM ".PREFIX."_modules_".$this->registry->sitelang." WHERE module_name not in ('account','feedback','main_pages') order by module_id ASC";
+        $result = $this->db->Execute($sql);
+        if($result) {
+            if(isset($result->fields['1'])) {
+                $row_exist = intval($result->fields['0']);
+            } else {
+                $row_exist = 0;
+            }
+            if($row_exist > 0) {
+                $module_ordinal_number = 0;
+                while(!$result->EOF) {
                     $module_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
                     $module_customname = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
-                    $module_version = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
-                    $module_status = intval($result->fields['4']);
-                    $module_valueview = intval($result->fields['5']);
-                    $module_all[] = array(
-                        "module_id" => $module_id,
+                    $additional_modules[] = array(
                         "module_name" => $module_name,
                         "module_customname" => $module_customname,
-                        "module_version" => $module_version,
-                        "module_status" => $module_status,
-                        "module_valueview" => $module_valueview
+                        "module_ordinal_number" => $module_ordinal_number
                     );
-                    $this->registry->main_class->assign("module_all",$module_all);
-                } else {
-                    $this->display_menu();
-                    if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editnotfind|".$this->registry->language)) {
-                        $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                        $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                        $this->registry->main_class->assign("module_edit_save","nosuchmodule");
+                    if($module_ordinal_number == 5) {
+                        $module_ordinal_number = 0;
+                    } else {
+                        $module_ordinal_number = $module_ordinal_number + 1;
                     }
-                    $this->registry->main_class->database_close();
-                    $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editnotfind|".$this->registry->language);
-                    exit();
+                    $result->MoveNext();
                 }
+                $this->result['display_admin_graphic'] = DISPLAY_ADMIN_GRAPHIC;
+                $this->result['display_menu'] = "yes";
+                $this->result['additional_modules'] = $additional_modules;
             } else {
-                $this->display_menu();
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                    $this->registry->main_class->assign("module_edit_save","notsave");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editsqlerror|".$this->registry->language);
-                exit();
+                $this->result['display_menu'] = "no";
             }
+        } else {
+            $this->result['display_menu'] = "no";
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'show_sql_error';
+            $this->error_array = $error;
         }
-        $this->display_menu();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|edit|".$module_id."|".$this->registry->language)) {
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-            $this->registry->main_class->assign("module_edit_save","save");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|edit|".$module_id."|".$this->registry->language);
     }
 
 
-    public function edit_module_save() {
-        if(isset($_POST['module_id'])) {
-            $module_id = intval($_POST['module_id']);
+    public function edit_module($module_id) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $module_id = intval($module_id);
+        if($module_id == 0) {
+            $this->error = 'empty_data';
+            return;
         }
-        if(isset($_POST['module_customname'])) {
-            $module_customname = trim($_POST['module_customname']);
-        }
-        if(isset($_POST['module_status'])) {
-            $module_status = intval($_POST['module_status']);
-        }
-        if(isset($_POST['module_valueview'])) {
-            $module_valueview = intval($_POST['module_valueview']);
-        }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMODULEPAGETITLE'));
-        if((!isset($_POST['module_id']) or !isset($_POST['module_customname']) or !isset($_POST['module_status']) or !isset($_POST['module_valueview'])) or ($module_id == 0 or $module_customname == "")) {
-            $this->display_menu();
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                $this->registry->main_class->assign("module_edit_save","noalldata");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editnotalldata|".$this->registry->language);
-            exit();
-        }
-        $module_customname = $this->registry->main_class->format_striptags($module_customname);
-        $module_customname = $this->registry->main_class->processing_data($module_customname);
-        $sql = "SELECT module_id FROM ".PREFIX."_modules_".$this->registry->sitelang." WHERE module_customname=".$module_customname." AND module_id<>'".$module_id."'";
+        $sql = "SELECT module_id, module_name, module_custom_name, module_version, module_status, module_value_view FROM ".PREFIX."_modules_".$this->registry->sitelang." WHERE module_id = '".$module_id."'";
         $result = $this->db->Execute($sql);
         if($result) {
             if(isset($result->fields['0'])) {
-                $numrows = intval($result->fields['0']);
+                $row_exist = intval($result->fields['0']);
             } else {
-                $numrows = 0;
+                $row_exist = 0;
             }
-            if($numrows > 0) {
-                $this->display_menu();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editfind|".$this->registry->language)) {
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                    $this->registry->main_class->assign("module_edit_save","findinbase");
+            if($row_exist > 0) {
+                $module_id = intval($result->fields['0']);
+                $module_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                $module_customname = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
+                $module_version = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
+                $module_status = intval($result->fields['4']);
+                $module_valueview = intval($result->fields['5']);
+                $module_all[] = array(
+                    "module_id" => $module_id,
+                    "module_name" => $module_name,
+                    "module_customname" => $module_customname,
+                    "module_version" => $module_version,
+                    "module_status" => $module_status,
+                    "module_valueview" => $module_valueview
+                );
+                $this->result['module_all'] = $module_all;
+            } else {
+                $this->error = 'edit_not_found';
+                return;
+            }
+        } else {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'edit_sql_error';
+            $this->error_array = $error;
+            return;
+        }
+        //$this->result['module_edit_save'] = "save";
+    }
+
+
+    public function edit_module_save($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'module_customname'
+                );
+                $keys2 = array(
+                    'module_id',
+                    'module_status',
+                    'module_valueview'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
                 }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editfind|".$this->registry->language);
-                exit();
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
             }
-            $sql = "UPDATE ".PREFIX."_modules_".$this->registry->sitelang." SET module_customname=$module_customname, module_status='$module_status', module_valueview='$module_valueview' WHERE module_id='$module_id'";
+        }
+        if((!isset($array['module_id']) or !isset($array['module_customname']) or !isset($array['module_status']) or !isset($array['module_valueview'])) or ($data_array['module_id'] == 0 or $data_array['module_customname'] == "")) {
+            $this->error = 'edit_not_all_data';
+            return;
+        }
+        $data_array['module_customname'] = $this->registry->main_class->format_striptags($data_array['module_customname']);
+        $data_array['module_customname'] = $this->registry->main_class->processing_data($data_array['module_customname']);
+        $sql = "SELECT module_id FROM ".PREFIX."_modules_".$this->registry->sitelang." WHERE module_custom_name = ".$data_array['module_customname']." AND module_id <> '".$data_array['module_id']."'";
+        $result = $this->db->Execute($sql);
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
+            } else {
+                $row_exist = 0;
+            }
+            if($row_exist > 0) {
+                $this->error = 'edit_found';
+                return;
+            }
+            $sql = "UPDATE ".PREFIX."_modules_".$this->registry->sitelang." SET module_custom_name = ".$data_array['module_customname'].", module_status = '".$data_array['module_status']."', module_value_view = '".$data_array['module_valueview']."' WHERE module_id = '".$data_array['module_id']."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
         }
-        $this->display_menu();
         if($result === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                $this->registry->main_class->assign("module_edit_save","notsave");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'edit_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                $this->registry->main_class->assign("module_edit_save","notsave2");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|editok|".$this->registry->language);
-            exit();
+            $this->error = 'edit_ok';
+            return;
         } else {
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|modules|edit|".$module_id);
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|modules|edit|".$data_array['module_id']);
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|modules|show");
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|homepage");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|editok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                $this->registry->main_class->assign("module_edit_save","save_ok");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|editok|".$this->registry->language);
+            $this->result['module_edit_save'] = 'edit_done';
         }
     }
 
 
-    public function status_module() {
-        if(isset($_GET['status'])) {
+    public function status_module($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['status'])) {
             $status = trim($_GET['status']);
         }
-        if(isset($_GET['module_id'])) {
-            $module_id = intval($_GET['module_id']);
+        if(isset($array['module_id'])) {
+            $module_id = intval($array['module_id']);
         }
-        if((!isset($_GET['module_id']) or !isset($_GET['status'])) or ($module_id == 0 or $status == "")) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_modules&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if((!isset($array['module_id']) or !isset($array['status'])) or ($module_id == 0 or $status == "")) {
+            $this->error = 'empty_data';
+            return;
         }
         $status = $this->registry->main_class->format_striptags($status);
         if($status == "off") {
-            $sql = "UPDATE ".PREFIX."_modules_".$this->registry->sitelang." SET module_status='0' WHERE module_id='".$module_id."'";
+            $sql = "UPDATE ".PREFIX."_modules_".$this->registry->sitelang." SET module_status = '0' WHERE module_id = '".$module_id."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
         } elseif($status == "on") {
-            $sql = "UPDATE ".PREFIX."_modules_".$this->registry->sitelang." SET module_status='1' WHERE module_id='".$module_id."'";
+            $sql = "UPDATE ".PREFIX."_modules_".$this->registry->sitelang." SET module_status = '1' WHERE module_id = '".$module_id."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_modules&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_action';
+            return;
         }
-        $this->display_menu();
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_MENUMODULES'));
         if($result === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|statussqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                $this->registry->main_class->assign("module_edit_save","notsave");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|statussqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'status_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|statusok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                $this->registry->main_class->assign("module_edit_save","notsave2");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|error|statusok|".$this->registry->language);
-            exit();
+            $this->error = 'status_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|modules|edit|".$module_id);
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|modules|show");
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|homepage");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|".$status."|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/modules/edit_module.html");
-                $this->registry->main_class->assign("module_edit_save","save_status");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|modules|".$status."|ok|".$this->registry->language);
+            $this->result['module_edit_save'] = $status;
         }
     }
 }
-
-?>

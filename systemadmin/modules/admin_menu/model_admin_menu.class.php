@@ -4,123 +4,126 @@
  * File:      model_admin_menu.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2013 SystemDK
+ * @copyright 2014 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.0
+ * @version   3.1
  */
 class admin_menu extends model_base {
 
 
-    public function index() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINBLOCKMAINNAME'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|show|".$this->registry->language)) {
-            $sql = "SELECT a.mainmenu_id,a.mainmenu_type,a.mainmenu_name,a.mainmenu_module,a.mainmenu_submodule,a.mainmenu_target,a.mainmenu_priority,a.mainmenu_inmenu,(SELECT max(b.mainmenu_id) FROM ".PREFIX."_main_menu_".$this->registry->sitelang." b WHERE b.mainmenu_priority=a.mainmenu_priority-1) as mainmenu_id2,(SELECT max(c.mainmenu_id) FROM ".PREFIX."_main_menu_".$this->registry->sitelang." c WHERE c.mainmenu_priority=a.mainmenu_priority+1) as mainmenu_id3 FROM ".PREFIX."_main_menu_".$this->registry->sitelang." a ORDER BY a.mainmenu_priority";
-            $result = $this->db->Execute($sql);
-            if($result) {
-                if(isset($result->fields['0'])) {
-                    $numrows1 = intval($result->fields['0']);
-                } else {
-                    $numrows1 = 0;
-                }
-                if($numrows1 > 0) {
-                    while(!$result->EOF) {
-                        $mainmenu_id = intval($result->fields['0']);
-                        $mainmenu_type = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
-                        $mainmenu_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
-                        $mainmenu_module = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
-                        $mainmenu_submodule = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4']));
-                        $mainmenu_target = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5']));
-                        $mainmenu_priority = intval($result->fields['6']);
-                        $mainmenu_inmenu = intval($result->fields['7']);
-                        $menu_priority1 = $mainmenu_priority - 1;
-                        $menu_priority2 = $mainmenu_priority + 1;
-                        $mainmenu_id2 = $result->fields['8'];
-                        if(isset($mainmenu_id2) and $mainmenu_id2 != 0) {
-                            $param1 = $mainmenu_id2;
-                        } else {
-                            $param1 = "";
-                        }
-                        $mainmenu_id3 = $result->fields['9'];
-                        if(isset($mainmenu_id3) and $mainmenu_id3 != 0) {
-                            $param2 = $mainmenu_id3;
-                        } else {
-                            $param2 = "";
-                        }
-                        $menu_all[] = array(
-                            "mainmenu_id" => $mainmenu_id,
-                            "mainmenu_type" => $mainmenu_type,
-                            "mainmenu_name" => $mainmenu_name,
-                            "mainmenu_module" => $mainmenu_module,
-                            "mainmenu_submodule" => $mainmenu_submodule,
-                            "mainmenu_target" => $mainmenu_target,
-                            "mainmenu_priority" => $mainmenu_priority,
-                            "mainmenu_inmenu" => $mainmenu_inmenu,
-                            "menu_priority1" => $menu_priority1,
-                            "menu_priority2" => $menu_priority2,
-                            "param1" => $param1,
-                            "param2" => $param2
-                        );
-                        $result->MoveNext();
-                    }
-                    $this->registry->main_class->assign("menu_all",$menu_all);
-                } else {
-                    $this->registry->main_class->assign("menu_all","no");
-                }
-            } else {
-                $error_message = $this->db->ErrorMsg();
-                $error_code = $this->db->ErrorNo();
-                $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|showsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->assign("menu_update","notsave");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|showsqlerror|".$this->registry->language);
-                exit();
-            }
+    private $error;
+    private $error_array;
+    private $result;
+
+
+    public function get_property_value($property) {
+        if(isset($this->$property) and in_array($property,array('error','error_array','result'))) {
+            return $this->$property;
         }
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|show|".$this->registry->language)) {
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menu.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|show|".$this->registry->language);
+        return false;
     }
 
 
-    public function menu_save() {
-        if(isset($_GET['mainmenu_id2'])) {
-            $mainmenu_id2 = intval($_GET['mainmenu_id2']);
+    public function index() {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $sql = "SELECT a.main_menu_id,a.main_menu_type,a.main_menu_name,a.main_menu_module,a.main_menu_submodule,a.main_menu_add_param,a.main_menu_target,a.main_menu_priority,a.main_menu_in_menu,(SELECT max(b.main_menu_id) FROM ".PREFIX."_main_menu_".$this->registry->sitelang." b WHERE b.main_menu_priority = a.main_menu_priority - 1) as main_menu_id2,(SELECT max(c.main_menu_id) FROM ".PREFIX."_main_menu_".$this->registry->sitelang." c WHERE c.main_menu_priority = a.main_menu_priority + 1) as main_menu_id3 FROM ".PREFIX."_main_menu_".$this->registry->sitelang." a ORDER BY a.main_menu_priority";
+        $result = $this->db->Execute($sql);
+        if($result) {
+            if(isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
+            } else {
+                $row_exist = 0;
+            }
+            if($row_exist > 0) {
+                while(!$result->EOF) {
+                    $mainmenu_id = intval($result->fields['0']);
+                    $mainmenu_type = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                    $mainmenu_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
+                    $mainmenu_module = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
+                    $mainmenu_submodule = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4']));
+                    $mainmenu_add_param = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5']));
+                    $mainmenu_target = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']));
+                    $mainmenu_priority = intval($result->fields['7']);
+                    $mainmenu_inmenu = intval($result->fields['8']);
+                    $menu_priority1 = $mainmenu_priority - 1;
+                    $menu_priority2 = $mainmenu_priority + 1;
+                    $mainmenu_id2 = $result->fields['9'];
+                    if(isset($mainmenu_id2) and $mainmenu_id2 != 0) {
+                        $param1 = $mainmenu_id2;
+                    } else {
+                        $param1 = "";
+                    }
+                    $mainmenu_id3 = $result->fields['10'];
+                    if(isset($mainmenu_id3) and $mainmenu_id3 != 0) {
+                        $param2 = $mainmenu_id3;
+                    } else {
+                        $param2 = "";
+                    }
+                    $menu_all[] = array(
+                        "mainmenu_id" => $mainmenu_id,
+                        "mainmenu_type" => $mainmenu_type,
+                        "mainmenu_name" => $mainmenu_name,
+                        "mainmenu_module" => $mainmenu_module,
+                        "mainmenu_submodule" => $mainmenu_submodule,
+                        "mainmenu_add_param" => $mainmenu_add_param,
+                        "mainmenu_target" => $mainmenu_target,
+                        "mainmenu_priority" => $mainmenu_priority,
+                        "mainmenu_inmenu" => $mainmenu_inmenu,
+                        "menu_priority1" => $menu_priority1,
+                        "menu_priority2" => $menu_priority2,
+                        "param1" => $param1,
+                        "param2" => $param2
+                    );
+                    $result->MoveNext();
+                }
+                $this->result['menu_all'] = $menu_all;
+            } else {
+                $this->result['menu_all'] = "no";
+            }
+        } else {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = array("code" => $error_code,"message" => $error_message);
+            $this->error = 'show_sql_error';
+            $this->error_array = $error;
+            return;
         }
-        if(isset($_GET['mainmenu_priority'])) {
-            $mainmenu_priority = intval($_GET['mainmenu_priority']);
+    }
+
+
+    public function menu_save($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'mainmenu_id2',
+                    'mainmenu_priority',
+                    'mainmenu_priority2',
+                    'mainmenu_id'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = intval($value);
+                }
+            }
         }
-        if(isset($_GET['mainmenu_priority2'])) {
-            $mainmenu_priority2 = intval($_GET['mainmenu_priority2']);
-        }
-        if(isset($_GET['mainmenu_id'])) {
-            $mainmenu_id = intval($_GET['mainmenu_id']);
-        }
-        if((!isset($_GET['mainmenu_id2']) or !isset($_GET['mainmenu_priority']) or !isset($_GET['mainmenu_priority2']) or !isset($_GET['mainmenu_id'])) or ($mainmenu_id2 == 0 or $mainmenu_priority == 0 or $mainmenu_priority2 == 0 or $mainmenu_id == 0)) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_menu&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if((!isset($array['mainmenu_id2']) or !isset($array['mainmenu_priority']) or !isset($array['mainmenu_priority2']) or !isset($array['mainmenu_id'])) or ($data_array['mainmenu_id2'] == 0 or $data_array['mainmenu_priority'] == 0 or $data_array['mainmenu_priority2'] == 0 or $data_array['mainmenu_id'] == 0)) {
+            $this->error = 'not_all_data';
+            return;
         }
         $this->db->StartTrans();
-        $result1 = $this->db->Execute("UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET mainmenu_priority='".$mainmenu_priority."' WHERE mainmenu_id='".$mainmenu_id2."'");
+        $result1 = $this->db->Execute("UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET main_menu_priority = '".$data_array['mainmenu_priority']."' WHERE main_menu_id = '".$data_array['mainmenu_id2']."'");
         $num_result1 = $this->db->Affected_Rows();
         if($result1 === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
         }
-        $result2 = $this->db->Execute("UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET mainmenu_priority='".$mainmenu_priority2."' WHERE mainmenu_id='".$mainmenu_id."'");
+        $result2 = $this->db->Execute("UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET main_menu_priority = '".$data_array['mainmenu_priority2']."' WHERE main_menu_id = '".$data_array['mainmenu_id']."'");
         $num_result2 = $this->db->Affected_Rows();
         if($result2 === false) {
             $error_message = $this->db->ErrorMsg();
@@ -128,60 +131,40 @@ class admin_menu extends model_base {
             $error[] = array("code" => $error_code,"message" => $error_message);
         }
         $this->db->CompleteTrans();
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINBLOCKMAINNAME'));
         if($result1 === false or $result2 === false) {
             if($num_result1 > 0 or $num_result2 > 0) {
                 $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|menu|show");
             }
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|showsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|showsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'show_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result1 !== false and $result2 !== false and $num_result1 == 0 and $num_result2 == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|showok|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","notsave2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|showok|".$this->registry->language);
-            exit();
+            $this->error = 'save_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|menu|show");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|range|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","yes");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|range|ok|".$this->registry->language);
+            $this->result = 'range_done';
         }
     }
 
 
-    public function menu_status() {
-        if(isset($_GET['action'])) {
-            $action = trim($_GET['action']);
+    public function menu_status($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['action'])) {
+            $action = trim($array['action']);
         }
-        if(isset($_GET['menu_id'])) {
-            $menu_id = intval($_GET['menu_id']);
+        if(isset($array['menu_id'])) {
+            $menu_id = intval($array['menu_id']);
         }
-        if((!isset($_GET['action']) or !isset($_GET['menu_id'])) or ($action == "" or $menu_id == 0)) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_menu&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if((!isset($array['action']) or !isset($array['menu_id'])) or ($action == "" or $menu_id == 0)) {
+            $this->error = 'not_all_data';
+            return;
         }
         $action = $this->registry->main_class->format_striptags($action);
         if($action == "on") {
-            $sql = "UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET mainmenu_inmenu='1' WHERE mainmenu_id='".$menu_id."'";
+            $sql = "UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET main_menu_in_menu = '1' WHERE main_menu_id = '".$menu_id."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
             if($result === false) {
@@ -189,9 +172,8 @@ class admin_menu extends model_base {
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $this->registry->main_class->assign("menu_update","on");
         } elseif($action == "off") {
-            $sql = "UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET mainmenu_inmenu='0' WHERE mainmenu_id='".$menu_id."'";
+            $sql = "UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET main_menu_in_menu = '0' WHERE main_menu_id = '".$menu_id."'";
             $result = $this->db->Execute($sql);
             $num_result = $this->db->Affected_Rows();
             if($result === false) {
@@ -199,9 +181,8 @@ class admin_menu extends model_base {
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $this->registry->main_class->assign("menu_update","off");
         } elseif($action == "delete") {
-            $sql = "SELECT mainmenu_priority FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE mainmenu_id='".$menu_id."'";
+            $sql = "SELECT main_menu_priority FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE main_menu_id = '".$menu_id."'";
             $result = $this->db->Execute($sql);
             if($result) {
                 if(isset($result->fields['0'])) {
@@ -211,13 +192,13 @@ class admin_menu extends model_base {
                 }
                 if($mainmenu_priority > 0) {
                     $this->db->StartTrans();
-                    $result2 = $this->db->Execute("UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET mainmenu_priority=mainmenu_priority-1 WHERE mainmenu_priority>'".$mainmenu_priority."'");
+                    $result2 = $this->db->Execute("UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET main_menu_priority = main_menu_priority - 1 WHERE main_menu_priority > '".$mainmenu_priority."'");
                     if($result2 === false) {
                         $error_message = $this->db->ErrorMsg();
                         $error_code = $this->db->ErrorNo();
                         $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    $sql3 = "DELETE FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE mainmenu_id='".$menu_id."'";
+                    $sql3 = "DELETE FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE main_menu_id = '".$menu_id."'";
                     $result3 = $this->db->Execute($sql3);
                     $num_result = $this->db->Affected_Rows();
                     if($result3 === false) {
@@ -237,70 +218,38 @@ class admin_menu extends model_base {
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
             }
-            $this->registry->main_class->assign("menu_update","delete");
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_menu&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_action';
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINBLOCKMAINNAME'));
         if($result === false) {
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|statussqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|statussqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'status_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|statusok|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","notsave2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|statusok|".$this->registry->language);
-            exit();
+            $this->error = 'status_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|menu|show");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|".$action."|ok|".$this->registry->language)) {
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|".$action."|ok|".$this->registry->language);
+            $this->result = $action;
         }
     }
 
 
     public function menu_select_type() {
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDMENUPAGETITLE'));
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|select|".$this->registry->language)) {
-            $this->registry->main_class->assign("menu_select_type","yes");
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuadd.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|select|".$this->registry->language);
+        $this->result = false;
+        $this->result['menu_select_type'] = "yes";
     }
 
 
-    public function menu_add() {
-        if(isset($_POST['menu_type'])) {
-            $menu_type = trim($_POST['menu_type']);
-        }
-        if(!isset($_POST['menu_type']) or $menu_type == "") {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_menu&func=index&lang=".$this->registry->sitelang);
-            exit();
+    public function menu_add($menu_type) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $menu_type = trim($menu_type);
+        if($menu_type == "") {
+            $this->error = 'not_all_data';
+            return;
         }
         $menu_type = $this->registry->main_class->format_striptags($menu_type);
         if($menu_type == "module") {
@@ -322,65 +271,44 @@ class admin_menu extends model_base {
                 $modules_list[$i] = $this->registry->main_class->processing_data($modules_list[$i]);
                 $modules_list[$i] = substr(substr($modules_list[$i],0,-1),1);
                 if($modules_list[$i] != "" and $modules_list[$i] != "main_pages") {
-                    $sql = "SELECT mainmenu_id FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE mainmenu_module='".$modules_list[$i]."' OR mainmenu_submodule='".$modules_list[$i]."'";
+                    $sql = "SELECT main_menu_id FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE main_menu_module = '".$modules_list[$i]."' OR main_menu_submodule = '".$modules_list[$i]."'";
                     $result = $this->db->Execute($sql);
                     if($result) {
                         if(isset($result->fields['0'])) {
-                            $numrows = intval($result->fields['0']);
+                            $row_exist = intval($result->fields['0']);
                         } else {
-                            $numrows = 0;
+                            $row_exist = 0;
                         }
                         $modules_list[$i] = $this->registry->main_class->extracting_data($modules_list[$i]);
-                        if($numrows == 0 and $modules_list[$i] != "") {
+                        if($row_exist == 0 and $modules_list[$i] != "") {
                             $module_name[]['module_name'] = $modules_list[$i];
                         }
                     } else {
-                        $this->registry->main_class->display_theme_adminheader();
-                        $this->registry->main_class->display_theme_adminmain();
-                        $this->registry->main_class->displayadmininfo();
                         $error_message = $this->db->ErrorMsg();
                         $error_code = $this->db->ErrorNo();
                         $error[] = array("code" => $error_code,"message" => $error_message);
-                        $this->registry->main_class->assign("error",$error);
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addsqlerror|".$this->registry->language)) {
-                            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDMENUPAGETITLE'));
-                            $this->registry->main_class->assign("menu_update","notsave");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addsqlerror|".$this->registry->language);
-                        exit();
+                        $this->error = 'add_sql_error';
+                        $this->error_array = $error;
+                        return;
                     }
                 }
             }
             if(!isset($module_name) or $module_name == "") {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|addnomodules|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDMENUPAGETITLE'));
-                    $this->registry->main_class->assign("menu_update","nomodules");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|addnomodules|".$this->registry->language);
-                exit();
+                $this->error = 'add_no_modules';
+                return;
             } else {
-                $this->registry->main_class->assign("module_name",$module_name);
+                $this->result['module_name'] = $module_name;
             }
-            $this->registry->main_class->assign("menu_type","module");
         } elseif($menu_type == "main_page") {
-            $sql = "select a.mainpage_id, a.mainpage_title from ".PREFIX."_main_pages_".$this->registry->sitelang." a where a.mainpage_id not in (select b.mainmenu_module from ".PREFIX."_main_menu_".$this->registry->sitelang." b where b.mainmenu_type='main_page' and b.mainmenu_module is not null) and a.mainpage_id not in (select c.mainmenu_submodule from ".PREFIX."_main_menu_".$this->registry->sitelang." c where c.mainmenu_type='main_page' and c.mainmenu_submodule is not null)";
+            $sql = "select a.main_page_id, a.main_page_title from ".PREFIX."_main_pages_".$this->registry->sitelang." a where a.main_page_id not in (select b.main_menu_add_param from ".PREFIX."_main_menu_".$this->registry->sitelang." b where b.main_menu_type = 'main_page' and (b.main_menu_module = 'main_pages' or b.main_menu_submodule = 'main_pages') and b.main_menu_add_param is not null)";
             $result = $this->db->Execute($sql);
             if($result) {
                 if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
+                    $row_exist = intval($result->fields['0']);
                 } else {
-                    $numrows = 0;
+                    $row_exist = 0;
                 }
-                if($numrows > 0) {
+                if($row_exist > 0) {
                     while(!$result->EOF) {
                         $mainpage_id = intval($result->fields['0']);
                         $mainpage_title = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
@@ -389,112 +317,66 @@ class admin_menu extends model_base {
                     }
                 }
             } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDMENUPAGETITLE'));
-                    $this->registry->main_class->assign("menu_update","notsave");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addsqlerror|".$this->registry->language);
-                exit();
+                $this->error = 'add_sql_error';
+                $this->error_array = $error;
+                return;
             }
             if(!isset($page_all) or $page_all == "") {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|addnopages|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDMENUPAGETITLE'));
-                    $this->registry->main_class->assign("menu_update","nopages");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|addnopages|".$this->registry->language);
-                exit();
+                $this->error = 'add_no_pages';
+                return;
             }
-            $this->registry->main_class->assign("page_all",$page_all);
-            $this->registry->main_class->assign("menu_type","main_page");
+            $this->result['page_all'] = $page_all;
         } elseif($menu_type == "other") {
-            $this->registry->main_class->assign("menu_type","other");
+            // no actions
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_menu&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_menu_type';
+            return;
         }
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|add|".$menu_type."|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDMENUPAGETITLE'));
-            $this->registry->main_class->assign("menu_select_type","no");
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuadd.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|add|".$menu_type."|".$this->registry->language);
+        $this->result['menu_type'] = $menu_type;
+        $this->result['menu_select_type'] = "no";
     }
 
 
-    public function menu_add_inbase() {
-        if(isset($_POST['mainmenu_name'])) {
-            $mainmenu_name = trim($_POST['mainmenu_name']);
-        }
-        if(isset($_POST['menu_object'])) {
-            $menu_object = trim($_POST['menu_object']);
-        }
-        if(isset($_POST['menu_type'])) {
-            $menu_type = trim($_POST['menu_type']);
-        }
-        if(isset($_POST['mainmenu_module'])) {
-            $mainmenu_module = trim($_POST['mainmenu_module']);
-        }
-        if(isset($_POST['mainmenu_target'])) {
-            $mainmenu_target = trim($_POST['mainmenu_target']);
-        }
-        if(isset($_POST['mainmenu_inmenu'])) {
-            $mainmenu_inmenu = intval($_POST['mainmenu_inmenu']);
-        }
-        if((!isset($_POST['mainmenu_name']) or !isset($_POST['menu_object'])or !isset($_POST['menu_type']) or !isset($_POST['mainmenu_module']) or !isset($_POST['mainmenu_target']) or !isset($_POST['mainmenu_inmenu'])) or ($mainmenu_name == "" or $menu_object == "" or $menu_type == "" or $mainmenu_module == "" or $mainmenu_target == "")) {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDMENUPAGETITLE'));
-                $this->registry->main_class->assign("menu_update","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
+    public function menu_add_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'mainmenu_name',
+                    'menu_object',
+                    'menu_type',
+                    'mainmenu_module',
+                    'mainmenu_target'
+                );
+                $keys2 = array(
+                    'mainmenu_inmenu'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addnotalldata|".$this->registry->language);
-            exit();
         }
-        $sql = "SELECT MAX(mainmenu_priority) FROM ".PREFIX."_main_menu_".$this->registry->sitelang;
+        if((!isset($array['mainmenu_name']) or !isset($array['menu_object'])or !isset($array['menu_type']) or !isset($array['mainmenu_module']) or !isset($array['mainmenu_target']) or !isset($array['mainmenu_inmenu'])) or ($data_array['mainmenu_name'] == "" or $data_array['menu_object'] == "" or $data_array['menu_type'] == "" or $data_array['mainmenu_module'] == "" or $data_array['mainmenu_target'] == "")) {
+            $this->error = 'add_not_all_data';
+            return;
+        }
+        $sql = "SELECT MAX(main_menu_priority) FROM ".PREFIX."_main_menu_".$this->registry->sitelang;
         $result = $this->db->Execute($sql);
         if($result === false) {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDMENUPAGETITLE'));
-                $this->registry->main_class->assign("menu_update","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'add_sql_error';
+            $this->error_array = $error;
+            return;
         }
         if(isset($result->fields['0']) and intval($result->fields['0']) > 0) {
             $mainmenu_priority = intval($result->fields['0']);
@@ -502,95 +384,90 @@ class admin_menu extends model_base {
         } else {
             $mainmenu_priority = 1;
         }
-        $mainmenu_module = $this->registry->main_class->format_striptags($mainmenu_module);
-        $mainmenu_module = $this->registry->main_class->processing_data($mainmenu_module);
-        $menu_object = $this->registry->main_class->format_striptags($menu_object);
-        if($menu_object == "parent") {
-            $mainmenu_module = "$mainmenu_module";
-            $mainmenu_submodule = 'NULL';
-        } elseif($menu_object == "children") {
-            $mainmenu_submodule = "$mainmenu_module";
-            $mainmenu_module = 'NULL';
-        } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_menu&func=index&lang=".$this->registry->sitelang);
-            exit();
+        foreach($data_array as $key => $value) {
+            $keys = array(
+                'mainmenu_module',
+                'menu_type',
+                'mainmenu_name',
+                'mainmenu_target'
+            );
+            if(in_array($key,$keys)) {
+                $value = $this->registry->main_class->format_striptags($value);
+                $data_array[$key] = $this->registry->main_class->processing_data($value);
+            }
         }
-        $menu_type = $this->registry->main_class->format_striptags($menu_type);
-        $menu_type = $this->registry->main_class->processing_data($menu_type);
-        $mainmenu_name = $this->registry->main_class->format_striptags($mainmenu_name);
-        $mainmenu_name = $this->registry->main_class->processing_data($mainmenu_name);
-        $mainmenu_target = $this->registry->main_class->format_striptags($mainmenu_target);
-        $mainmenu_target = $this->registry->main_class->processing_data($mainmenu_target);
-        $mainmenu_id = $this->db->GenID(PREFIX."_main_menu_id_".$this->registry->sitelang);
-        $sql = "INSERT INTO ".PREFIX."_main_menu_".$this->registry->sitelang." (mainmenu_id,mainmenu_type,mainmenu_name,mainmenu_module,mainmenu_submodule,mainmenu_target,mainmenu_priority,mainmenu_inmenu)  VALUES ('$mainmenu_id',$menu_type,$mainmenu_name,$mainmenu_module,$mainmenu_submodule,$mainmenu_target,'$mainmenu_priority','$mainmenu_inmenu')";
+        $data_array['menu_object'] = $this->registry->main_class->format_striptags($data_array['menu_object']);
+        $main_menu_add_param = 'NULL';
+        if($data_array['menu_type'] == "'main_page'") {
+            $main_menu_add_param = $data_array['mainmenu_module'];
+            $data_array['mainmenu_module'] = "'main_pages'";
+        }
+        if($data_array['menu_object'] == "parent") {
+            $mainmenu_submodule = 'NULL';
+        } elseif($data_array['menu_object'] == "children") {
+            $mainmenu_submodule = $data_array['mainmenu_module'];
+            $data_array['mainmenu_module'] = 'NULL';
+        } else {
+            $this->error = 'unknown_menu_object';
+            return;
+        }
+        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX."_main_menu_id_".$this->registry->sitelang,'main_menu_id');
+        $sql = "INSERT INTO ".PREFIX."_main_menu_".$this->registry->sitelang." (".$sequence_array['field_name_string']."main_menu_type,main_menu_name,main_menu_module,main_menu_submodule,main_menu_add_param,main_menu_target,main_menu_priority,main_menu_in_menu)  VALUES (".$sequence_array['sequence_value_string']."".$data_array['menu_type'].",".$data_array['mainmenu_name'].",".$data_array['mainmenu_module'].",".$mainmenu_submodule.",".$main_menu_add_param.",".$data_array['mainmenu_target'].",'".$mainmenu_priority."','".$data_array['mainmenu_inmenu']."')";
         $result = $this->db->Execute($sql);
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONADDMENUPAGETITLE'));
         if($result === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|addsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'add_sql_error';
+            $this->error_array = $error;
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|menu|show");
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|addok|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","add");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|addok|".$this->registry->language);
+            $this->result = 'add_ok';
         }
     }
 
 
-    public function menu_edit() {
-        if(isset($_GET['menu_type'])) {
-            $menu_type = trim($_GET['menu_type']);
+    public function menu_edit($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(isset($array['menu_type'])) {
+            $menu_type = trim($array['menu_type']);
         }
-        if(isset($_GET['menu_id'])) {
-            $menu_id = intval($_GET['menu_id']);
+        if(isset($array['menu_id'])) {
+            $menu_id = intval($array['menu_id']);
         }
-        if((!isset($_GET['menu_type']) or !isset($_GET['menu_id'])) or ($menu_type == "" or $menu_id == 0)) {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_menu&func=index&lang=".$this->registry->sitelang);
-            exit();
+        if((!isset($array['menu_type']) or !isset($array['menu_id'])) or ($menu_type == "" or $menu_id == 0)) {
+            $this->error = 'edit_not_all_data';
+            return;
         }
-        $sql1 = "SELECT mainmenu_id,mainmenu_type,mainmenu_name,mainmenu_module,mainmenu_submodule,mainmenu_target,mainmenu_priority,mainmenu_inmenu FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE mainmenu_id='".$menu_id."'";
+        $sql1 = "SELECT main_menu_id,main_menu_type,main_menu_name,main_menu_module,main_menu_submodule,main_menu_add_param,main_menu_target,main_menu_priority,main_menu_in_menu FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE main_menu_id = '".$menu_id."'";
         $result1 = $this->db->Execute($sql1);
         if($result1) {
             if(isset($result1->fields['0'])) {
-                $numrows = intval($result1->fields['0']);
+                $row_exist = intval($result1->fields['0']);
             } else {
-                $numrows = 0;
+                $row_exist = 0;
             }
-            if($numrows > 0) {
+            if($row_exist > 0) {
                 while(!$result1->EOF) {
                     $mainmenu_id = intval($result1->fields['0']);
                     $mainmenu_type = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result1->fields['1']));
                     $mainmenu_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result1->fields['2']));
                     $mainmenu_module = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result1->fields['3']));
                     $mainmenu_submodule = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result1->fields['4']));
-                    $mainmenu_target = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result1->fields['5']));
-                    $mainmenu_priority = intval($result1->fields['6']);
-                    $mainmenu_inmenu = intval($result1->fields['7']);
+                    $mainmenu_add_param = intval($result1->fields['5']);
+                    $mainmenu_target = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result1->fields['6']));
+                    $mainmenu_priority = intval($result1->fields['7']);
+                    $mainmenu_inmenu = intval($result1->fields['8']);
                     $menu_all[] = array(
                         "mainmenu_id" => $mainmenu_id,
                         "mainmenu_type" => $mainmenu_type,
                         "mainmenu_name" => $mainmenu_name,
                         "mainmenu_module" => $mainmenu_module,
                         "mainmenu_submodule" => $mainmenu_submodule,
+                        "mainmenu_add_param" => $mainmenu_add_param,
                         "mainmenu_target" => $mainmenu_target,
                         "mainmenu_priority" => $mainmenu_priority,
                         "mainmenu_inmenu" => $mainmenu_inmenu
@@ -598,36 +475,16 @@ class admin_menu extends model_base {
                     $result1->MoveNext();
                 }
             } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editnotfound|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMENUPAGETITLE'));
-                    $this->registry->main_class->assign("menu_update","notfound");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editnotfound|".$this->registry->language);
-                exit();
+                $this->error = 'edit_not_found';
+                return;
             }
         } else {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMENUPAGETITLE'));
-                $this->registry->main_class->assign("menu_update","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'edit_sql_error';
+            $this->error_array = $error;
+            return;
         }
         $menu_type = $this->registry->main_class->format_striptags($menu_type);
         if($menu_type == "module") {
@@ -649,65 +506,44 @@ class admin_menu extends model_base {
                 $modules_list[$i] = $this->registry->main_class->processing_data($modules_list[$i]);
                 $modules_list[$i] = substr(substr($modules_list[$i],0,-1),1);
                 if($modules_list[$i] != "" and $modules_list[$i] != "main_pages") {
-                    $sql = "SELECT mainmenu_id FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE mainmenu_module='".$modules_list[$i]."' OR mainmenu_submodule='".$modules_list[$i]."'";
+                    $sql = "SELECT main_menu_id FROM ".PREFIX."_main_menu_".$this->registry->sitelang." WHERE main_menu_module = '".$modules_list[$i]."' OR main_menu_submodule = '".$modules_list[$i]."'";
                     $result = $this->db->Execute($sql);
                     if($result) {
                         if(isset($result->fields['0'])) {
-                            $numrows = intval($result->fields['0']);
+                            $row_exist = intval($result->fields['0']);
                         } else {
-                            $numrows = 0;
+                            $row_exist = 0;
                         }
                         $modules_list[$i] = $this->registry->main_class->extracting_data($modules_list[$i]);
-                        if(($numrows == 0 and $modules_list[$i] != "") or (intval($result->fields['0']) == $menu_id)) {
+                        if(($row_exist == 0 and $modules_list[$i] != "") or (intval($result->fields['0']) == $menu_id)) {
                             $module_name[]['module_name'] = $modules_list[$i];
                         }
                     } else {
-                        $this->registry->main_class->display_theme_adminheader();
-                        $this->registry->main_class->display_theme_adminmain();
-                        $this->registry->main_class->displayadmininfo();
                         $error_message = $this->db->ErrorMsg();
                         $error_code = $this->db->ErrorNo();
                         $error[] = array("code" => $error_code,"message" => $error_message);
-                        $this->registry->main_class->assign("error",$error);
-                        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editsqlerror|".$this->registry->language)) {
-                            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMENUPAGETITLE'));
-                            $this->registry->main_class->assign("menu_update","notsave");
-                            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                            $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                        }
-                        $this->registry->main_class->database_close();
-                        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editsqlerror|".$this->registry->language);
-                        exit();
+                        $this->error = 'edit_sql_error';
+                        $this->error_array = $error;
+                        return;
                     }
                 }
             }
             if(!isset($module_name) or $module_name == "") {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|editnomodules|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMENUPAGETITLE'));
-                    $this->registry->main_class->assign("menu_update","nomodules");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|editnomodules|".$this->registry->language);
-                exit();
+                $this->error = 'edit_no_modules';
+                return;
             } else {
-                $this->registry->main_class->assign("module_name",$module_name);
+                $this->result['module_name'] = $module_name;
             }
-            $this->registry->main_class->assign("menu_type","module");
         } elseif($menu_type == "main_page") {
-            $sql = "select a.mainpage_id, a.mainpage_title from ".PREFIX."_main_pages_".$this->registry->sitelang." a where a.mainpage_id not in (select b.mainmenu_module from ".PREFIX."_main_menu_".$this->registry->sitelang." b where b.mainmenu_type='main_page' and b.mainmenu_module is not null and b.mainmenu_id <> ".$menu_id.") and a.mainpage_id not in (select c.mainmenu_submodule from ".PREFIX."_main_menu_".$this->registry->sitelang." c where c.mainmenu_type='main_page' and c.mainmenu_submodule is not null and c.mainmenu_id <> ".$menu_id.")";
+            $sql = "select a.main_page_id, a.main_page_title from ".PREFIX."_main_pages_".$this->registry->sitelang." a where a.main_page_id not in (select b.main_menu_add_param from ".PREFIX."_main_menu_".$this->registry->sitelang." b where b.main_menu_type = 'main_page' and (b.main_menu_module = 'main_pages' or b.main_menu_submodule = 'main_pages') and b.main_menu_add_param is not null and b.main_menu_id <> ".$menu_id.")";
             $result = $this->db->Execute($sql);
             if($result) {
                 if(isset($result->fields['0'])) {
-                    $numrows = intval($result->fields['0']);
+                    $row_exist = intval($result->fields['0']);
                 } else {
-                    $numrows = 0;
+                    $row_exist = 0;
                 }
-                if($numrows > 0) {
+                if($row_exist > 0) {
                     while(!$result->EOF) {
                         $mainpage_id = intval($result->fields['0']);
                         $mainpage_title = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
@@ -716,157 +552,102 @@ class admin_menu extends model_base {
                     }
                 }
             } else {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = array("code" => $error_code,"message" => $error_message);
-                $this->registry->main_class->assign("error",$error);
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editsqlerror|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMENUPAGETITLE'));
-                    $this->registry->main_class->assign("menu_update","notsave");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editsqlerror|".$this->registry->language);
-                exit();
+                $this->error = 'edit_sql_error';
+                $this->error_array = $error;
+                return;
             }
             if(!isset($page_all) or $page_all == "") {
-                $this->registry->main_class->display_theme_adminheader();
-                $this->registry->main_class->display_theme_adminmain();
-                $this->registry->main_class->displayadmininfo();
-                if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|editnopages|".$this->registry->language)) {
-                    $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMENUPAGETITLE'));
-                    $this->registry->main_class->assign("menu_update","nopages");
-                    $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                    $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-                }
-                $this->registry->main_class->database_close();
-                $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|editnopages|".$this->registry->language);
-                exit();
+                $this->error = 'edit_no_pages';
+                return;
             }
-            $this->registry->main_class->assign("page_all",$page_all);
-            $this->registry->main_class->assign("menu_type","main_page");
+            $this->result['page_all'] = $page_all;
         } elseif($menu_type == "other") {
-            $this->registry->main_class->assign("menu_type","other");
+            // no actions
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_menu&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_menu_type';
+            return;
         }
-        $this->registry->main_class->assign("menu_all",$menu_all);
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|edit|".$menu_type."|".$menu_id."|".$this->registry->language)) {
-            $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMENUPAGETITLE'));
-            $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-            $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuedit.html");
-        }
-        $this->registry->main_class->database_close();
-        $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|edit|".$menu_type."|".$menu_id."|".$this->registry->language);
+        $this->result['menu_type'] = $menu_type;
+        $this->result['menu_all'] = $menu_all;
     }
 
 
-    public function menu_edit_inbase() {
-        if(isset($_POST['mainmenu_id'])) {
-            $mainmenu_id = intval($_POST['mainmenu_id']);
-        }
-        if(isset($_POST['mainmenu_name'])) {
-            $mainmenu_name = trim($_POST['mainmenu_name']);
-        }
-        if(isset($_POST['menu_object'])) {
-            $menu_object = trim($_POST['menu_object']);
-        }
-        if(isset($_POST['menu_type'])) {
-            $menu_type = trim($_POST['menu_type']);
-        }
-        if(isset($_POST['mainmenu_module'])) {
-            $mainmenu_module = trim($_POST['mainmenu_module']);
-        }
-        if(isset($_POST['mainmenu_target'])) {
-            $mainmenu_target = trim($_POST['mainmenu_target']);
-        }
-        if(isset($_POST['mainmenu_inmenu'])) {
-            $mainmenu_inmenu = intval($_POST['mainmenu_inmenu']);
-        }
-        if((!isset($_POST['mainmenu_id']) or !isset($_POST['mainmenu_name']) or !isset($_POST['menu_object']) or !isset($_POST['menu_type']) or !isset($_POST['mainmenu_module']) or !isset($_POST['mainmenu_target']) or !isset($_POST['mainmenu_inmenu'])) or ($mainmenu_id == 0 or $mainmenu_name == "" or $menu_object == "" or $menu_type == "" or $mainmenu_module == "" or $mainmenu_target == "")) {
-            $this->registry->main_class->display_theme_adminheader();
-            $this->registry->main_class->display_theme_adminmain();
-            $this->registry->main_class->displayadmininfo();
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editnotalldata|".$this->registry->language)) {
-                $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMENUPAGETITLE'));
-                $this->registry->main_class->assign("menu_update","notalldata");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
+    public function menu_edit_inbase($array) {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        if(!empty($array)) {
+            foreach($array as $key => $value) {
+                $keys = array(
+                    'mainmenu_name',
+                    'menu_object',
+                    'menu_type',
+                    'mainmenu_module',
+                    'mainmenu_target'
+                );
+                $keys2 = array(
+                    'mainmenu_id',
+                    'mainmenu_inmenu'
+                );
+                if(in_array($key,$keys)) {
+                    $data_array[$key] = trim($value);
+                }
+                if(in_array($key,$keys2)) {
+                    $data_array[$key] = intval($value);
+                }
             }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editnotalldata|".$this->registry->language);
-            exit();
         }
-        $mainmenu_module = $this->registry->main_class->format_striptags($mainmenu_module);
-        $mainmenu_module = $this->registry->main_class->processing_data($mainmenu_module);
-        $menu_object = $this->registry->main_class->format_striptags($menu_object);
-        if($menu_object == "parent") {
-            $mainmenu_module = "$mainmenu_module";
+        if((!isset($array['mainmenu_id']) or !isset($array['mainmenu_name']) or !isset($array['menu_object']) or !isset($array['menu_type']) or !isset($array['mainmenu_module']) or !isset($array['mainmenu_target']) or !isset($array['mainmenu_inmenu'])) or ($data_array['mainmenu_id'] == 0 or $data_array['mainmenu_name'] == "" or $data_array['menu_object'] == "" or $data_array['menu_type'] == "" or $data_array['mainmenu_module'] == "" or $data_array['mainmenu_target'] == "")) {
+            $this->error = 'edit_not_all_data';
+            return;
+        }
+        foreach($data_array as $key => $value) {
+            $keys = array(
+                'mainmenu_module',
+                'menu_type',
+                'mainmenu_name',
+                'mainmenu_target'
+            );
+            if(in_array($key,$keys)) {
+                $value = $this->registry->main_class->format_striptags($value);
+                $data_array[$key] = $this->registry->main_class->processing_data($value);
+            }
+        }
+        $data_array['menu_object'] = $this->registry->main_class->format_striptags($data_array['menu_object']);
+        $main_menu_add_param = 'NULL';
+        if($data_array['menu_type'] == "'main_page'") {
+            $main_menu_add_param = $data_array['mainmenu_module'];
+            $data_array['mainmenu_module'] = "'main_pages'";
+        }
+        if($data_array['menu_object'] == "parent") {
             $mainmenu_submodule = 'NULL';
-        } elseif($menu_object == "children") {
-            $mainmenu_submodule = "$mainmenu_module";
-            $mainmenu_module = 'NULL';
+        } elseif($data_array['menu_object'] == "children") {
+            $mainmenu_submodule = $data_array['mainmenu_module'];
+            $data_array['mainmenu_module'] = 'NULL';
         } else {
-            $this->registry->main_class->database_close();
-            header("Location: index.php?path=admin_menu&func=index&lang=".$this->registry->sitelang);
-            exit();
+            $this->error = 'unknown_menu_object';
+            return;
         }
-        $menu_type = $this->registry->main_class->format_striptags($menu_type);
-        $menu_type = $this->registry->main_class->processing_data($menu_type);
-        $mainmenu_name = $this->registry->main_class->format_striptags($mainmenu_name);
-        $mainmenu_name = $this->registry->main_class->processing_data($mainmenu_name);
-        $mainmenu_target = $this->registry->main_class->format_striptags($mainmenu_target);
-        $mainmenu_target = $this->registry->main_class->processing_data($mainmenu_target);
-        $sql = "UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET mainmenu_type=$menu_type,mainmenu_name=$mainmenu_name,mainmenu_module=$mainmenu_module,mainmenu_submodule=$mainmenu_submodule,mainmenu_target=$mainmenu_target,mainmenu_inmenu='$mainmenu_inmenu' WHERE mainmenu_id='$mainmenu_id'";
+        $sql = "UPDATE ".PREFIX."_main_menu_".$this->registry->sitelang." SET main_menu_type = ".$data_array['menu_type'].",main_menu_name = ".$data_array['mainmenu_name'].",main_menu_module = ".$data_array['mainmenu_module'].",main_menu_submodule = ".$mainmenu_submodule.",main_menu_add_param = ".$main_menu_add_param.",main_menu_target = ".$data_array['mainmenu_target'].",main_menu_in_menu = '".$data_array['mainmenu_inmenu']."' WHERE main_menu_id = '".$data_array['mainmenu_id']."'";
         $result = $this->db->Execute($sql);
         $num_result = $this->db->Affected_Rows();
-        $this->registry->main_class->display_theme_adminheader();
-        $this->registry->main_class->display_theme_adminmain();
-        $this->registry->main_class->displayadmininfo();
-        $this->registry->main_class->set_sitemeta($this->registry->main_class->getConfigVars('_ADMINISTRATIONEDITMENUPAGETITLE'));
         if($result === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = array("code" => $error_code,"message" => $error_message);
-            $this->registry->main_class->assign("error",$error);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editsqlerror|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","notsave");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editsqlerror|".$this->registry->language);
-            exit();
+            $this->error = 'edit_sql_error';
+            $this->error_array = $error;
+            return;
         } elseif($result !== false and $num_result == 0) {
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editok|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","notsave2");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|error|editok|".$this->registry->language);
-            exit();
+            $this->error = 'edit_ok';
+            return;
         } else {
             $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|menu|show");
-            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|menu|edit|".$menu_type."|".$mainmenu_id);
-            if(!$this->registry->main_class->isCached("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|editok|".$this->registry->language)) {
-                $this->registry->main_class->assign("menu_update","yes");
-                $this->registry->main_class->assign("include_center_up","systemadmin/adminup.html");
-                $this->registry->main_class->assign("include_center","systemadmin/modules/menu/menuupdate.html");
-            }
-            $this->registry->main_class->database_close();
-            $this->registry->main_class->display("systemadmin/main.html",$this->registry->sitelang."|systemadmin|modules|menu|editok|".$this->registry->language);
+            $this->registry->main_class->clearCache(null,$this->registry->sitelang."|systemadmin|modules|menu|edit|".$data_array['menu_type']."|".$data_array['mainmenu_id']);
+            $this->result = 'edit_done';
         }
     }
 }
-
-?>
