@@ -1731,7 +1731,7 @@ class install {
         $site_startdate = date("d/m/Y");
         $file = @fopen("../includes/data/config.inc","w");
         $content = "<?php\n\n";
-        $content .= 'define("SYSTEMDK_VERSION","3.1.0");'."\n";
+        $content .= 'define("SYSTEMDK_VERSION","3.1.1");'."\n";
         $content .= 'define("SYSTEMDK_MODREWRITE","'.$data_array['mod_rewrite']."\");\n";
         $content .= 'define("SYSTEMDK_DESCRIPTION","");'."\n";
         $content .= 'define("SITE_ID","'.$data_array['site_id']."\");\n";
@@ -1984,10 +1984,11 @@ class install {
 
 
     private function check_php_version() {
-        $php_version = phpversion();
-        $php_version = explode(".",$php_version);
-        $php_version = $php_version[0].$php_version[1];
-        if($php_version < 52 and $this->func !== 'step2') {
+        if(!defined('PHP_VERSION_ID')) {
+            $version = explode('.', PHP_VERSION);
+            define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+        }
+        if(PHP_VERSION_ID < 50200 and $this->func !== 'step2') {
             if($this->func == 'step5' or $this->func == 'step6') {
                 if(session_id() == "") {
                     session_start();
@@ -2001,7 +2002,7 @@ class install {
             }
             header("Location: ../index.php");
             exit();
-        } elseif($php_version < 52 and $this->func == 'step2') {
+        } elseif(PHP_VERSION_ID < 50200 and $this->func == 'step2') {
             $this->smarty->assign("servconf","no");
         } elseif($this->func == 'step2') {
             $this->smarty->assign("servconf","yes");
@@ -2037,7 +2038,11 @@ class install {
         }
         $rand[] = substr(microtime(),2,6);
         $rand = sha1(implode('',$rand),true);
-        $salt = '$2a$'.sprintf('%02d',$cost).'$';
+        $salt_prefix = '$2a$';
+        if(PHP_VERSION_ID >= 50307) {
+            $salt_prefix = '$2y$';
+        }
+        $salt = $salt_prefix.sprintf('%02d',$cost).'$';
         $salt .= strtr(substr(base64_encode($rand),0,22),array('+' => '.'));
         return $salt;
     }

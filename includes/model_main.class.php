@@ -74,10 +74,11 @@ class model_main extends model_base {
         if(SITE_STATUS == "off" and !defined('__SITE_ADMIN_PART')) {
             return 'site_off';
         }
-        $phpversion = phpversion();
-        $phpversion = explode(".",$phpversion);
-        $phpversion = "$phpversion[0]$phpversion[1]";
-        if($phpversion < '52') {
+        if(!defined('PHP_VERSION_ID')) {
+            $version = explode('.', PHP_VERSION);
+            define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+        }
+        if(PHP_VERSION_ID < 50200) {
             return 'version_php';
         }
         foreach($_GET as $secvalue) {
@@ -411,7 +412,11 @@ class model_main extends model_base {
         }
         $rand[] = substr(microtime(),2,6);
         $rand = sha1(implode('',$rand),true);
-        $salt = '$2a$'.sprintf('%02d',$cost).'$';
+        $salt_prefix = '$2a$';
+        if(PHP_VERSION_ID >= 50307) {
+            $salt_prefix = '$2y$';
+        }
+        $salt = $salt_prefix.sprintf('%02d',$cost).'$';
         $salt .= strtr(substr(base64_encode($rand),0,22),array('+' => '.'));
         return $salt;
     }
