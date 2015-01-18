@@ -4,10 +4,10 @@
  * File:      init.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2014 SystemDK
+ * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.1
+ * @version   3.2
  */
 header("Expires: Mon, 30 Nov 2009 00:39:00 GMT");
 header("Last-Modified: ".gmdate("D, d M Y H:i:s")." GMT");

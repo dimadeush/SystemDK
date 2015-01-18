@@ -4,10 +4,10 @@
  * File:      model_admin_including.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2014 SystemDK
+ * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.1
+ * @version   3.2
  */
 class admin_including extends model_base {
 

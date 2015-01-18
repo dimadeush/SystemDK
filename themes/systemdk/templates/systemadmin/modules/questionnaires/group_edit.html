@@ -1,0 +1,48 @@
+{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</span></center>
+</div><br>
+<div align="center">
+    <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_questionnaires&amp;func=results&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_RESULTS#}</a>
+    <br><br>
+    <img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_QUESTIONNAIRES_GROUP_EDIT_TITLE#}</span>
+    <br><br>
+    <form action="index.php?path=admin_questionnaires&amp;lang={$site_language}" method="POST">
+        <input type="hidden" name="func" value="group_edit_inbase">
+        <input type="hidden" name="group_id" value="{$group_all.group_id}">
+        <table border="0" cellspacing="2" cellpadding="0">
+            <tr align="left">
+                <td bgcolor="{#color7#}" class="td1">
+                    <img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_QUESTIONNAIRES_TITLE#}:</span> <span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" size="50" maxlength="255" name="group_name" value="{$group_all.group_name}" class="formenter">
+                </td>
+            </tr>
+            <tr align="left">
+                <td bgcolor="{#color7#}" class="td1">
+                    <img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_QUESTIONNAIRES_STATUS#}:</span>
+                </td>
+                <td bgcolor="{#color7#}" class="td2">
+                    <select name="group_status" class="formenter">
+                        <option value="1" {if $group_all.group_status eq '1'}selected="selected"{/if}>{#_QUESTIONNAIRES_ON#}</option>
+                        <option value="0" {if $group_all.group_status eq '0'}selected="selected"{/if}>{#_QUESTIONNAIRES_OFF#}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr align="left">
+                <td bgcolor="{#color7#}" class="td1">
+                    <img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_QUESTIONNAIRES_ASSIGNED_TO_QUESTIONNAIRE#}:</span>
+                </td>
+                <td bgcolor="{#color7#}" class="td2">
+                    <select name="questionnaire_id" class="formenter">
+                        {foreach $questionnaires_all as $questionnaires_all_tpl}
+                        <option value="{$questionnaires_all_tpl.questionnaire_id}" {if $group_all.questionnaire_id eq $questionnaires_all_tpl.questionnaire_id}selected="selected"{/if}>{$questionnaires_all_tpl.questionnaire_name}</option>
+                        {/foreach}
+                    </select>
+                </td>
+            </tr>
+        </table><br>
+        <input type="submit" value="{#_QUESTIONNAIRES_BUTTON_SAVE#}">
+    </form>
+    <br>
+    <table border="0" width="99%" cellspacing="0" cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text"> {#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</div>
+<br>

@@ -1,0 +1,58 @@
+{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</span></center>
+</div><br>
+<div align="center">
+    <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a> <span class="tablecenterblocktext2">|</span>
+    <span class="tablecenterblocktext2">{#_QUESTIONNAIRES_RESULTS#}</span>
+    <br><br>
+    <img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_QUESTIONNAIRES_RESULTS_TITLE#}</span>
+    <br><br>
+    <form action="index.php?path=admin_questionnaires&amp;func=results_delete&amp;lang={$site_language}" method="POST">
+        <table border="0" width="99%" cellspacing="2"  cellpadding="0">
+            <tr align="center">
+                <td width="1%" bgcolor="{#color7#}" class="td2"></td>
+                <td width="1%" bgcolor="{#color7#}" class="td2"></td>
+                <td width="40%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_GROUP_NAME#}</span></td>
+                <td width="40%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_QUESTIONNAIRE_NAME#}</span></td>
+                <td width="18%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_FUNCTIONS#}</span></td>
+            </tr>
+            {if $voted_groups ne "no_voted_groups"}
+                {foreach $voted_groups as $voted_groups_tpl}
+                <tr>
+                    <td width="1%" bgcolor="{#color7#}" nowrap><img src="../{#bgimage15#}" border="0" alt=""></td>
+                    <td width="1%" bgcolor="{#color7#}" align="center"><input type="checkbox" name="voted_group_id[]" value="{$voted_groups_tpl.id}" class="formenter"></td>
+                    <td width="40%" bgcolor="{#color7#}" class="td1" align="left"><span class="tablecenterblocktext2"> {$voted_groups_tpl.group_name|truncate:30:"...":true}</span></td>
+                    <td width="40%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$voted_groups_tpl.questionnaire_name|truncate:30:"...":true}</span></td>
+                    <td width="18%" bgcolor="{#color7#}" class="td2" align="left" nowrap><a href="index.php?path=admin_questionnaires&amp;func=results_details&amp;group_id={$voted_groups_tpl.group_id}&amp;questionnaire_id={$voted_groups_tpl.questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_RESULTS#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_questionnaires&amp;func=results_details_by_persons&amp;group_id={$voted_groups_tpl.group_id}&amp;questionnaire_id={$voted_groups_tpl.questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_RESULTS_BY_PERSONS#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_questionnaires&amp;func=results_delete&amp;action=confirm_delete&amp;voted_group_id={$voted_groups_tpl.id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_FUNCTIONDELETE#}</a></td>
+                </tr>
+                {/foreach}
+            {else}
+                <tr>
+                    <td width="100%" colspan="5" align="center" bgcolor="{#color7#}"><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_NO_VOTED_GROUPS#}</span></td>
+                </tr>
+            {/if}
+        </table>
+        {if $voted_groups ne "no_voted_groups"}
+            <table border="0" width="99%" cellspacing="2"  cellpadding="0">
+                <tr align="right">
+                    <td><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_ACTIONWITHSELECTED#}:</span> <select name="action" class="formenter"> <option value="confirm_delete">{#_QUESTIONNAIRES_FUNCTIONDELETE#}</option></select> <input type="submit" value="{#_QUESTIONNAIRES_BUTTONDONE#}" class="button"></td>
+                </tr>
+            </table>
+        {/if}
+    </form>
+</div>
+{if $pages_menu ne "no"}
+    <table width="100%" cellpadding="0" cellspacing="2" border="0">
+        <tr>
+            <td><center><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_COUNTTOTAL#}:{$total_voted_groups} ({#_QUESTIONNAIRES_PAGESCOUNTTOTAL#}:{$num_pages})</span></center></td>
+        </tr>
+    </table>
+    <div align="center">
+        {if $prevpage ne "no"}<a href="index.php?path=admin_questionnaires&amp;func=results&amp;num_page={$prevpage}&amp;lang={$site_language}" title="{#_QUESTIONNAIRES_PREVPAGE#}" class="link"><img src="../{#bgimage19#}" border="0" alt="{#_QUESTIONNAIRES_PREVPAGE#}"></a> {/if}
+        {foreach $pages_menu as $pages_menu_tpl}
+            {if $pages_menu_tpl.param1 eq "1"} <span class="tablecenterblocktext2">[{$pages_menu_tpl.number}]</span> {elseif $pages_menu_tpl.param1 eq "2"} <a href="index.php?path=admin_questionnaires&amp;func=results&amp;num_page={$pages_menu_tpl.number}&amp;lang={$site_language}" class="link">[{$pages_menu_tpl.number}]</a> {elseif $pages_menu_tpl.param1 eq "3"} ...<a href="index.php?path=admin_questionnaires&amp;func=results&amp;num_page={$pages_menu_tpl.number}&amp;lang={$site_language}" class="link">[{$pages_menu_tpl.number}]</a> {elseif $pages_menu_tpl.param1 eq "4"} <a href="index.php?path=admin_questionnaires&amp;func=results&amp;num_page={$pages_menu_tpl.number}&amp;lang={$site_language}" class="link">[{$pages_menu_tpl.number}]</a>... {/if}
+        {/foreach}
+        {if $nextpage ne "no"} <a href="index.php?path=admin_questionnaires&amp;func=results&amp;num_page={$nextpage}&amp;lang={$site_language}" title="{#_QUESTIONNAIRES_NEXTPAGE#}" class="link"><img src="../{#bgimage20#}" border="0" alt="{#_QUESTIONNAIRES_NEXTPAGE#}"></a>{/if}
+    </div>
+{/if}
+<br><br>

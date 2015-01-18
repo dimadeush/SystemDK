@@ -1,0 +1,193 @@
+{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</span></center>
+</div><br>
+<div align="center">
+    {if $questionnaires_message eq "sql_error"}
+        <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SYSTEMERROR#}</span><br><br>
+        {nocache}
+        {if isset($error) and $error ne "no"}
+        {foreach $error as $error_tpl}
+        {if $error_tpl.message ne "" and $error_tpl.code ne ""}<span class="errorsmall">{$error_tpl.message}<br>{$error_tpl.code}</span><br>{/if}
+        {/foreach}
+        {/if}
+        {/nocache}
+        <br><a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "not_all_data"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTALLDATA#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "questionnaire_not_found"}
+        <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_QUESTIONNAIRE_NOT_FOUND#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "question_not_found"}
+        <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_QUESTION_NOT_FOUND#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "question_item_not_found"}
+        <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_QUESTION_ITEM_NOT_FOUND#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "question_answer_not_found"}
+        <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_QUESTION_ANSWER_NOT_FOUND#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "ok"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SYSTEMNOTICE#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "questionnaire_add_ok"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTIONNAIRE_ADDED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a>
+    {elseif $questionnaires_message eq "question_add_ok"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTION_ADDED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_QUESTIONS#}</a>
+    {elseif $questionnaires_message eq "question_item_add_ok"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTION_ITEM_ADDED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_QUESTIONS#}</a>
+    {elseif $questionnaires_message eq "question_answer_add_ok"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTION_ANSWER_ADDED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_QUESTIONS#}</a>
+    {elseif $questionnaires_message eq "questionnaire_edit_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTIONNAIRE_EDITED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a>
+    {elseif $questionnaires_message eq "question_item_edit_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTION_ITEM_EDITED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_QUESTIONS#}</a>
+    {elseif $questionnaires_message eq "question_answer_edit_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTION_ANSWER_EDITED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_QUESTIONS#}</a>
+    {elseif $questionnaires_message eq "question_edit_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTION_EDITED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_QUESTIONS#}</a>
+    {elseif $questionnaires_message eq "delete"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTIONNAIRE_DELETED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a>
+    {elseif $questionnaires_message eq "on"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTIONNAIRE_ON_OK#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a>
+    {elseif $questionnaires_message eq "off"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTIONNAIRE_OFF_OK#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a>
+    {elseif $questionnaires_message eq "confirm_delete"}
+        <form action="index.php?path=admin_questionnaires&amp;func=questionnaires_status&amp;lang={$site_language}" method="POST">
+            <input type="hidden" name="action" value="delete">
+            <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_QUESTIONNAIRES_QUESTIONNAIRE_CONFIRM_DELETE#}:</span><br><br>
+            {nocache}
+                {foreach $questionnaires_all as $questionnaires_all_tpl}
+                    <span class="linkbig">{$questionnaires_all_tpl.questionnaire_name}{if !$questionnaires_all_tpl@last},{/if}</span><br>
+                    <input type="hidden" name="questionnaire_id[]" value="{$questionnaires_all_tpl.questionnaire_id}">
+                {/foreach}
+            {/nocache}
+            <br>
+            <input type="submit" value="{#_QUESTIONNAIRES_BUTTONDONE#}" class="button"><br><br>
+            <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+        </form>
+    {elseif $questionnaires_message eq "confirm_delete_data"}
+        <form action="index.php?path=admin_questionnaires&amp;func={$delete_type}&amp;lang={$site_language}" method="POST">
+            <input type="hidden" name="action" value="delete">
+            <img src="../{#bgimage28#}" border="0" alt="">&nbsp;
+            <span class="messagebig">
+                {if $delete_type eq 'question_delete'}
+                    {#_QUESTIONNAIRES_QUESTION_CONFIRM_DELETE#}:
+                {elseif $delete_type eq 'question_item_delete'}
+                    {#_QUESTIONNAIRES_QUESTION_ITEM_CONFIRM_DELETE#}:
+                {elseif $delete_type eq 'question_answer_delete'}
+                    {#_QUESTIONNAIRES_QUESTION_ANSWER_CONFIRM_DELETE#}:
+                {/if}
+            </span><br><br>
+            {nocache}
+                <span class="linkbig">{$delete_title}</span><br>
+                <input type="hidden" name="{$delete_name}" value="{$delete_id}">
+                <input type="hidden" name="questionnaire_id" value="{$questionnaire_id}">
+            {/nocache}
+            <br>
+            <input type="submit" value="{#_QUESTIONNAIRES_BUTTONDONE#}" class="button"><br><br>
+            <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+        </form>
+    {elseif $questionnaires_message eq "no_questionnaires"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_NO_QUESTIONNAIRES#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "already_assigned"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_FOUND_GROUP_WITH_QUESTIONNAIRE#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "group_add_ok"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_GROUP_ADDED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a>
+    {elseif $questionnaires_message eq "group_edit_not_found"}
+        <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_GROUP_NOT_FOUND#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "group_edit_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_GROUP_EDITED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a>
+    {elseif $questionnaires_message eq "confirm_group_delete"}
+        <form action="index.php?path=admin_questionnaires&amp;func=groups_status&amp;lang={$site_language}" method="POST">
+            <input type="hidden" name="action" value="group_delete">
+            <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_QUESTIONNAIRES_GROUP_CONFIRM_DELETE#}:</span><br><br>
+            {nocache}
+                {foreach $groups_all as $groups_all_tpl}
+                    <span class="linkbig">{$groups_all_tpl.group_name}{if !$groups_all_tpl@last},{/if}</span><br>
+                    <input type="hidden" name="group_id[]" value="{$groups_all_tpl.group_id}">
+                {/foreach}
+            {/nocache}
+            <br>
+            <input type="submit" value="{#_QUESTIONNAIRES_BUTTONDONE#}" class="button"><br><br>
+            <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+        </form>
+    {elseif $questionnaires_message eq "group_delete"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_GROUP_DELETED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a>
+    {elseif $questionnaires_message eq "group_on"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_GROUP_ON_OK#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a>
+    {elseif $questionnaires_message eq "group_off"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_GROUP_OFF_OK#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a>
+    {elseif $questionnaires_message eq "no_question_types"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_NO_QUESTION_TYPES#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "empty_group"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_GROUP_NOT_SELECTED#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "empty_questionnaire"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_QUESTIONNAIRE_NOT_SELECTED#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "empty_question"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_QUESTION_NOT_SELECTED#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "empty_question_item"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_QUESTION_ITEM_NOT_SELECTED#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "empty_question_answer"}
+        <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_QUESTION_ANSWER_NOT_SELECTED#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "question_delete_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTION_DELETED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_QUESTIONS#}</a>
+    {elseif $questionnaires_message eq "question_item_delete_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTION_ITEM_DELETED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_QUESTIONS#}</a>
+    {elseif $questionnaires_message eq "question_answer_delete_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_QUESTION_ANSWER_DELETED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaire_id}&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_QUESTIONS#}</a>
+    {elseif $questionnaires_message eq "results_delete"}
+        <form action="index.php?path=admin_questionnaires&amp;func=results_delete&amp;lang={$site_language}" method="POST">
+            <input type="hidden" name="action" value="delete">
+            <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_QUESTIONNAIRES_VOTED_GROUPS_CONFIRM_DELETE#}:</span><br><br>
+            {nocache}
+                {foreach $voted_groups_all as $voted_groups_all_tpl}
+                    <span class="linkbig">{$voted_groups_all_tpl.group_name}</span> <span class="textbig">(</span><span class="linkbig">{$voted_groups_all_tpl.questionnaire_name}</span><span class="textbig">)</span>{if !$voted_groups_all_tpl@last}<span class="textbig">,</span>{/if}<br>
+                    <input type="hidden" name="voted_group_id[]" value="{$voted_groups_all_tpl.voted_group_id}">
+                {/foreach}
+            {/nocache}
+            <br>
+            <input type="submit" value="{#_QUESTIONNAIRES_BUTTONDONE#}" class="button"><br><br>
+            <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+        </form>
+    {elseif $questionnaires_message eq "results_delete_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_VOTED_GROUPS_DELETED#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=results&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_RESULTS#}</a>
+    {elseif $questionnaires_message eq "config_done"}
+        <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_CONFIG_DONE#}</span><br><br>
+        <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a>
+    {elseif $questionnaires_message eq "conf_no_file"}
+        <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_CONFIG_NO_FILE#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {elseif $questionnaires_message eq "conf_no_write"}
+        <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_QUESTIONNAIRES_CONFIG_NOT_WRITE#}</span><br><br>
+        <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+    {/if}
+</div>

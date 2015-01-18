@@ -1,0 +1,44 @@
+{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</span></center>
+</div><br>
+<div align="center">
+    <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_questionnaires&amp;func=results&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_RESULTS#}</a>
+    <br><br>
+    <img src="../{#bgimage18#}" border="0" alt="">
+    <span class="title">
+        {if isset($questionnaire_action) and $questionnaire_action eq 'question_answer_add'}
+            {#_QUESTIONNAIRES_ADD_QUESTION_ANSWER_TITLE#}
+        {elseif isset($questionnaire_action) and $questionnaire_action eq 'question_item_edit'}
+            {#_QUESTIONNAIRES_QUESTION_ITEM_EDIT_TITLE#}
+        {elseif isset($questionnaire_action) and $questionnaire_action eq 'question_answer_edit'}
+            {#_QUESTIONNAIRES_QUESTION_ANSWER_EDIT_TITLE#}
+        {else}
+            {#_QUESTIONNAIRES_ADD_QUESTION_ITEM_TITLE#}
+        {/if}
+    </span>
+    <br><br>
+    <table width="99%" cellpadding="0" cellspacing="0" border="0"><tr><td align="left"><a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a> <span class="textlinkbig"><b>&rarr;</b></span> <a href="index.php?path=admin_questionnaires&amp;func=questions&amp;questionnaire_id={$questionnaires_all.questionnaire_id}&amp;lang={$site_language}" class="link">{$questionnaires_all.questionnaire_name}</a> <span class="textlinkbig"><b>&rarr;</b></span> <span class="tablecenterblocktext2">{$questionnaires_all.question_title}</span></td></tr></table>
+    <br>
+    <form action="index.php?path=admin_questionnaires&amp;lang={$site_language}" method="POST">
+        <input type="hidden" name="func" value="{if isset($questionnaire_action) and $questionnaire_action eq 'question_answer_add'}question_answer_add_inbase{elseif isset($questionnaire_action) and $questionnaire_action eq 'question_item_edit'}question_item_edit_inbase{elseif isset($questionnaire_action) and $questionnaire_action eq 'question_answer_edit'}question_answer_edit_inbase{else}question_item_add_inbase{/if}">
+        <input type="hidden" name="questionnaire_id" value="{$questionnaires_all.questionnaire_id}">
+        <input type="hidden" name="question_id" value="{$questionnaires_all.question_id}">
+        {if isset($questionnaire_action) and $questionnaire_action eq 'question_item_edit'}
+            <input type="hidden" name="question_item_id" value="{$questionnaires_all.question_item_id}">
+        {elseif isset($questionnaire_action) and $questionnaire_action eq 'question_answer_edit'}
+            <input type="hidden" name="question_answer_id" value="{$questionnaires_all.question_answer_id}">
+        {/if}
+        <table border="0" cellspacing="2" cellpadding="0">
+            <tr align="left">
+                <td bgcolor="{#color7#}" class="td1">
+                    <img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_QUESTIONNAIRES_TITLE#}:</span> <span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" size="50" maxlength="255" name="title" {if isset($questionnaire_action) and ($questionnaire_action eq 'question_item_edit' or $questionnaire_action eq 'question_answer_edit')}value="{$questionnaires_all.title}"{/if} class="formenter">
+                </td>
+            </tr>
+        </table><br>
+        <input type="submit" value="{if isset($questionnaire_action) and ($questionnaire_action eq 'question_item_edit' or $questionnaire_action eq 'question_answer_edit')}{#_QUESTIONNAIRES_BUTTON_SAVE#}{else}{#_QUESTIONNAIRES_BUTTON_ADD#}{/if}">
+    </form>
+    <br>
+    <table border="0" width="99%" cellspacing="0" cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text"> {#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</div>
+<br>

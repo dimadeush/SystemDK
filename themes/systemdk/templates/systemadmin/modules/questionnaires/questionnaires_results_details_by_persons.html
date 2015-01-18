@@ -1,0 +1,65 @@
+{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</span></center>
+</div><br>
+<div align="center">
+    <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_questionnaires&amp;func=results&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_RESULTS#}</a>
+    <br><br>
+    <img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_QUESTIONNAIRES_QUESTIONNAIRE_RESULTS_BY_PERSONS_TITLE#}<br><br>{$questionnaire_name} / {$group_name}<br>{#_QUESTIONNAIRES_TOTAL_VOTED_PERSONS_TITLE#}: {$voted_persons}</span>
+    <br><br>
+    {if $questions eq 'no'}
+    <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_NO_QUESTIONS#}</span><br><br>
+    {else}
+    <table border="0" width="99%" cellspacing="2"  cellpadding="0">
+        <tr>
+            <td width="1%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">¹</span></td>
+            <td bgcolor="{#color7#}" class="td2" align="center"><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_TITLE#}</span></td>
+            {foreach $voted_persons_list as $voted_persons_list_tpl}
+                <td bgcolor="{#color7#}" class="td2" align="center">{if !empty($voted_persons_list_tpl.user_id)}<a href="index.php?path=admin_users&amp;func=user_edit&amp;user_id={$voted_persons_list_tpl.user_id}&amp;lang={$site_language}" class="link" title="{#_QUESTIONNAIRES_REGISTERED_USER#}">{else}<span class="tablecenterblocktext2">{/if}{$voted_persons_list_tpl@iteration}{if !empty($voted_persons_list_tpl.user_id)}</a>{else}</span>{/if} <span class="tablecenterblocktext2">({$voted_persons_list_tpl.voted_date})</span></td>
+            {/foreach}
+            <td width="1%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_VOTED_PERSONS_IN_PERCENT#}</span></td>
+        </tr>
+        {foreach $questions as $questions_tpl}
+            <tr>
+                <td width="1%" bgcolor="{#color7#}" class="td2" align="left" nowrap><span class="tablecenterblocktext2">{$questions_tpl@iteration}.</span></td>
+                <td width="99%" colspan="{$voted_persons+2}" bgcolor="{#color7#}" class="td2" align="left"><span class="tablecenterblocktext2">{$questions_tpl.question_title}</span></td>
+            </tr>
+            {if $questions_tpl.question_items ne 'no'}
+                {foreach $questions_tpl.question_items as $question_items_tpl}
+                    <tr>
+                        <td width="1%" bgcolor="{#color7#}" class="td2" align="left" nowrap><span class="tablecenterblocktext2"> - {$question_items_tpl@iteration}.</span></td>
+                        <td bgcolor="{#color7#}" class="td2" align="left"><span class="tablecenterblocktext2">{$question_items_tpl.question_item_title}</span></td>
+                        {foreach $voted_persons_list as $voted_persons_list_tpl}
+                            <td bgcolor="{#color7#}" class="td2" align="center">
+                                    {if $questions_tpl.question_allow_answer_variants}
+                                        {if !empty($question_items_tpl.results_by_persons.{$voted_persons_list_tpl.person_id}.answer_question_answer)}
+                                            <span class="tablecenterblocktext2">{$question_items_tpl.results_by_persons.{$voted_persons_list_tpl.person_id}.answer_question_answer}</span>
+                                        {/if}
+                                    {else}
+                                        {if isset($question_items_tpl.results_by_persons.{$voted_persons_list_tpl.person_id}.answer_question_item_id) and $question_items_tpl.results_by_persons.{$voted_persons_list_tpl.person_id}.answer_question_item_id gt 0}
+                                            <span class="tablecenterblocktext2">+</span>
+                                        {/if}
+                                    {/if}
+                            </td>
+                        {/foreach}
+                        <td bgcolor="{#color7#}" class="td2" align="center" nowrap> {if !$questions_tpl.question_allow_answer_variants}<span class="tablecenterblocktext2">{($question_items_tpl.count_voted_question_item * 100 / $voted_persons)|string_format:"%d" }%</span>{/if}</td>
+                    </tr>
+                {/foreach}
+            {/if}
+            {if isset($questions_tpl.question_subtext)}
+                <tr>
+                    <td bgcolor="{#color7#}" class="td2" align="left" colspan="2"><span class="tablecenterblocktext2">{$questions_tpl.question_subtext}</span></td>
+                    {foreach $voted_persons_list as $voted_persons_list_tpl}
+                        <td bgcolor="{#color7#}" class="td2" align="center"><span class="tablecenterblocktext2" title="{$questions_tpl.results_by_persons.{$voted_persons_list_tpl.person_id}.answer_text}">{$questions_tpl.results_by_persons.{$voted_persons_list_tpl.person_id}.answer_text|truncate:10:"...":true} [</span><a href="index.php?path=admin_questionnaires&amp;func=results_person_text_answers&amp;group_id={$group_id}&amp;questionnaire_id={$questionnaire_id}&amp;question_id={$questions_tpl.question_id}&amp;person_id={$voted_persons_list_tpl.person_id}&amp;lang={$site_language}" title="{$questions_tpl.results_by_persons.{$voted_persons_list_tpl.person_id}.answer_text}" class="link">{#_QUESTIONNAIRES_SHOW_ANSWER#}</a><span class="tablecenterblocktext2">]</span></td>
+                    {/foreach}
+                    <td bgcolor="{#color7#}" class="td2" align="center" nowrap></td>
+                </tr>
+            {/if}
+            <tr>
+                <td bgcolor="{#color7#}" class="td2" align="left" colspan="{$voted_persons+3}"><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_QUESTION_TYPE#}: {#$questions_tpl.type_description#}; {if $questions_tpl.question_obligatory eq '1'}{#_QUESTIONNAIRES_OBLIGATORY_YES#}{else}{#_QUESTIONNAIRES_OBLIGATORY_NO#}{/if}</span></td>
+            </tr>
+        {/foreach}
+    </table>
+    {/if}
+</div>
+<br>

@@ -4,10 +4,10 @@
  * File:      index.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2014 SystemDK
+ * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.1
+ * @version   3.2
  */
 // Define the site path constant
 define('__SITE_PATH',realpath(dirname(__FILE__)));

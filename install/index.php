@@ -6,10 +6,10 @@
  * File:      install/index.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2014 SystemDK
+ * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.1
+ * @version   3.2
  */
 class install {
 
@@ -580,6 +580,141 @@ class install {
                     $error[] = array("code" => $error_code,"message" => $error_message);
                 }
                 //shop end
+                // questionnaire start
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_groups_".$install_lang[$i]." (
+                    group_id int(11) not null auto_increment,
+                    questionnaire_id int(11) not null,
+                    group_name varchar(255) not null,
+                    group_status enum('0','1') not null default '0',
+                    PRIMARY KEY (group_id)
+                  ) ENGINE=InnoDB");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_questions_".$install_lang[$i]." (
+                    question_id int(11) not null auto_increment,
+                    question_title varchar(255) not null,
+                    questionnaire_id int(11) not null,
+                    type_id int(11) not null,
+                    question_priority int(11) not null,
+                    question_subtext varchar(255),
+                    question_obligatory enum('0','1') not null default '1',
+                    PRIMARY KEY (question_id)
+                  ) ENGINE=InnoDB");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_question_answers_".$install_lang[$i]." (
+                    question_answer_id int(11) not null auto_increment,
+                    question_id int(11) not null,
+                    question_answer varchar(255) not null,
+                    question_answer_priority int(11) not null,
+                    PRIMARY KEY (question_answer_id)
+                  ) ENGINE=InnoDB");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_question_items_".$install_lang[$i]." (
+                    question_item_id int(11) not null auto_increment,
+                    question_id int(11) not null,
+                    question_item_title varchar(255) not null,
+                    question_item_priority int(11) not null,
+                    PRIMARY KEY (question_item_id)
+                  ) ENGINE=InnoDB");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                if($i == 0) {
+                    $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_question_types (
+                    type_id int(11) not null auto_increment,
+                    type_name varchar(255) not null,
+                    type_description varchar(255) not null,
+                    PRIMARY KEY (type_id)
+                  ) ENGINE=InnoDB");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_q_question_types (type_id,type_name,type_description) VALUES
+                    (1,'check_more', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_MORE'),
+                    (2,'check_single', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_SINGLE'),
+                    (3,'select_list', '_QUESTIONNAIRES_QUESTION_TYPE_SELECT_LIST'),
+                    (4,'check_more_with_text', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_MORE_WITH_TEXT'),
+                    (5,'check_single_with_tex', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_SINGLE_WITH_TEXT'),
+                    (6,'select_list_with_text', '_QUESTIONNAIRES_QUESTION_TYPE_SELECT_LIST_WITH_TEXT'),
+                    (7,'only_text', '_QUESTIONNAIRES_QUESTION_TYPE_ONLY_TEXT');
+                    ");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_questionnaires_".$install_lang[$i]." (
+                    questionnaire_id int(11) not null auto_increment,
+                    questionnaire_name varchar(255) not null,
+                    questionnaire_date bigint(19) not null,
+                    questionnaire_status enum('0','1') not null default '0',
+                    questionnaire_meta_title varchar(255),
+                    questionnaire_meta_keywords varchar(255),
+                    questionnaire_meta_description varchar(255),
+                    PRIMARY KEY (questionnaire_id)
+                  ) ENGINE=InnoDB");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_voted_answers_".$install_lang[$i]." (
+                    answer_id int(11) not null auto_increment,
+                    person_id int(11) not null,
+                    question_id int(11) not null,
+                    question_item_id int(11),
+                    questionnaire_id int(11) not null,
+                    answer_text mediumtext,
+                    group_id int(11) not null,
+                    question_answer_id int(11),
+                    PRIMARY KEY (answer_id)
+                  ) ENGINE=InnoDB");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_voted_groups_".$install_lang[$i]." (
+                    voted_group_id int(11) not null auto_increment,
+                    group_id int(11) not null,
+                    questionnaire_id int(11) not null,
+                    PRIMARY KEY (voted_group_id)
+                  ) ENGINE=InnoDB");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_voted_persons_".$install_lang[$i]." (
+                    person_id int(11) not null auto_increment,
+                    user_id int(11),
+                    voted_group_id int(11) not null,
+                    person_ip varchar(45) not null,
+                    voted_date bigint(19) not null,
+                    PRIMARY KEY (person_id)
+                  ) ENGINE=InnoDB");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                // questionnaire end
                 if($i == 0) {
                     $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_guestbook (
                         post_id int(11) not null auto_increment,
@@ -1264,6 +1399,337 @@ class install {
                     $error[] = array("code" => $error_code,"message" => $error_message);
                 }
                 //shop end
+                // questionnaire start
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_groups_".$install_lang[$i]." (
+                    group_id NUMBER(11,0) NOT NULL,
+                    questionnaire_id NUMBER(11,0) NOT NULL,
+                    group_name VARCHAR2(255) NOT NULL,
+                    group_status NUMBER(1,0) DEFAULT 0 NOT NULL
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("ALTER TABLE ".$data_array['prefix']."_q_groups_".$install_lang[$i]." ADD (
+                    PRIMARY KEY(group_id)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE SEQUENCE ".$data_array['prefix']."_groups_".$install_lang[$i]."
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  ");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_questions_".$install_lang[$i]." (
+                    question_id NUMBER(11,0) NOT NULL,
+                    question_title VARCHAR2(255) NOT NULL,
+                    questionnaire_id NUMBER(11,0) NOT NULL,
+                    type_id NUMBER(11,0) NOT NULL,
+                    question_priority NUMBER(11,0) NOT NULL,
+                    question_subtext VARCHAR2(255),
+                    question_obligatory NUMBER(1,0) DEFAULT 1 NOT NULL
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("ALTER TABLE ".$data_array['prefix']."_q_questions_".$install_lang[$i]." ADD (
+                    PRIMARY KEY(question_id)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE SEQUENCE ".$data_array['prefix']."_questions_".$install_lang[$i]."
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  ");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_question_answers_".$install_lang[$i]." (
+                    question_answer_id NUMBER(11,0) NOT NULL,
+                    question_id NUMBER(11,0) NOT NULL,
+                    question_answer VARCHAR2(255) NOT NULL,
+                    question_answer_priority NUMBER(11,0) NOT NULL
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("ALTER TABLE ".$data_array['prefix']."_q_question_answers_".$install_lang[$i]." ADD (
+                    PRIMARY KEY(question_answer_id)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE SEQUENCE ".$data_array['prefix']."_question_answers_".$install_lang[$i]."
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  ");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_question_items_".$install_lang[$i]." (
+                    question_item_id NUMBER(11,0) NOT NULL,
+                    question_id NUMBER(11,0) NOT NULL,
+                    question_item_title VARCHAR2(255) NOT NULL,
+                    question_item_priority NUMBER(11,0) NOT NULL
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("ALTER TABLE ".$data_array['prefix']."_q_question_items_".$install_lang[$i]." ADD (
+                    PRIMARY KEY(question_item_id)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE SEQUENCE ".$data_array['prefix']."_question_items_".$install_lang[$i]."
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  ");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                if($i == 0) {
+                    $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_question_types (
+                        type_id NUMBER(11,0) NOT NULL,
+                        type_name VARCHAR2(255) NOT NULL,
+                        type_description VARCHAR2(255) NOT NULL
+                      )");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $insert = $adodb->Execute("ALTER TABLE ".$data_array['prefix']."_q_question_types ADD (
+                        PRIMARY KEY(type_id)
+                    )");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    // do not need sequence because type_id using in code to determine question type
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_q_question_types VALUES (1, 'check_more', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_MORE')");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_q_question_types VALUES (2, 'check_single', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_SINGLE')");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_q_question_types VALUES (3, 'select_list', '_QUESTIONNAIRES_QUESTION_TYPE_SELECT_LIST')");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_q_question_types VALUES (4, 'check_more_with_text', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_MORE_WITH_TEXT')");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_q_question_types VALUES (5, 'check_single_with_text', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_SINGLE_WITH_TEXT')");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_q_question_types VALUES (6, 'select_list_with_text', '_QUESTIONNAIRES_QUESTION_TYPE_SELECT_LIST_WITH_TEXT')");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_q_question_types VALUES (7, 'only_text', '_QUESTIONNAIRES_QUESTION_TYPE_ONLY_TEXT')");
+                    if(!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = array("code" => $error_code,"message" => $error_message);
+                    }
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_questionnaires_".$install_lang[$i]." (
+                    questionnaire_id NUMBER(11,0) NOT NULL,
+                    questionnaire_name VARCHAR2(255) NOT NULL,
+                    questionnaire_date NUMBER(19,0) NOT NULL,
+                    questionnaire_status NUMBER(1,0) DEFAULT 0 NOT NULL,
+                    questionnaire_meta_title VARCHAR2(255),
+                    questionnaire_meta_keywords VARCHAR2(255),
+                    questionnaire_meta_description VARCHAR2(255)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("ALTER TABLE ".$data_array['prefix']."_q_questionnaires_".$install_lang[$i]." ADD (
+                    PRIMARY KEY(questionnaire_id)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE SEQUENCE ".$data_array['prefix']."_questionnaires_".$install_lang[$i]."
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  ");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_voted_answers_".$install_lang[$i]." (
+                    answer_id NUMBER(11,0) NOT NULL,
+                    person_id NUMBER(11,0) NOT NULL,
+                    question_id NUMBER(11,0) NOT NULL,
+                    question_item_id NUMBER(11,0),
+                    questionnaire_id NUMBER(11,0) NOT NULL,
+                    answer_text CLOB,
+                    group_id NUMBER(11,0) NOT NULL,
+                    question_answer_id NUMBER(11,0)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("ALTER TABLE ".$data_array['prefix']."_q_voted_answers_".$install_lang[$i]." ADD (
+                    PRIMARY KEY(answer_id)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE SEQUENCE ".$data_array['prefix']."_voted_answers_".$install_lang[$i]."
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  ");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_voted_groups_".$install_lang[$i]." (
+                    voted_group_id NUMBER(11,0) NOT NULL,
+                    group_id NUMBER(11,0) NOT NULL,
+                    questionnaire_id NUMBER(11,0) NOT NULL
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("ALTER TABLE ".$data_array['prefix']."_q_voted_groups_".$install_lang[$i]." ADD (
+                    PRIMARY KEY(voted_group_id)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE SEQUENCE ".$data_array['prefix']."_voted_groups_".$install_lang[$i]."
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  ");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_q_voted_persons_".$install_lang[$i]." (
+                    person_id NUMBER(11,0) NOT NULL,
+                    user_id NUMBER(11,0),
+                    voted_group_id NUMBER(11,0) NOT NULL,
+                    person_ip VARCHAR2(45 CHAR) NOT NULL,
+                    voted_date NUMBER(19,0) NOT NULL
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("ALTER TABLE ".$data_array['prefix']."_q_voted_persons_".$install_lang[$i]." ADD (
+                    PRIMARY KEY(person_id)
+                  )");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                $insert = $adodb->Execute("CREATE SEQUENCE ".$data_array['prefix']."_voted_persons_".$install_lang[$i]."
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  ");
+                if(!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = array("code" => $error_code,"message" => $error_message);
+                }
+                // questionnaire end
                 if($i == 0) {
                     $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_guestbook (
                         post_id NUMBER(11,0) NOT NULL,
@@ -1731,7 +2197,7 @@ class install {
         $site_startdate = date("d/m/Y");
         $file = @fopen("../includes/data/config.inc","w");
         $content = "<?php\n\n";
-        $content .= 'define("SYSTEMDK_VERSION","3.1.1");'."\n";
+        $content .= 'define("SYSTEMDK_VERSION","3.2.0");'."\n";
         $content .= 'define("SYSTEMDK_MODREWRITE","'.$data_array['mod_rewrite']."\");\n";
         $content .= 'define("SYSTEMDK_DESCRIPTION","");'."\n";
         $content .= 'define("SITE_ID","'.$data_array['site_id']."\");\n";
@@ -1794,7 +2260,6 @@ class install {
         $content .= 'define("SYSTEMDK_IPANTISPAM","'.$data_array['systemdk_ipantispam']."\");\n";
         $content .= 'define("SYSTEMDK_IPANTISPAM_NUM","'.$data_array['systemdk_ipantispam_num']."\");\n";
         $content .= 'define("SYSTEMDK_FEEDBACK_RECEIVER","default");'."\n";
-        $content .= "?>\n";
         $write_file = @fwrite($file,$content);
         if(!$write_file) {
             if($data_array['db_persistency'] === 'no') {
@@ -1985,8 +2450,8 @@ class install {
 
     private function check_php_version() {
         if(!defined('PHP_VERSION_ID')) {
-            $version = explode('.', PHP_VERSION);
-            define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
+            $version = explode('.',PHP_VERSION);
+            define('PHP_VERSION_ID',($version[0] * 10000 + $version[1] * 100 + $version[2]));
         }
         if(PHP_VERSION_ID < 50200 and $this->func !== 'step2') {
             if($this->func == 'step5' or $this->func == 'step6') {

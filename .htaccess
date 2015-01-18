@@ -58,6 +58,12 @@ RewriteRule ^([^/]+)/shop/page/([0-9]+)(/?)+$ index.php?path=shop&num_page=$2&la
 RewriteCond %{REQUEST_URI} !/modules/shop
 RewriteCond %{REQUEST_URI} !/userfiles/shop
 RewriteRule ^([^/]+)/shop/([^/]+)(/?)+$ index.php?path=shop&func=$2&lang=$1 [L]
+# questionnaires
+RewriteCond %{REQUEST_URI} !/modules/questionnaires
+RewriteRule ^([^/]+)/questionnaires(/?)+$ index.php?path=questionnaires&lang=$1 [L]
+RewriteRule ^([^/]+)/questionnaires/([0-9]+)(/?)+$ index.php?path=questionnaires&func=view&questionnaire_id=$2&lang=$1 [L]
+RewriteCond %{REQUEST_URI} !/modules/questionnaires
+RewriteRule ^([^/]+)/questionnaires/([^/]+)(/?)+$ index.php?path=questionnaires&func=$2&lang=$1 [L]
 # hide content of some directories
 RewriteRule ^adodb(/?)+$ index.php [L]
 RewriteRule ^adodb/([^/]+)(/?)+$ index.php [L]

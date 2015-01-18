@@ -4,10 +4,10 @@
  * File:      block_controller_menu.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2014 SystemDK
+ * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.1
+ * @version   3.2
  */
 class block_controller_menu extends controller_base {
 

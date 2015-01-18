@@ -1,0 +1,18 @@
+{if !empty($organization_name) or !empty($organization_id)}<table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="right"><span class="textbig">{if !empty($organization_name)}{#_QUESTIONNAIRES_ORGANIZATION_NAME_TITLE#}: {$organization_name}{if !empty($organization_id)},{/if}{/if} {if !empty($organization_id)}{#_QUESTIONNAIRES_ORGANIZATION_ID_TITLE#}: {$organization_id}{/if}</span></td></tr></table>{else}<br>{/if}
+<div align="center">
+    <img src="/{$system_dir}{#bgimage18#}" alt=""> <span class="title">{#_QUESTIONNAIRES_MODULE_METATITLE#}</span><br><br>
+    <table width="98%" border="0" cellpadding="0"  cellspacing="0">
+        <tr>
+            <td align="left" class="textbig">
+                {if $questionnaires_all eq "no_questionnaires"}
+                <div align="center"><img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_QUESTIONNAIRES_MODULE_NOITEMS#}</span></div>
+                {else}
+                {foreach $questionnaires_all as $questionnaires_all_tpl}
+                    <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/questionnaires/{$questionnaires_all_tpl.questionnaire_id}/{else}index.php?path=questionnaires&amp;func=view&amp;questionnaire_id={$questionnaires_all_tpl.questionnaire_id}&amp;lang={$site_language}{/if}">{$questionnaires_all_tpl.questionnaire_name}</a> ({$questionnaires_all_tpl.questionnaire_date})<br>
+                {/foreach}
+                {/if}
+            </td>
+        </tr>
+    </table>
+</div>
+<br><br>

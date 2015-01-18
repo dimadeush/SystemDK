@@ -1,0 +1,45 @@
+{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</span></center>
+</div><br>
+<div align="center">
+    <a href="index.php?path=admin_questionnaires&amp;func=index&amp;lang={$site_language}" class="link">{#_ADMINISTRATIONQUESTIONNAIRESPAGETITLE#}</a> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a> <span class="tablecenterblocktext2">|</span>
+    <span class="tablecenterblocktext2">{#_QUESTIONNAIRES_ADD_QUESTIONNAIRE#}</span> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_questionnaires&amp;func=results&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_RESULTS#}</a>
+    <br><br>
+    <img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_QUESTIONNAIRES_ADDTITLE#}</span>
+    <br><br>
+    <form action="index.php?path=admin_questionnaires&amp;lang={$site_language}" method="POST">
+        <input type="hidden" name="func" value="questionnaire_add_inbase">
+        <table border="0" cellspacing="2" cellpadding="0">
+            <tr align="left">
+                <td bgcolor="{#color7#}" class="td1">
+                    <img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_QUESTIONNAIRES_TITLE#}:</span> <span class="errorsmall">*</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" size="50" maxlength="255" name="questionnaire_name" class="formenter">
+                </td>
+            </tr>
+            <tr align="left">
+                <td bgcolor="{#color7#}" class="td1">
+                    <img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_QUESTIONNAIRES_STATUS#}:</span>
+                </td>
+                <td bgcolor="{#color7#}" class="td2">
+                    <select name="questionnaire_status" class="formenter">
+                        <option value="1" selected="selected">{#_QUESTIONNAIRES_ON#}</option>
+                        <option value="0">{#_QUESTIONNAIRES_OFF#}</option>
+                    </select>
+                </td>
+            </tr>
+            <tr align="left">
+                <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_QUESTIONNAIRES_META_TITLE#}:</span> </td><td bgcolor="{#color7#}" class="td2"><input type="text" name="questionnaire_meta_title" size="70" maxlength="255" class="formenter"> </td>
+            </tr>
+            <tr align="left">
+                <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_QUESTIONNAIRES_META_KEYWORDS#}:</span> </td><td bgcolor="{#color7#}" class="td2"><input type="text" name="questionnaire_meta_keywords" size="70" maxlength="255" class="formenter"> </td>
+            </tr>
+            <tr align="left">
+                <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_QUESTIONNAIRES_META_DESCRIPTION#}:</span> </td><td bgcolor="{#color7#}" class="td2"><input type="text" name="questionnaire_meta_description" size="70" maxlength="255" class="formenter"> </td>
+            </tr>
+        </table><br>
+        <input type="submit" value="{#_QUESTIONNAIRES_BUTTON_ADD#}">
+    </form>
+    <br>
+    <table border="0" width="99%" cellspacing="0" cellpadding="0"><tr><td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text"> {#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td></tr></table>
+</div>
+<br>

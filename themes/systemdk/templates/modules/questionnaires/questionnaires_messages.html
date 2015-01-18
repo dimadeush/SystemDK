@@ -1,0 +1,64 @@
+<br><br><div align="center">
+{config_load file="$language/error.conf"}
+{if $questionnaires_message eq "questionnaires_error"}
+    <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
+    <span class="textbig">{#_SYSTEMERROR#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "questionnaire_not_selected"}
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">{#_QUESTIONNAIRES_MODULE_QUESTIONNAIRESNOTSELECTED#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "not_found_questionnaire"}
+    <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
+    <span class="textbig">{#_QUESTIONNAIRES_MODULE_QUESTIONNAIRE_NOT_FOUND#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "group_not_assign"}
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">{#_QUESTIONNAIRES_MODULE_GROUP_NOT_ASSIGN#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "incorrect_group_id"}
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">{#_QUESTIONNAIRES_MODULE_INCORRECT_GROUP_ID#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "no_questions"}
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">{#_QUESTIONNAIRES_MODULE_NO_QUESTIONS#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "not_all_data" or $questionnaires_message eq "no_questionnaire_data"}
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">{#_ERROR_USERNOTALLDATA#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "already_voted"}
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">{#_QUESTIONNAIRES_MODULE_ALREADY_VOTED#}</span><br><br>
+    <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/questionnaires/{else}/{$system_dir}index.php?path=questionnaires&amp;lang={$site_language}{/if}" class="link">{#_QUESTIONNAIRES_MODULE_MAINPAGE#}</a>
+{elseif $questionnaires_message eq "not_user"}
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">{#_QUESTIONNAIRES_ONLY_USERS_CAN_VOTE#}</span><br><br>
+    <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/questionnaires/{else}/{$system_dir}index.php?path=questionnaires&amp;lang={$site_language}{/if}" class="link">{#_QUESTIONNAIRES_MODULE_MAINPAGE#}</a>
+{elseif $questionnaires_message eq "unknown_question_type"}
+    <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
+    <span class="textbig">{#_QUESTIONNAIRES_MODULE_UNKNOWN_QUESTION_TYPE#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "incorrect_data"}
+    <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
+    <span class="textbig">{#_QUESTIONNAIRES_MODULE_INCORRECT_DATA#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "sql_error"}
+    <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
+    <span class="textbig">{#_SYSTEMERROR#}:</span><br><br>
+    {nocache}
+    {if $errortext ne "no"}
+        {foreach $errortext as $errortext_tpl}
+            {if $errortext_tpl.message ne "" and $errortext_tpl.code ne ""}<span class="errorsmall">{$errortext_tpl.message}<br>{$errortext_tpl.code}</span><br>{/if}
+        {/foreach}
+    {/if}
+    {/nocache}
+    <br><br>
+    <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/questionnaires/{else}/{$system_dir}index.php?path=questionnaires&amp;lang={$site_language}{/if}" class="link">{#_GOBACK#}</a>
+{elseif $questionnaires_message eq "voted"}
+    <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_QUESTIONNAIRES_MODULE_VOTED_OK#}</span><br><br>
+    <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/questionnaires/{else}/{$system_dir}index.php?path=questionnaires&amp;lang={$site_language}{/if}" class="link">{#_QUESTIONNAIRES_MODULE_MAINPAGE#}</a>
+{/if}
+</div>
+<br><br>
