@@ -5,7 +5,7 @@
 <a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_shop&amp;func=shop_orders&amp;lang={$site_language}" class="link">{#_SHOPORDERSTITLE#}</a>
 <br><br><br>
 {foreach $order_item_all as $order_item_all_tpl}
-<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_SHOPORDERITEMEDIT#} ¹{$order_item_all_tpl.order_id}</span> <span class="tablecenterblocktext2">[</span> <a href="index.php?path=admin_shop&amp;func=shop_orderproc&amp;order_id={$order_item_all_tpl.order_id}&amp;lang={$site_language}" class="link">{#_SHOPSHOWORDER#}</a> <span class="tablecenterblocktext2">]</span><br><br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_SHOPORDERITEMEDIT#} â„–{$order_item_all_tpl.order_id}</span> <span class="tablecenterblocktext2">[</span> <a href="index.php?path=admin_shop&amp;func=shop_orderproc&amp;order_id={$order_item_all_tpl.order_id}&amp;lang={$site_language}" class="link">{#_SHOPSHOWORDER#}</a> <span class="tablecenterblocktext2">]</span><br><br>
 <form action="index.php?path=admin_shop&amp;func=shop_orderi_save&amp;lang={$site_language}" method="POST">
 <input type="hidden" name="order_item_id" value="{$order_item_all_tpl.order_item_id}">
 <input type="hidden" name="order_id" value="{$order_item_all_tpl.order_id}">

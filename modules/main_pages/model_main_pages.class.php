@@ -9,7 +9,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 class main_pages extends model_base {
 
@@ -144,15 +144,13 @@ class main_pages extends model_base {
         } else {
             $num_page = 1;
         }
-        $mainpage_content = str_ireplace("<span style=\"display: none;\">&nbsp;</span></div>","",$mainpage_content);
-        $mainpage_content = explode("<div style=\"page-break-after: always;\">",$mainpage_content);
+        $mainpage_content = $this->registry->main_class->split_content_by_pages($mainpage_content);
         $count_num_pages = count($mainpage_content);
         if($num_page > $count_num_pages) {
             $num_page = 1;
         }
         $mainpage_content = $mainpage_content[$num_page - 1];
         $mainpage_content = $this->registry->main_class->search_player_entry($mainpage_content);
-        $pages_menu = 'no';
         if($count_num_pages > 1) {
             if($num_page < $count_num_pages) {
                 $next_page = $num_page + 1;
@@ -170,6 +168,8 @@ class main_pages extends model_base {
                 "prev_page" => $prev_page,
                 "count_num_pages" => $count_num_pages
             );
+        } else {
+            $pages_menu = 'no';
         }
         $all = array(
             "mainpage_id" => $main_page_id,

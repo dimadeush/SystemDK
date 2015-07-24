@@ -7,7 +7,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 class admin_users extends model_base {
 
@@ -243,7 +243,7 @@ class admin_users extends model_base {
             return;
         }
         $data_array[$prefix.'_add_email'] = $this->registry->main_class->processing_data($data_array[$prefix.'_add_email']);
-        if(preg_match("/[^a-zA-Zà-ÿÀ-ß0-9_-]/",$data_array[$prefix.'_add_login'])) {
+        if(preg_match("/[^a-zA-ZÐ°-ÑÐ-Ð¯0-9_-]/",$data_array[$prefix.'_add_login'])) {
             $this->error = 'add_login';
             return;
         }
@@ -589,7 +589,7 @@ class admin_users extends model_base {
             return;
         }
         $data_array[$prefix.'_edit_email'] = $this->registry->main_class->processing_data($data_array[$prefix.'_edit_email']);
-        if(preg_match("/[^a-zA-Zà-ÿÀ-ß0-9_-]/",$data_array[$prefix.'_edit_login'])) {
+        if(preg_match("/[^a-zA-ZÐ°-ÑÐ-Ð¯0-9_-]/",$data_array[$prefix.'_edit_login'])) {
             $this->error = 'edit_login';
             return;
         }

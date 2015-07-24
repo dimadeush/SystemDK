@@ -66,7 +66,7 @@
 </tr>
 <tr align="left">
 <td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE6#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES6#}</span></td>
-<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_charset" size="35" class="formenter" maxlength="40" value="windows-1251"></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="site_charset" size="35" class="formenter" maxlength="40" value="utf-8"></td>
 </tr>
 <tr align="left">
 <td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE7#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES7#}</span></td>
@@ -82,7 +82,7 @@
 </tr>
 <tr align="left">
 <td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE41#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES41#}</span></td>
-<td bgcolor="{#color10#}" class="td2"><textarea name="site_status_notes" rows="4" cols="45" class="formenter">Проводятся технические работы. Приносим Вам свои извинения за доставленные неудобства.</textarea></td>
+<td bgcolor="{#color10#}" class="td2"><textarea name="site_status_notes" rows="4" cols="45" class="formenter">РџСЂРѕРІРѕРґСЏС‚СЃСЏ С‚РµС…РЅРёС‡РµСЃРєРёРµ СЂР°Р±РѕС‚С‹. РџСЂРёРЅРѕСЃРёРј Р’Р°Рј СЃРІРѕРё РёР·РІРёРЅРµРЅРёСЏ Р·Р° РґРѕСЃС‚Р°РІР»РµРЅРЅС‹Рµ РЅРµСѓРґРѕР±СЃС‚РІР°.</textarea></td>
 </tr>
 <tr align="left">
 <td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE15#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES15#}</span></td>
@@ -258,8 +258,14 @@
 </tr>
 <tr align="left">
 <td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE25#}:</span>{if $select_db_type ne "mssql"}<span class="errorsmall">*</span>{/if}<br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES25#}</span></td>
-<td bgcolor="{#color10#}" class="td2"><input type="text" name="db_character" size="35" class="formenter" maxlength="100" {if $select_db_type eq "oci8"} value="CL8MSWIN1251"{elseif $select_db_type eq "mysql"} value="cp1251"{/if}></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="db_character" size="35" class="formenter" maxlength="100" {if $select_db_type eq "oci8"} value="AL32UTF8"{elseif $select_db_type eq "mysql"} value="utf8mb4"{/if}></td>
 </tr>
+{if $select_db_type eq "mysql"}
+<tr align="left">
+<td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE27#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES27#}</span></td>
+<td bgcolor="{#color10#}" class="td2"><input type="text" name="db_collate" size="35" class="formenter" maxlength="100" value="utf8mb4_unicode_ci"></td>
+</tr>
+{/if}
 <tr align="left">
 <td bgcolor="{#color10#}" width="100%" class="td1"><img src="../{#bgimage15#}" alt="" border="0"> <span class="tablenamecenterblock">{#_INSTALLTITLE28#}:</span><br><img src="../{#bgimage16#}" border="0" alt=""> <span class="text"><u>{#_INSTALLNOTES#}</u>: {#_INSTALLTITLENOTES28#}</span></td>
 <td bgcolor="{#color10#}" class="td2"><select name="db_persistency" class="formenter"><option selected="selected">yes</option><option>no</option></select></td>

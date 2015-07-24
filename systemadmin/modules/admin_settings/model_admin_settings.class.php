@@ -7,7 +7,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 class admin_settings extends model_base {
 
@@ -208,6 +208,7 @@ class admin_settings extends model_base {
         $content .= 'define("PREFIX","'.PREFIX."\");\n";
         $content .= 'define("DBTYPE","'.DBTYPE."\");\n";
         $content .= 'define("DB_CHARACTER","'.DB_CHARACTER."\");\n";
+        $content .= 'define("DB_COLLATE","'.DB_COLLATE."\");\n";
         $content .= 'define("SMARTY_CACHING","'.$data_array['smarty_caching']."\");\n";
         $content .= 'define("SMARTY_DEBUGGING","'.$data_array['smarty_debugging']."\");\n";
         $content .= 'define("ADODB_DEBUGGING","'.$data_array['adodb_debugging']."\");\n";

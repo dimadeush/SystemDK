@@ -9,7 +9,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 class news extends model_base {
 
@@ -322,8 +322,7 @@ class news extends model_base {
             $this->result['news_all'] = $this->error;
             return;
         }
-        $news_content = str_replace("<span style=\"display: none;\">&nbsp;</span></div>","",$news_content);
-        $news_content = explode("<div style=\"page-break-after: always;\">",$news_content);
+        $news_content = $this->registry->main_class->split_content_by_pages($news_content);
         $count_num_pages = count($news_content);
         if($num_page > $count_num_pages) {
             $num_page = 1;

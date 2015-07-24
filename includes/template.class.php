@@ -7,7 +7,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 include_once(__SITE_PATH."/smarty/Smarty.class.php");
 class template {

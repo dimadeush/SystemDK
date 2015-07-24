@@ -12,7 +12,7 @@
     {else}
     <table border="0" width="99%" cellspacing="2"  cellpadding="0">
         <tr>
-            <td width="1%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">¹</span></td>
+            <td width="1%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">â„–</span></td>
             <td bgcolor="{#color7#}" class="td2" align="center"><span class="tablecenterblocktext2">{#_QUESTIONNAIRES_TITLE#}</span></td>
             {foreach $voted_persons_list as $voted_persons_list_tpl}
                 <td bgcolor="{#color7#}" class="td2" align="center">{if !empty($voted_persons_list_tpl.user_id)}<a href="index.php?path=admin_users&amp;func=user_edit&amp;user_id={$voted_persons_list_tpl.user_id}&amp;lang={$site_language}" class="link" title="{#_QUESTIONNAIRES_REGISTERED_USER#}">{else}<span class="tablecenterblocktext2">{/if}{$voted_persons_list_tpl@iteration}{if !empty($voted_persons_list_tpl.user_id)}</a>{else}</span>{/if} <span class="tablecenterblocktext2">({$voted_persons_list_tpl.voted_date})</span></td>

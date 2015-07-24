@@ -9,7 +9,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 class install {
 
@@ -103,70 +103,71 @@ class install {
     public function step4() {
         $data_array = false;
         if(!empty($_POST)) {
+            $keys = array(
+                'site_id',
+                'site_name',
+                'site_url',
+                'mod_rewrite',
+                'admin_email',
+                'site_dir',
+                'admin_dir',
+                'smarty_debugging',
+                'adodb_debugging',
+                'gzip',
+                'smarty_caching',
+                'site_logo',
+                'site_charset',
+                'site_keywords',
+                'site_description',
+                'site_status',
+                'site_status_notes',
+                'site_theme',
+                'language',
+                'Home_Module',
+                'enter_check',
+                'display_admin_graphic',
+                'db_host',
+                'db_type',
+                'db_name',
+                'db_user_name',
+                'db_password',
+                'prefix',
+                'db_character',
+                'db_collate',
+                'db_persistency',
+                'systemdk_mail_method',
+                'systemdk_smtp_host',
+                'systemdk_smtp_user',
+                'systemdk_smtp_pass',
+                'systemdk_account_registration',
+                'systemdk_account_activation',
+                'systemdk_account_rules',
+                'systemdk_statistics',
+                'systemdk_player_autoplay',
+                'systemdk_player_autobuffer',
+                'systemdk_player_controls',
+                'systemdk_player_audioautoplay',
+                'systemdk_player_audioautobuffer',
+                'systemdk_player_audio_controls',
+                'systemdk_player_ratio',
+                'systemdk_player_skin',
+                'systemdk_ipantispam',
+                'systemdk_site_lang',
+                'systemdk_admin_site_lang',
+                'systemdk_interface_lang',
+                'systemdk_admin_interface_lang'
+            );
+            $keys2 = array(
+                'cache_lifetime',
+                'session_cookie_live',
+                'systemdk_adminrows_perpage',
+                'db_port',
+                'systemdk_smtp_port',
+                'systemdk_account_maxusers',
+                'systemdk_account_maxactivationdays',
+                'systemdk_ipantispam_num'
+            );
             foreach($_POST as $key => $value) {
-                $keys = array(
-                    'site_id',
-                    'site_name',
-                    'site_url',
-                    'mod_rewrite',
-                    'admin_email',
-                    'site_dir',
-                    'admin_dir',
-                    'smarty_debugging',
-                    'adodb_debugging',
-                    'gzip',
-                    'smarty_caching',
-                    'site_logo',
-                    'site_charset',
-                    'site_keywords',
-                    'site_description',
-                    'site_status',
-                    'site_status_notes',
-                    'site_theme',
-                    'language',
-                    'Home_Module',
-                    'enter_check',
-                    'display_admin_graphic',
-                    'db_host',
-                    'db_type',
-                    'db_name',
-                    'db_user_name',
-                    'db_password',
-                    'prefix',
-                    'db_character',
-                    'db_persistency',
-                    'systemdk_mail_method',
-                    'systemdk_smtp_host',
-                    'systemdk_smtp_user',
-                    'systemdk_smtp_pass',
-                    'systemdk_account_registration',
-                    'systemdk_account_activation',
-                    'systemdk_account_rules',
-                    'systemdk_statistics',
-                    'systemdk_player_autoplay',
-                    'systemdk_player_autobuffer',
-                    'systemdk_player_controls',
-                    'systemdk_player_audioautoplay',
-                    'systemdk_player_audioautobuffer',
-                    'systemdk_player_audio_controls',
-                    'systemdk_player_ratio',
-                    'systemdk_player_skin',
-                    'systemdk_ipantispam',
-                    'systemdk_site_lang',
-                    'systemdk_admin_site_lang',
-                    'systemdk_interface_lang',
-                    'systemdk_admin_interface_lang'
-                );
-                $keys2 = array(
-                    'cache_lifetime',
-                    'session_cookie_live',
-                    'systemdk_adminrows_perpage',
-                    'db_port',
-                    'systemdk_smtp_port',
-                    'systemdk_account_maxusers',
-                    'systemdk_account_maxactivationdays',
-                    'systemdk_ipantispam_num'
-                );
                 if(in_array($key,$keys)) {
                     $data_array[$key] = trim($value);
                 }
@@ -176,7 +177,10 @@ class install {
             }
         }
         $data_array['systemdk_install_lang'] = $_POST['systemdk_install_lang'];
-        if((!isset($data_array['site_id']) or !isset($data_array['site_name']) or !isset($data_array['site_url']) or !isset($data_array['mod_rewrite']) or !isset($data_array['admin_email']) or !isset($data_array['site_dir']) or !isset($data_array['admin_dir']) or !isset($data_array['smarty_debugging']) or !isset($data_array['adodb_debugging']) or !isset($data_array['gzip']) or !isset($data_array['smarty_caching']) or !isset($data_array['cache_lifetime']) or !isset($data_array['session_cookie_live']) or !isset($data_array['site_logo']) or !isset($data_array['site_charset']) or !isset($data_array['site_keywords']) or !isset($data_array['site_description']) or !isset($data_array['site_status']) or !isset($data_array['site_status_notes']) or !isset($data_array['site_theme']) or !isset($data_array['language']) or !isset($data_array['Home_Module']) or !isset($data_array['enter_check']) or !isset($data_array['display_admin_graphic']) or !isset($data_array['systemdk_adminrows_perpage']) or !isset($data_array['db_host']) or !isset($data_array['db_type']) or !isset($data_array['db_name']) or !isset($data_array['db_user_name']) or !isset($data_array['db_password']) or !isset($data_array['prefix']) or !isset($data_array['db_character']) or !isset($data_array['db_persistency']) or !isset($data_array['db_port']) or !isset($data_array['systemdk_mail_method']) or !isset($data_array['systemdk_smtp_host']) or !isset($data_array['systemdk_smtp_port']) or !isset($data_array['systemdk_smtp_user']) or !isset($data_array['systemdk_smtp_pass']) or !isset($data_array['systemdk_account_registration']) or !isset($data_array['systemdk_account_activation']) or !isset($data_array['systemdk_account_rules']) or !isset($data_array['systemdk_account_maxusers']) or !isset($data_array['systemdk_account_maxactivationdays']) or !isset($data_array['systemdk_statistics']) or !isset($data_array['systemdk_player_autoplay']) or !isset($data_array['systemdk_player_autobuffer']) or !isset($data_array['systemdk_player_controls']) or !isset($data_array['systemdk_player_audioautoplay']) or !isset($data_array['systemdk_player_audioautobuffer']) or !isset($data_array['systemdk_player_audio_controls']) or !isset($data_array['systemdk_player_ratio']) or !isset($data_array['systemdk_player_skin']) or !isset($data_array['systemdk_ipantispam']) or !isset($data_array['systemdk_ipantispam_num']) or !isset($data_array['systemdk_site_lang']) or !isset($data_array['systemdk_admin_site_lang']) or !isset($data_array['systemdk_interface_lang']) or !isset($data_array['systemdk_admin_interface_lang']) or !isset($data_array['systemdk_install_lang'])) or ($data_array['site_id'] == "" or $data_array['site_name'] == "" or $data_array['site_url'] == "" or $data_array['mod_rewrite'] == "" or $data_array['admin_email'] == "" or $data_array['admin_dir'] == "" or $data_array['smarty_debugging'] == "" or $data_array['adodb_debugging'] == "" or $data_array['gzip'] == "" or $data_array['smarty_caching'] == "" or $data_array['site_charset'] == "" or $data_array['site_keywords'] == "" or $data_array['site_description'] == "" or $data_array['site_status'] == "" or $data_array['site_theme'] == "" or $data_array['language'] == "" or $data_array['enter_check'] == "" or $data_array['display_admin_graphic'] == "" or $data_array['db_host'] == "" or $data_array['db_type'] == "" or $data_array['db_name'] == "" or $data_array['db_user_name'] == "" or $data_array['db_password'] == "" or $data_array['prefix'] == "" or $data_array['db_persistency'] == "" or ($data_array['db_character'] == "" and $data_array['db_type'] == 'oci8') or ($data_array['db_character'] == "" and $data_array['db_type'] == 'mysql') or $data_array['systemdk_mail_method'] == "" or $data_array['systemdk_account_registration'] == "" or $data_array['systemdk_account_activation'] == "" or $data_array['systemdk_account_rules'] == "" or $data_array['systemdk_statistics'] == "" or $data_array['systemdk_player_autoplay'] == "" or $data_array['systemdk_player_autobuffer'] == "" or $data_array['systemdk_player_controls'] == "" or $data_array['systemdk_player_audioautoplay'] == "" or $data_array['systemdk_player_audioautobuffer'] == "" or $data_array['systemdk_player_audio_controls'] == "" or $data_array['systemdk_player_skin'] == "" or $data_array['systemdk_ipantispam'] == "" or $data_array['systemdk_site_lang'] == "" or $data_array['systemdk_admin_site_lang'] == "" or $data_array['systemdk_interface_lang'] == "" or $data_array['systemdk_admin_interface_lang'] == "" or count($data_array['systemdk_install_lang']) < 1)) {
+        if(!empty($data_array['db_type']) and !in_array($data_array['db_type'],array('mysql','pdo','mysqli','mysqlt','maxsql'))) {
+            $data_array['db_collate'] = "";
+        }
+        if((!isset($data_array['site_id']) or !isset($data_array['site_name']) or !isset($data_array['site_url']) or !isset($data_array['mod_rewrite']) or !isset($data_array['admin_email']) or !isset($data_array['site_dir']) or !isset($data_array['admin_dir']) or !isset($data_array['smarty_debugging']) or !isset($data_array['adodb_debugging']) or !isset($data_array['gzip']) or !isset($data_array['smarty_caching']) or !isset($data_array['cache_lifetime']) or !isset($data_array['session_cookie_live']) or !isset($data_array['site_logo']) or !isset($data_array['site_charset']) or !isset($data_array['site_keywords']) or !isset($data_array['site_description']) or !isset($data_array['site_status']) or !isset($data_array['site_status_notes']) or !isset($data_array['site_theme']) or !isset($data_array['language']) or !isset($data_array['Home_Module']) or !isset($data_array['enter_check']) or !isset($data_array['display_admin_graphic']) or !isset($data_array['systemdk_adminrows_perpage']) or !isset($data_array['db_host']) or !isset($data_array['db_type']) or !isset($data_array['db_name']) or !isset($data_array['db_user_name']) or !isset($data_array['db_password']) or !isset($data_array['prefix']) or !isset($data_array['db_character']) or !isset($data_array['db_collate']) or !isset($data_array['db_persistency']) or !isset($data_array['db_port']) or !isset($data_array['systemdk_mail_method']) or !isset($data_array['systemdk_smtp_host']) or !isset($data_array['systemdk_smtp_port']) or !isset($data_array['systemdk_smtp_user']) or !isset($data_array['systemdk_smtp_pass']) or !isset($data_array['systemdk_account_registration']) or !isset($data_array['systemdk_account_activation']) or !isset($data_array['systemdk_account_rules']) or !isset($data_array['systemdk_account_maxusers']) or !isset($data_array['systemdk_account_maxactivationdays']) or !isset($data_array['systemdk_statistics']) or !isset($data_array['systemdk_player_autoplay']) or !isset($data_array['systemdk_player_autobuffer']) or !isset($data_array['systemdk_player_controls']) or !isset($data_array['systemdk_player_audioautoplay']) or !isset($data_array['systemdk_player_audioautobuffer']) or !isset($data_array['systemdk_player_audio_controls']) or !isset($data_array['systemdk_player_ratio']) or !isset($data_array['systemdk_player_skin']) or !isset($data_array['systemdk_ipantispam']) or !isset($data_array['systemdk_ipantispam_num']) or !isset($data_array['systemdk_site_lang']) or !isset($data_array['systemdk_admin_site_lang']) or !isset($data_array['systemdk_interface_lang']) or !isset($data_array['systemdk_admin_interface_lang']) or !isset($data_array['systemdk_install_lang'])) or ($data_array['site_id'] == "" or $data_array['site_name'] == "" or $data_array['site_url'] == "" or $data_array['mod_rewrite'] == "" or $data_array['admin_email'] == "" or $data_array['admin_dir'] == "" or $data_array['smarty_debugging'] == "" or $data_array['adodb_debugging'] == "" or $data_array['gzip'] == "" or $data_array['smarty_caching'] == "" or $data_array['site_charset'] == "" or $data_array['site_keywords'] == "" or $data_array['site_description'] == "" or $data_array['site_status'] == "" or $data_array['site_theme'] == "" or $data_array['language'] == "" or $data_array['enter_check'] == "" or $data_array['display_admin_graphic'] == "" or $data_array['db_host'] == "" or $data_array['db_type'] == "" or $data_array['db_name'] == "" or $data_array['db_user_name'] == "" or $data_array['db_password'] == "" or $data_array['prefix'] == "" or $data_array['db_persistency'] == "" or ($data_array['db_character'] == "" and $data_array['db_type'] == 'oci8') or (($data_array['db_character'] == "" or $data_array['db_collate'] == "") and in_array($data_array['db_type'],array('mysql','pdo','mysqli','mysqlt','maxsql'))) or $data_array['systemdk_mail_method'] == "" or $data_array['systemdk_account_registration'] == "" or $data_array['systemdk_account_activation'] == "" or $data_array['systemdk_account_rules'] == "" or $data_array['systemdk_statistics'] == "" or $data_array['systemdk_player_autoplay'] == "" or $data_array['systemdk_player_autobuffer'] == "" or $data_array['systemdk_player_controls'] == "" or $data_array['systemdk_player_audioautoplay'] == "" or $data_array['systemdk_player_audioautobuffer'] == "" or $data_array['systemdk_player_audio_controls'] == "" or $data_array['systemdk_player_skin'] == "" or $data_array['systemdk_ipantispam'] == "" or $data_array['systemdk_site_lang'] == "" or $data_array['systemdk_admin_site_lang'] == "" or $data_array['systemdk_interface_lang'] == "" or $data_array['systemdk_admin_interface_lang'] == "" or count($data_array['systemdk_install_lang']) < 1)) {
             $this->smarty->assign("error","not_all_data");
             $this->smarty->display("install/action.html","|not_all_data");
             exit();
@@ -260,7 +264,7 @@ class install {
             exit();
         }
         if($data_array['db_type'] === 'mysql' or $data_array['db_type'] === 'pdo' or $data_array['db_type'] === 'mysqli' or $data_array['db_type'] === 'mysqlt' or $data_array['db_type'] === 'maxsql') {
-            $adodb->Execute("set names '".$data_array['db_character']."'");
+            $adodb->Execute("SET NAMES '".$data_array['db_character']."' COLLATE ".$data_array['db_collate']);
         }
         if(!get_magic_quotes_gpc()) {
             $get_magic_quotes_gpc = 'off';
@@ -818,7 +822,7 @@ class install {
                         $error_code = $adodb->ErrorNo();
                         $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_system_pages (system_page_author,system_page_name,system_page_title,system_page_date,system_page_content,system_page_lang,system_page_meta_title,system_page_meta_keywords,system_page_meta_description) VALUES ('admin', 'account_rules', 'Общие правила', '".time()."', 'Заходя на сайт, Вы подтверждаете своё согласие со следующими условиями. Если Вы не согласны с ними, пожалуйста, не заходите и не пользуйтесь нашим сайтом. Мы оставляем за собой право изменять эти правила в любое время и сделаем всё возможное, чтобы уведомить Вас об этом, однако с Вашей стороны было бы разумным регулярно просматривать этот текст на предмет изменений, так как использование нашего сайта после обновления/исправления условий означает Ваше согласие с ними.<br><br>Наши сайты работают под управлением программного обеспечения SystemDK для создания веб-сайтов. Скачать его можно по адресу www.systemsdk.com. За дополнительной информацией о SystemsDK обращайтесь по адресу http://www.systemsdk.com.<br><br>Вы соглашаетесь не размещать оскорбительных, угрожающих, клеветнических сообщений, порнографических сообщений, призывов к национальной розни и прочих сообщений, которые могут нарушить законы Вашей страны, страны, которая предоставляет услуги хостинга для этого сайта, или международное право. Попытки размещения таких сообщений могут привести к Вашему немедленному отключению от сайта, при этом Ваш провайдер будет поставлен в известность, если мы сочтём это нужным. IP-адреса сохраняются для возможности проведения такой политики. Вы соглашаетесь с тем, что администраторы сайта имеют право удалить, отредактировать, перенести или закрыть Вам доступ в любое время по своему усмотрению. Как пользователь Вы согласны с тем, что введённая Вами информация будет храниться в базе данных. Хотя эта информация не будет открыта третьим лицам без Вашего разрешения, ни администрация сайта, ни авторы программного обеспечения SystemDK не могут быть ответственными за действия хакеров, которые могут привести к несанкционированному доступу к ней.', 'ru',null,null,null), ('admin', 'account_rules', 'General rules', '".time()."', 'By accessing our web-site, you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use our web-site. We may change these at any time and we’ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of our web-site after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br><br> Our web-sites are powered by SystemDK which can be downloaded from www.systemsdk.com. For further information about SystemDK, please see: http://www.systemsdk.com.<br><br>You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where this web-site is hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider if deemed required by us. The IP address are recorded to aid in enforcing these conditions. You agree that web-site administrators have the right to remove, edit, move or close access for You at any time should we see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither web-site administration nor SystemDK developers shall be held responsible for any hacking attempt that may lead to the data being compromised.', 'en',null,null,null);");
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_system_pages (system_page_author,system_page_name,system_page_title,system_page_date,system_page_content,system_page_lang,system_page_meta_title,system_page_meta_keywords,system_page_meta_description) VALUES ('admin', 'account_rules', 'РћР±С‰РёРµ РїСЂР°РІРёР»Р°', '".time()."', 'Р—Р°С…РѕРґСЏ РЅР° СЃР°Р№С‚, Р’С‹ РїРѕРґС‚РІРµСЂР¶РґР°РµС‚Рµ СЃРІРѕС‘ СЃРѕРіР»Р°СЃРёРµ СЃРѕ СЃР»РµРґСѓСЋС‰РёРјРё СѓСЃР»РѕРІРёСЏРјРё. Р•СЃР»Рё Р’С‹ РЅРµ СЃРѕРіР»Р°СЃРЅС‹ СЃ РЅРёРјРё, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, РЅРµ Р·Р°С…РѕРґРёС‚Рµ Рё РЅРµ РїРѕР»СЊР·СѓР№С‚РµСЃСЊ РЅР°С€РёРј СЃР°Р№С‚РѕРј. РњС‹ РѕСЃС‚Р°РІР»СЏРµРј Р·Р° СЃРѕР±РѕР№ РїСЂР°РІРѕ РёР·РјРµРЅСЏС‚СЊ СЌС‚Рё РїСЂР°РІРёР»Р° РІ Р»СЋР±РѕРµ РІСЂРµРјСЏ Рё СЃРґРµР»Р°РµРј РІСЃС‘ РІРѕР·РјРѕР¶РЅРѕРµ, С‡С‚РѕР±С‹ СѓРІРµРґРѕРјРёС‚СЊ Р’Р°СЃ РѕР± СЌС‚РѕРј, РѕРґРЅР°РєРѕ СЃ Р’Р°С€РµР№ СЃС‚РѕСЂРѕРЅС‹ Р±С‹Р»Рѕ Р±С‹ СЂР°Р·СѓРјРЅС‹Рј СЂРµРіСѓР»СЏСЂРЅРѕ РїСЂРѕСЃРјР°С‚СЂРёРІР°С‚СЊ СЌС‚РѕС‚ С‚РµРєСЃС‚ РЅР° РїСЂРµРґРјРµС‚ РёР·РјРµРЅРµРЅРёР№, С‚Р°Рє РєР°Рє РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РЅР°С€РµРіРѕ СЃР°Р№С‚Р° РїРѕСЃР»Рµ РѕР±РЅРѕРІР»РµРЅРёСЏ/РёСЃРїСЂР°РІР»РµРЅРёСЏ СѓСЃР»РѕРІРёР№ РѕР·РЅР°С‡Р°РµС‚ Р’Р°С€Рµ СЃРѕРіР»Р°СЃРёРµ СЃ РЅРёРјРё.<br><br>РќР°С€Рё СЃР°Р№С‚С‹ СЂР°Р±РѕС‚Р°СЋС‚ РїРѕРґ СѓРїСЂР°РІР»РµРЅРёРµРј РїСЂРѕРіСЂР°РјРјРЅРѕРіРѕ РѕР±РµСЃРїРµС‡РµРЅРёСЏ SystemDK РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РІРµР±-СЃР°Р№С‚РѕРІ. РЎРєР°С‡Р°С‚СЊ РµРіРѕ РјРѕР¶РЅРѕ РїРѕ Р°РґСЂРµСЃСѓ www.systemsdk.com. Р—Р° РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ SystemsDK РѕР±СЂР°С‰Р°Р№С‚РµСЃСЊ РїРѕ Р°РґСЂРµСЃСѓ http://www.systemsdk.com.<br><br>Р’С‹ СЃРѕРіР»Р°С€Р°РµС‚РµСЃСЊ РЅРµ СЂР°Р·РјРµС‰Р°С‚СЊ РѕСЃРєРѕСЂР±РёС‚РµР»СЊРЅС‹С…, СѓРіСЂРѕР¶Р°СЋС‰РёС…, РєР»РµРІРµС‚РЅРёС‡РµСЃРєРёС… СЃРѕРѕР±С‰РµРЅРёР№, РїРѕСЂРЅРѕРіСЂР°С„РёС‡РµСЃРєРёС… СЃРѕРѕР±С‰РµРЅРёР№, РїСЂРёР·С‹РІРѕРІ Рє РЅР°С†РёРѕРЅР°Р»СЊРЅРѕР№ СЂРѕР·РЅРё Рё РїСЂРѕС‡РёС… СЃРѕРѕР±С‰РµРЅРёР№, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ РЅР°СЂСѓС€РёС‚СЊ Р·Р°РєРѕРЅС‹ Р’Р°С€РµР№ СЃС‚СЂР°РЅС‹, СЃС‚СЂР°РЅС‹, РєРѕС‚РѕСЂР°СЏ РїСЂРµРґРѕСЃС‚Р°РІР»СЏРµС‚ СѓСЃР»СѓРіРё С…РѕСЃС‚РёРЅРіР° РґР»СЏ СЌС‚РѕРіРѕ СЃР°Р№С‚Р°, РёР»Рё РјРµР¶РґСѓРЅР°СЂРѕРґРЅРѕРµ РїСЂР°РІРѕ. РџРѕРїС‹С‚РєРё СЂР°Р·РјРµС‰РµРЅРёСЏ С‚Р°РєРёС… СЃРѕРѕР±С‰РµРЅРёР№ РјРѕРіСѓС‚ РїСЂРёРІРµСЃС‚Рё Рє Р’Р°С€РµРјСѓ РЅРµРјРµРґР»РµРЅРЅРѕРјСѓ РѕС‚РєР»СЋС‡РµРЅРёСЋ РѕС‚ СЃР°Р№С‚Р°, РїСЂРё СЌС‚РѕРј Р’Р°С€ РїСЂРѕРІР°Р№РґРµСЂ Р±СѓРґРµС‚ РїРѕСЃС‚Р°РІР»РµРЅ РІ РёР·РІРµСЃС‚РЅРѕСЃС‚СЊ, РµСЃР»Рё РјС‹ СЃРѕС‡С‚С‘Рј СЌС‚Рѕ РЅСѓР¶РЅС‹Рј. IP-Р°РґСЂРµСЃР° СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РґР»СЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРѕРІРµРґРµРЅРёСЏ С‚Р°РєРѕР№ РїРѕР»РёС‚РёРєРё. Р’С‹ СЃРѕРіР»Р°С€Р°РµС‚РµСЃСЊ СЃ С‚РµРј, С‡С‚Рѕ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂС‹ СЃР°Р№С‚Р° РёРјРµСЋС‚ РїСЂР°РІРѕ СѓРґР°Р»РёС‚СЊ, РѕС‚СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ, РїРµСЂРµРЅРµСЃС‚Рё РёР»Рё Р·Р°РєСЂС‹С‚СЊ Р’Р°Рј РґРѕСЃС‚СѓРї РІ Р»СЋР±РѕРµ РІСЂРµРјСЏ РїРѕ СЃРІРѕРµРјСѓ СѓСЃРјРѕС‚СЂРµРЅРёСЋ. РљР°Рє РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ Р’С‹ СЃРѕРіР»Р°СЃРЅС‹ СЃ С‚РµРј, С‡С‚Рѕ РІРІРµРґС‘РЅРЅР°СЏ Р’Р°РјРё РёРЅС„РѕСЂРјР°С†РёСЏ Р±СѓРґРµС‚ С…СЂР°РЅРёС‚СЊСЃСЏ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…. РҐРѕС‚СЏ СЌС‚Р° РёРЅС„РѕСЂРјР°С†РёСЏ РЅРµ Р±СѓРґРµС‚ РѕС‚РєСЂС‹С‚Р° С‚СЂРµС‚СЊРёРј Р»РёС†Р°Рј Р±РµР· Р’Р°С€РµРіРѕ СЂР°Р·СЂРµС€РµРЅРёСЏ, РЅРё Р°РґРјРёРЅРёСЃС‚СЂР°С†РёСЏ СЃР°Р№С‚Р°, РЅРё Р°РІС‚РѕСЂС‹ РїСЂРѕРіСЂР°РјРјРЅРѕРіРѕ РѕР±РµСЃРїРµС‡РµРЅРёСЏ SystemDK РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РѕС‚РІРµС‚СЃС‚РІРµРЅРЅС‹РјРё Р·Р° РґРµР№СЃС‚РІРёСЏ С…Р°РєРµСЂРѕРІ, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ РїСЂРёРІРµСЃС‚Рё Рє РЅРµСЃР°РЅРєС†РёРѕРЅРёСЂРѕРІР°РЅРЅРѕРјСѓ РґРѕСЃС‚СѓРїСѓ Рє РЅРµР№.', 'ru',null,null,null), ('admin', 'account_rules', 'General rules', '".time()."', 'By accessing our web-site, you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use our web-site. We may change these at any time and weвЂ™ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of our web-site after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br><br> Our web-sites are powered by SystemDK which can be downloaded from www.systemsdk.com. For further information about SystemDK, please see: http://www.systemsdk.com.<br><br>You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where this web-site is hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider if deemed required by us. The IP address are recorded to aid in enforcing these conditions. You agree that web-site administrators have the right to remove, edit, move or close access for You at any time should we see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither web-site administration nor SystemDK developers shall be held responsible for any hacking attempt that may lead to the data being compromised.', 'en',null,null,null);");
                     if(!$insert) {
                         $error_message = $adodb->ErrorMsg();
                         $error_code = $adodb->ErrorNo();
@@ -856,7 +860,7 @@ class install {
                 }
                 $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_main_pages_".$install_lang[$i]." (
                     main_page_id int(11) not null auto_increment,
-                    main_page_name_id varchar(255),
+                    main_page_name_id varchar(191),
                     main_page_author varchar(25) not null,
                     main_page_title varchar(255) not null,
                     main_page_date bigint(19) not null,
@@ -1955,13 +1959,13 @@ class install {
                     }
                     $adodb->StartTrans();
                     $systempage_id = $adodb->GenID($data_array['prefix']."_system_pages_id");
-                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_system_pages VALUES (".$systempage_id.", 'admin', 'account_rules', 'Общие правила', '".time()."', empty_clob(), 'ru',null,null,null)");
+                    $insert = $adodb->Execute("INSERT INTO ".$data_array['prefix']."_system_pages VALUES (".$systempage_id.", 'admin', 'account_rules', 'РћР±С‰РёРµ РїСЂР°РІРёР»Р°', '".time()."', empty_clob(), 'ru',null,null,null)");
                     if(!$insert) {
                         $error_message = $adodb->ErrorMsg();
                         $error_code = $adodb->ErrorNo();
                         $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    $insert = $adodb->UpdateClob($data_array['prefix'].'_system_pages','system_page_content','Заходя на сайт, Вы подтверждаете своё согласие со следующими условиями. Если Вы не согласны с ними, пожалуйста, не заходите и не пользуйтесь нашим сайтом. Мы оставляем за собой право изменять эти правила в любое время и сделаем всё возможное, чтобы уведомить Вас об этом, однако с Вашей стороны было бы разумным регулярно просматривать этот текст на предмет изменений, так как использование нашего сайта после обновления/исправления условий означает Ваше согласие с ними.<br><br>Наши сайты работают под управлением программного обеспечения SystemDK для создания веб-сайтов. Скачать его можно по адресу www.systemsdk.com. За дополнительной информацией о SystemsDK обращайтесь по адресу http://www.systemsdk.com.<br><br>Вы соглашаетесь не размещать оскорбительных, угрожающих, клеветнических сообщений, порнографических сообщений, призывов к национальной розни и прочих сообщений, которые могут нарушить законы Вашей страны, страны, которая предоставляет услуги хостинга для этого сайта, или международное право. Попытки размещения таких сообщений могут привести к Вашему немедленному отключению от сайта, при этом Ваш провайдер будет поставлен в известность, если мы сочтём это нужным. IP-адреса сохраняются для возможности проведения такой политики. Вы соглашаетесь с тем, что администраторы сайта имеют право удалить, отредактировать, перенести или закрыть Вам доступ в любое время по своему усмотрению. Как пользователь Вы согласны с тем, что введённая Вами информация будет храниться в базе данных. Хотя эта информация не будет открыта третьим лицам без Вашего разрешения, ни администрация сайта, ни авторы программного обеспечения SystemDK не могут быть ответственными за действия хакеров, которые могут привести к несанкционированному доступу к ней.','system_page_id = '.$systempage_id);
+                    $insert = $adodb->UpdateClob($data_array['prefix'].'_system_pages','system_page_content','Р—Р°С…РѕРґСЏ РЅР° СЃР°Р№С‚, Р’С‹ РїРѕРґС‚РІРµСЂР¶РґР°РµС‚Рµ СЃРІРѕС‘ СЃРѕРіР»Р°СЃРёРµ СЃРѕ СЃР»РµРґСѓСЋС‰РёРјРё СѓСЃР»РѕРІРёСЏРјРё. Р•СЃР»Рё Р’С‹ РЅРµ СЃРѕРіР»Р°СЃРЅС‹ СЃ РЅРёРјРё, РїРѕР¶Р°Р»СѓР№СЃС‚Р°, РЅРµ Р·Р°С…РѕРґРёС‚Рµ Рё РЅРµ РїРѕР»СЊР·СѓР№С‚РµСЃСЊ РЅР°С€РёРј СЃР°Р№С‚РѕРј. РњС‹ РѕСЃС‚Р°РІР»СЏРµРј Р·Р° СЃРѕР±РѕР№ РїСЂР°РІРѕ РёР·РјРµРЅСЏС‚СЊ СЌС‚Рё РїСЂР°РІРёР»Р° РІ Р»СЋР±РѕРµ РІСЂРµРјСЏ Рё СЃРґРµР»Р°РµРј РІСЃС‘ РІРѕР·РјРѕР¶РЅРѕРµ, С‡С‚РѕР±С‹ СѓРІРµРґРѕРјРёС‚СЊ Р’Р°СЃ РѕР± СЌС‚РѕРј, РѕРґРЅР°РєРѕ СЃ Р’Р°С€РµР№ СЃС‚РѕСЂРѕРЅС‹ Р±С‹Р»Рѕ Р±С‹ СЂР°Р·СѓРјРЅС‹Рј СЂРµРіСѓР»СЏСЂРЅРѕ РїСЂРѕСЃРјР°С‚СЂРёРІР°С‚СЊ СЌС‚РѕС‚ С‚РµРєСЃС‚ РЅР° РїСЂРµРґРјРµС‚ РёР·РјРµРЅРµРЅРёР№, С‚Р°Рє РєР°Рє РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РЅР°С€РµРіРѕ СЃР°Р№С‚Р° РїРѕСЃР»Рµ РѕР±РЅРѕРІР»РµРЅРёСЏ/РёСЃРїСЂР°РІР»РµРЅРёСЏ СѓСЃР»РѕРІРёР№ РѕР·РЅР°С‡Р°РµС‚ Р’Р°С€Рµ СЃРѕРіР»Р°СЃРёРµ СЃ РЅРёРјРё.<br><br>РќР°С€Рё СЃР°Р№С‚С‹ СЂР°Р±РѕС‚Р°СЋС‚ РїРѕРґ СѓРїСЂР°РІР»РµРЅРёРµРј РїСЂРѕРіСЂР°РјРјРЅРѕРіРѕ РѕР±РµСЃРїРµС‡РµРЅРёСЏ SystemDK РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РІРµР±-СЃР°Р№С‚РѕРІ. РЎРєР°С‡Р°С‚СЊ РµРіРѕ РјРѕР¶РЅРѕ РїРѕ Р°РґСЂРµСЃСѓ www.systemsdk.com. Р—Р° РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРµР№ Рѕ SystemsDK РѕР±СЂР°С‰Р°Р№С‚РµСЃСЊ РїРѕ Р°РґСЂРµСЃСѓ http://www.systemsdk.com.<br><br>Р’С‹ СЃРѕРіР»Р°С€Р°РµС‚РµСЃСЊ РЅРµ СЂР°Р·РјРµС‰Р°С‚СЊ РѕСЃРєРѕСЂР±РёС‚РµР»СЊРЅС‹С…, СѓРіСЂРѕР¶Р°СЋС‰РёС…, РєР»РµРІРµС‚РЅРёС‡РµСЃРєРёС… СЃРѕРѕР±С‰РµРЅРёР№, РїРѕСЂРЅРѕРіСЂР°С„РёС‡РµСЃРєРёС… СЃРѕРѕР±С‰РµРЅРёР№, РїСЂРёР·С‹РІРѕРІ Рє РЅР°С†РёРѕРЅР°Р»СЊРЅРѕР№ СЂРѕР·РЅРё Рё РїСЂРѕС‡РёС… СЃРѕРѕР±С‰РµРЅРёР№, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ РЅР°СЂСѓС€РёС‚СЊ Р·Р°РєРѕРЅС‹ Р’Р°С€РµР№ СЃС‚СЂР°РЅС‹, СЃС‚СЂР°РЅС‹, РєРѕС‚РѕСЂР°СЏ РїСЂРµРґРѕСЃС‚Р°РІР»СЏРµС‚ СѓСЃР»СѓРіРё С…РѕСЃС‚РёРЅРіР° РґР»СЏ СЌС‚РѕРіРѕ СЃР°Р№С‚Р°, РёР»Рё РјРµР¶РґСѓРЅР°СЂРѕРґРЅРѕРµ РїСЂР°РІРѕ. РџРѕРїС‹С‚РєРё СЂР°Р·РјРµС‰РµРЅРёСЏ С‚Р°РєРёС… СЃРѕРѕР±С‰РµРЅРёР№ РјРѕРіСѓС‚ РїСЂРёРІРµСЃС‚Рё Рє Р’Р°С€РµРјСѓ РЅРµРјРµРґР»РµРЅРЅРѕРјСѓ РѕС‚РєР»СЋС‡РµРЅРёСЋ РѕС‚ СЃР°Р№С‚Р°, РїСЂРё СЌС‚РѕРј Р’Р°С€ РїСЂРѕРІР°Р№РґРµСЂ Р±СѓРґРµС‚ РїРѕСЃС‚Р°РІР»РµРЅ РІ РёР·РІРµСЃС‚РЅРѕСЃС‚СЊ, РµСЃР»Рё РјС‹ СЃРѕС‡С‚С‘Рј СЌС‚Рѕ РЅСѓР¶РЅС‹Рј. IP-Р°РґСЂРµСЃР° СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РґР»СЏ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РїСЂРѕРІРµРґРµРЅРёСЏ С‚Р°РєРѕР№ РїРѕР»РёС‚РёРєРё. Р’С‹ СЃРѕРіР»Р°С€Р°РµС‚РµСЃСЊ СЃ С‚РµРј, С‡С‚Рѕ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂС‹ СЃР°Р№С‚Р° РёРјРµСЋС‚ РїСЂР°РІРѕ СѓРґР°Р»РёС‚СЊ, РѕС‚СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ, РїРµСЂРµРЅРµСЃС‚Рё РёР»Рё Р·Р°РєСЂС‹С‚СЊ Р’Р°Рј РґРѕСЃС‚СѓРї РІ Р»СЋР±РѕРµ РІСЂРµРјСЏ РїРѕ СЃРІРѕРµРјСѓ СѓСЃРјРѕС‚СЂРµРЅРёСЋ. РљР°Рє РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ Р’С‹ СЃРѕРіР»Р°СЃРЅС‹ СЃ С‚РµРј, С‡С‚Рѕ РІРІРµРґС‘РЅРЅР°СЏ Р’Р°РјРё РёРЅС„РѕСЂРјР°С†РёСЏ Р±СѓРґРµС‚ С…СЂР°РЅРёС‚СЊСЃСЏ РІ Р±Р°Р·Рµ РґР°РЅРЅС‹С…. РҐРѕС‚СЏ СЌС‚Р° РёРЅС„РѕСЂРјР°С†РёСЏ РЅРµ Р±СѓРґРµС‚ РѕС‚РєСЂС‹С‚Р° С‚СЂРµС‚СЊРёРј Р»РёС†Р°Рј Р±РµР· Р’Р°С€РµРіРѕ СЂР°Р·СЂРµС€РµРЅРёСЏ, РЅРё Р°РґРјРёРЅРёСЃС‚СЂР°С†РёСЏ СЃР°Р№С‚Р°, РЅРё Р°РІС‚РѕСЂС‹ РїСЂРѕРіСЂР°РјРјРЅРѕРіРѕ РѕР±РµСЃРїРµС‡РµРЅРёСЏ SystemDK РЅРµ РјРѕРіСѓС‚ Р±С‹С‚СЊ РѕС‚РІРµС‚СЃС‚РІРµРЅРЅС‹РјРё Р·Р° РґРµР№СЃС‚РІРёСЏ С…Р°РєРµСЂРѕРІ, РєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ РїСЂРёРІРµСЃС‚Рё Рє РЅРµСЃР°РЅРєС†РёРѕРЅРёСЂРѕРІР°РЅРЅРѕРјСѓ РґРѕСЃС‚СѓРїСѓ Рє РЅРµР№.','system_page_id = '.$systempage_id);
                     if(!$insert) {
                         $error_message = $adodb->ErrorMsg();
                         $error_code = $adodb->ErrorNo();
@@ -1974,7 +1978,7 @@ class install {
                         $error_code = $adodb->ErrorNo();
                         $error[] = array("code" => $error_code,"message" => $error_message);
                     }
-                    $insert = $adodb->UpdateClob($data_array['prefix'].'_system_pages','system_page_content','By accessing our web-site, you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use our web-site. We may change these at any time and we’ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of our web-site after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br><br> Our web-sites are powered by SystemDK which can be downloaded from www.systemsdk.com. For further information about SystemDK, please see: http://www.systemsdk.com.<br><br>You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where this web-site is hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider if deemed required by us. The IP address are recorded to aid in enforcing these conditions. You agree that web-site administrators have the right to remove, edit, move or close access for You at any time should we see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither web-site administration nor SystemDK developers shall be held responsible for any hacking attempt that may lead to the data being compromised.','system_page_id = '.$systempage_id);
+                    $insert = $adodb->UpdateClob($data_array['prefix'].'_system_pages','system_page_content','By accessing our web-site, you agree to be legally bound by the following terms. If you do not agree to be legally bound by all of the following terms then please do not access and/or use our web-site. We may change these at any time and weвЂ™ll do our utmost in informing you, though it would be prudent to review this regularly yourself as your continued usage of our web-site after changes mean you agree to be legally bound by these terms as they are updated and/or amended.<br><br> Our web-sites are powered by SystemDK which can be downloaded from www.systemsdk.com. For further information about SystemDK, please see: http://www.systemsdk.com.<br><br>You agree not to post any abusive, obscene, vulgar, slanderous, hateful, threatening, sexually-orientated or any other material that may violate any laws be it of your country, the country where this web-site is hosted or International Law. Doing so may lead to you being immediately and permanently banned, with notification of your Internet Service Provider if deemed required by us. The IP address are recorded to aid in enforcing these conditions. You agree that web-site administrators have the right to remove, edit, move or close access for You at any time should we see fit. As a user you agree to any information you have entered to being stored in a database. While this information will not be disclosed to any third party without your consent, neither web-site administration nor SystemDK developers shall be held responsible for any hacking attempt that may lead to the data being compromised.','system_page_id = '.$systempage_id);
                     if(!$insert) {
                         $error_message = $adodb->ErrorMsg();
                         $error_code = $adodb->ErrorNo();
@@ -2053,7 +2057,7 @@ class install {
                 }
                 $insert = $adodb->Execute("CREATE TABLE ".$data_array['prefix']."_main_pages_".$install_lang[$i]." (
                     main_page_id NUMBER(11,0) NOT NULL,
-                    main_page_name_id VARCHAR2(255 CHAR),
+                    main_page_name_id VARCHAR2(191 CHAR),
                     main_page_author VARCHAR2(25 CHAR) NOT NULL,
                     main_page_title VARCHAR2(255 CHAR) NOT NULL,
                     main_page_date NUMBER(19,0) NOT NULL,
@@ -2197,7 +2201,7 @@ class install {
         $site_startdate = date("d/m/Y");
         $file = @fopen("../includes/data/config.inc","w");
         $content = "<?php\n\n";
-        $content .= 'define("SYSTEMDK_VERSION","3.2.0");'."\n";
+        $content .= 'define("SYSTEMDK_VERSION","3.3.0");'."\n";
         $content .= 'define("SYSTEMDK_MODREWRITE","'.$data_array['mod_rewrite']."\");\n";
         $content .= 'define("SYSTEMDK_DESCRIPTION","");'."\n";
         $content .= 'define("SITE_ID","'.$data_array['site_id']."\");\n";
@@ -2213,6 +2217,7 @@ class install {
         $content .= 'define("PREFIX","'.$data_array['prefix']."\");\n";
         $content .= 'define("DBTYPE","'.$data_array['db_type']."\");\n";
         $content .= 'define("DB_CHARACTER","'.$data_array['db_character']."\");\n";
+        $content .= 'define("DB_COLLATE","'.$data_array['db_collate']."\");\n";
         $content .= 'define("SMARTY_CACHING","'.$data_array['smarty_caching']."\");\n";
         $content .= 'define("SMARTY_DEBUGGING","'.$data_array['smarty_debugging']."\");\n";
         $content .= 'define("ADODB_DEBUGGING","'.$data_array['adodb_debugging']."\");\n";
@@ -2375,14 +2380,14 @@ class install {
             exit();
         }
         if(DBTYPE === 'mysql' or DBTYPE === 'pdo' or DBTYPE === 'mysqli' or DBTYPE === 'mysqlt' or DBTYPE === 'maxsql') {
-            $adodb->Execute("set names '".DB_CHARACTER."'");
+            $adodb->Execute("SET NAMES '".DB_CHARACTER."' COLLATE ".DB_COLLATE);
         }
         foreach($data_array as $key => $value) {
             if(in_array($key,$keys)) {
                 $data_array[$key] = strip_tags($value);
             }
         }
-        if(preg_match("/[^a-zA-Zа-яА-Я0-9_-]/i",$data_array['admin_add_login'])) {
+        if(preg_match("/[^a-zA-ZР°-СЏРђ-РЇ0-9_-]/i",$data_array['admin_add_login'])) {
             if(DB_PERSISTENCY === 'no') {
                 $adodb->Close();
             }

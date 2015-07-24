@@ -7,7 +7,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 //Define the site admin path constant
 define('__SITE_ADMIN_PART','yes');

@@ -1,6 +1,6 @@
 <?php
-define("SYSTEMDK_GUESTBOOK_METAKEYWORDS","Ãîñòåâàÿ êíèãà, ãîñòåâàÿ, îòçûâû, SystemDK, îòçûâû SystemDK, Guestbook, SystemDK comments");
-define("SYSTEMDK_GUESTBOOK_METADESCRIPTION","Ãîñòåâàÿ êíèãà Guestbook");
+define("SYSTEMDK_GUESTBOOK_METAKEYWORDS","Ð“Ð¾ÑÑ‚ÐµÐ²Ð°Ñ ÐºÐ½Ð¸Ð³Ð°, Ð³Ð¾ÑÑ‚ÐµÐ²Ð°Ñ, Ð¾Ñ‚Ð·Ñ‹Ð²Ñ‹, SystemDK, Ð¾Ñ‚Ð·Ñ‹Ð²Ñ‹ SystemDK, Guestbook, SystemDK comments");
+define("SYSTEMDK_GUESTBOOK_METADESCRIPTION","Ð“Ð¾ÑÑ‚ÐµÐ²Ð°Ñ ÐºÐ½Ð¸Ð³Ð° Guestbook");
 define("SYSTEMDK_GUESTBOOK_STORYNUM",10);
 define("SYSTEMDK_GUESTBOOK_ANTISPAM_IPADDR","yes");
 define("SYSTEMDK_GUESTBOOK_ANTISPAM_NUM",10);

@@ -7,14 +7,14 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 class mail {
 
 
     private $mail_method = 'php';
     private $site_name = "";
-    private $charset = 'windows-1251';
+    private $charset = 'utf-8';
     public $from = "";
     private $to = "";
     private $subject = "";
@@ -63,11 +63,11 @@ class mail {
         $this->to = preg_replace("/,,/",",",$this->to);
         $this->from = preg_replace("/,,/",",",$this->from);
         if($this->mail_method != 'smtp') {
-            $this->to = preg_replace("#\#\[\]'\"\(\):;/\$!£%\^&\*\{\}#","",$this->to);
+            $this->to = preg_replace("#\#\[\]'\"\(\):;/\$!Ðˆ%\^&\*\{\}#","",$this->to);
         } else {
-            $this->to = '<'.preg_replace("#\#\[\]'\"\(\):;/\$!£%\^&\*\{\}#","",$this->to).'>';
+            $this->to = '<'.preg_replace("#\#\[\]'\"\(\):;/\$!Ðˆ%\^&\*\{\}#","",$this->to).'>';
         }
-        $this->from = preg_replace("#\#\[\]'\"\(\):;/\$!£%\^&\*\{\}#","",$this->from);
+        $this->from = preg_replace("#\#\[\]'\"\(\):;/\$!Ðˆ%\^&\*\{\}#","",$this->from);
         $this->subject = $subject;
         $this->message = $message;
         $this->message = str_replace("\r","",$this->message);

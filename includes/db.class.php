@@ -7,7 +7,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 include_once(__SITE_PATH."/adodb/adodb.inc.php");
 class db {
@@ -82,7 +82,7 @@ class db {
             $this->adodb->fnExecute = 'CountExecs';
             $this->adodb->fnCacheExecute = 'CountCachedExecs';
             if(DBTYPE === 'mysqlt' or DBTYPE === 'pdo' or DBTYPE === 'mysql' or DBTYPE === 'maxsql' or DBTYPE === 'mysqli') {
-                $this->adodb->Execute("set names '".DB_CHARACTER."'");
+                $this->adodb->Execute("set names '".DB_CHARACTER."' COLLATE ".DB_COLLATE);
             }
         }
     }

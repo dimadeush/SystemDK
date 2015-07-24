@@ -5,7 +5,7 @@
     <a href="index.php?path=admin_questionnaires&amp;func=groups&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_GROUPS#}</a> <span class="tablecenterblocktext2">|</span>
     <a href="index.php?path=admin_questionnaires&amp;func=results&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_RESULTS#}</a>
     <br><br>
-    <img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{if !empty($person_id)}{#_QUESTIONNAIRES_ANSWER_TEXT_FOR_PERSON_TITLE#} ¹{$person_id}{else}{#_QUESTIONNAIRES_ANSWER_TEXTS_TITLE#}{/if}</span>
+    <img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{if !empty($person_id)}{#_QUESTIONNAIRES_ANSWER_TEXT_FOR_PERSON_TITLE#} â„–{$person_id}{else}{#_QUESTIONNAIRES_ANSWER_TEXTS_TITLE#}{/if}</span>
     <br><br>
     {if $person_text_answers ne "no_person_text_answers"}
     <table width="99%" cellpadding="0" cellspacing="0" border="0"><tr><td align="left"><a href="index.php?path=admin_questionnaires&amp;func=results_details&amp;lang={$site_language}" class="link">{#_QUESTIONNAIRES_RESULTS#}</a> <span class="textlinkbig"><b>&rarr;</b></span> <a href="index.php?path=admin_questionnaires&amp;func={if !empty($person_id)}results_details_by_persons{else}results_details{/if}&amp;group_id={$person_text_answers_data.group_id}&amp;questionnaire_id={$person_text_answers_data.questionnaire_id}&amp;lang={$site_language}" class="link">{$person_text_answers_data.questionnaire_name} / {$person_text_answers_data.group_name}</a> <span class="textlinkbig"><b>&rarr;</b></span> <span class="tablecenterblocktext2">{$person_text_answers_data.question_title}</span></td></tr></table>
@@ -14,7 +14,7 @@
         {if $person_text_answers ne "no_person_text_answers"}
             <table border="0" width="99%" cellspacing="2"  cellpadding="0">
                 <tr>
-                    <td width="1%" bgcolor="{#color7#}" class="td2" align="center"><span class="tablecenterblocktext2">¹</span></td>
+                    <td width="1%" bgcolor="{#color7#}" class="td2" align="center"><span class="tablecenterblocktext2">â„–</span></td>
                     <td width="99%" bgcolor="{#color7#}" class="td2" align="center"> <span class="tablecenterblocktext2">{#_QUESTIONNAIRES_ANSWER_TEXT#}</span></td>
                 </tr>
             {foreach $person_text_answers as $person_text_answers_tpl}

@@ -7,7 +7,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 class controller_main extends controller_base {
 
@@ -324,6 +324,11 @@ class controller_main extends controller_base {
             $this->assign("systemdk_html5_exist","yes");
         }
         return $result['search_flowplayer'];
+    }
+
+
+    public function split_content_by_pages($content) {
+        return $this->model->split_content_by_pages($content);
     }
 
 

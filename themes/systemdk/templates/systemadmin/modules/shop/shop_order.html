@@ -5,7 +5,7 @@
 {foreach $order_all as $order_all_tpl}
 <a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> <span class="tablecenterblocktext2">|</span> <a href="index.php?path=admin_shop&amp;func=shop_orders&amp;lang={$site_language}" class="link">{#_SHOPORDERSTITLE#}</a>
 <br><br>
-<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{if $adminmodules_shop_orderedit eq "edit"}{#_SHOPEDITORDER#}{else}{#_SHOPSHOWORDER#}{/if} ¹{$order_all_tpl.order_id}</span> {if $adminmodules_shop_orderedit ne "edit"}<span class="tablecenterblocktext2">[</span> <a href="index.php?path=admin_shop&amp;func=shop_orderproc&amp;edit=1&amp;order_id={$order_all_tpl.order_id}&amp;lang={$site_language}" class="link">{#_SHOPFUNCTIONEDIT#}</a> <span class="tablecenterblocktext2">]</span>{/if}<br><br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{if $adminmodules_shop_orderedit eq "edit"}{#_SHOPEDITORDER#}{else}{#_SHOPSHOWORDER#}{/if} â„–{$order_all_tpl.order_id}</span> {if $adminmodules_shop_orderedit ne "edit"}<span class="tablecenterblocktext2">[</span> <a href="index.php?path=admin_shop&amp;func=shop_orderproc&amp;edit=1&amp;order_id={$order_all_tpl.order_id}&amp;lang={$site_language}" class="link">{#_SHOPFUNCTIONEDIT#}</a> <span class="tablecenterblocktext2">]</span>{/if}<br><br>
 <form action="index.php?path=admin_shop&amp;func=shop_order_save&amp;lang={$site_language}" method="POST">
 <input type="hidden" name="order_id" value="{$order_all_tpl.order_id}">
 {if $adminmodules_shop_orderedit eq "edit"}

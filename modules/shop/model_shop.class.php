@@ -9,7 +9,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 class shop extends model_base {
 
@@ -1238,8 +1238,7 @@ class shop extends model_base {
             $subcategory_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['19']));
         }
         $this->registry->main_class->set_sitemeta($item_meta_title,$item_meta_description,$item_meta_keywords);
-        $item_description = str_replace("<span style=\"display: none;\">&nbsp;</span></div>","",$item_description);
-        $item_description = explode("<div style=\"page-break-after: always;\">",$item_description);
+        $item_description = $this->registry->main_class->split_content_by_pages($item_description);
         $count_num_pages = count($item_description);
         if($num_page > $count_num_pages) {
             $num_page = 1;

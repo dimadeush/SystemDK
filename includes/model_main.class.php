@@ -9,7 +9,7 @@
  * @copyright 2015 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.2
+ * @version   3.3
  */
 class model_main extends model_base {
 
@@ -224,7 +224,7 @@ class model_main extends model_base {
         if(isset($this->registry->GET_func) and $this->format_striptags(trim($this->registry->GET_func)) == "account_logout") {
             $this->clear(array('user' => 1));
         } elseif(isset($this->registry->POST_user_login) and isset($this->registry->POST_user_password) and isset($this->registry->POST_func) and $this->format_striptags(trim($this->registry->POST_user_login)) != "" and trim($this->registry->POST_user_password) != "" and ($this->format_striptags(trim($this->registry->POST_func)) == "mainuser" or $this->format_striptags(trim($this->registry->POST_func == "mainadmin")))) {
-            if(preg_match("/[^a-zA-Zà-ÿÀ-ß0-9_-]/i",$this->format_striptags(trim($this->registry->POST_user_login)))) {
+            if(preg_match("/[^a-zA-ZÐ°-ÑÐ-Ð¯0-9_-]/i",$this->format_striptags(trim($this->registry->POST_user_login)))) {
                 if(ENTER_CHECK == "yes" and extension_loaded("gd")) {
                     $this->clear(array('captcha' => 1,'user' => 1));
                 } else {
@@ -516,7 +516,11 @@ class model_main extends model_base {
         }
         if(defined('SYSTEMDK_PLAYER_CONTROLS') and SYSTEMDK_PLAYER_CONTROLS === 'yes') {
             $content = str_ireplace('class="flowplayer','class="flowplayer fixed-controls',$content);
-            $content = str_ireplace('<video','<video controls',$content);
+            if(stripos($content, 'class="flowplayer') === false) {
+                $content = str_ireplace('<video','<video controls',$content);
+            } else {
+                $content = str_ireplace('<video','<video',$content);
+            }
         } else {
             $content = str_ireplace('="flowplayer','="flowplayer',$content);
         }
@@ -555,6 +559,14 @@ class model_main extends model_base {
             "search_flowplayer" => $check_player_entry,
             "systemdk_html5_exist" => $systemdk_html5_exist
         );
+    }
+
+
+    public function split_content_by_pages($content) {
+        $content = str_ireplace("<span style=\"display: none;\">&nbsp;</span></div>","",$content);
+        $content = str_ireplace("<div style=\"page-break-after: always;\">","<div style=\"page-break-after: always\">",$content); // for ckeditor old version
+        $content = explode("<div style=\"page-break-after: always\">",$content);
+        return $content;
     }
 
 
