@@ -24,6 +24,7 @@ if(file_exists(__SITE_PATH."/includes/data/config.inc")) {
     echo "<html><header><title>SystemDK - Fatal Error</title></header><body><br><br><center>Fatal error<br><br>SystemDK can't find config file</center></body></html>";
     exit();
 }
+header('Content-type: text/html; charset='.SITE_CHARSET);
 if(GZIP === "yes") {
     ob_start();
     ob_implicit_flush(0);

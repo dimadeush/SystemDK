@@ -19,6 +19,7 @@ class install {
 
 
     public function __construct() {
+        header('Content-type: text/html; charset=utf-8');
         if(function_exists("date_default_timezone_set") and function_exists("date_default_timezone_get")) {
             @date_default_timezone_set(@date_default_timezone_get());
         }
