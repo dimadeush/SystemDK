@@ -1,23 +1,32 @@
 <?php
+
 /**
  * Project:   SystemDK: PHP Content Management System
  * File:      model_base.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2015 SystemDK
+ * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.3
+ * @version   3.4
  */
-abstract class model_base {
+abstract class model_base
+{
 
 
+    /**
+     * @var registry
+     */
     protected $registry;
+    /**
+     * @var db
+     */
     protected $db;
 
 
-    public function __construct($registry) {
+    public function __construct($registry)
+    {
         $this->registry = $registry;
-        $this->db = singleton::getinstance('db',$this->registry);
+        $this->db = singleton::getinstance('db', $this->registry);
     }
 }

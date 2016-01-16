@@ -1,15 +1,17 @@
 <?php
+
 /**
  * Project:   SystemDK: PHP Content Management System
  * File:      model_admin_administrators.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2015 SystemDK
+ * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.3
+ * @version   3.4
  */
-class admin_administrators extends model_base {
+class admin_administrators extends model_base
+{
 
 
     private $error;
@@ -17,10 +19,12 @@ class admin_administrators extends model_base {
     private $result;
 
 
-    public function get_property_value($property) {
-        if(isset($this->$property) and in_array($property,array('error','error_array','result'))) {
+    public function get_property_value($property)
+    {
+        if (isset($this->$property) && in_array($property, ['error', 'error_array', 'result'])) {
             return $this->$property;
         }
+
         return false;
     }
 }

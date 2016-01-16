@@ -1,0 +1,9 @@
+# Ignore everything in this directory
+*
+
+# But not these files...
+!ban_ip.inc
+!footer.inc
+!header.inc
+!.gitignore
+!.htaccess

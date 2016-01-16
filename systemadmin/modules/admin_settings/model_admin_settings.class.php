@@ -1,32 +1,37 @@
 <?php
+
 /**
  * Project:   SystemDK: PHP Content Management System
  * File:      model_admin_settings.class.php
  *
  * @link      http://www.systemsdk.com/
- * @copyright 2015 SystemDK
+ * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.3
+ * @version   3.4
  */
-class admin_settings extends model_base {
+class admin_settings extends model_base
+{
 
 
     private $error;
     private $result;
 
 
-    public function get_property_value($property) {
-        if(isset($this->$property) and in_array($property,array('error','result'))) {
+    public function get_property_value($property)
+    {
+        if (isset($this->$property) && in_array($property, ['error', 'result'])) {
             return $this->$property;
         }
+
         return false;
     }
 
 
-    public function index($cached = false) {
+    public function index($cached = false)
+    {
         $this->result = false;
-        if(!$cached) {
+        if (!$cached) {
             $this->result['site_id'] = trim(SITE_ID);
             $this->result['mod_rewrite'] = trim(SYSTEMDK_MODREWRITE);
             $this->result['db_persistency'] = trim(DB_PERSISTENCY);
@@ -80,18 +85,18 @@ class admin_settings extends model_base {
         $this->result['site_theme'] = trim(SITE_THEME);
         $this->result['Home_Module'] = trim(HOME_MODULE);
         $dir = opendir('../themes');
-        while(false !== ($file = readdir($dir))) {
-            if((!preg_match("/[.]/i",$file))) {
+        while (false !== ($file = readdir($dir))) {
+            if ((!preg_match("/[.]/i", $file))) {
                 $themelist[] = "$file";
             }
         }
         closedir($dir);
         $this->result['themelist'] = $themelist;
-        $languagelist = $this->registry->controller_theme->display_theme_langlist('../themes/'.SITE_THEME.'/languages');
+        $languagelist = $this->registry->controller_theme->display_theme_langlist('../themes/' . SITE_THEME . '/languages');
         $this->result['languagelist'] = $languagelist;
         $moduledir = opendir('../modules');
-        while(false !== ($file = readdir($moduledir))) {
-            if(!preg_match("/[.]/i",$file)) {
+        while (false !== ($file = readdir($moduledir))) {
+            if (!preg_match("/[.]/i", $file)) {
                 $module = $file;
                 $modulelist[] = "$module";
             }
@@ -101,10 +106,11 @@ class admin_settings extends model_base {
     }
 
 
-    public function settingssave($post_array) {
+    public function settingssave($post_array)
+    {
         $this->result = false;
         $this->error = false;
-        $keys = array(
+        $keys = [
             'site_id',
             'mod_rewrite',
             'db_persistency',
@@ -148,132 +154,218 @@ class admin_settings extends model_base {
             'systemdk_site_lang',
             'systemdk_admin_site_lang',
             'systemdk_interface_lang',
-            'systemdk_admin_interface_lang'
-        );
-        if(!empty($post_array)) {
-            foreach($post_array as $key => $value) {
-                $keys2 = array(
-                    'cache_lifetime',
-                    'session_cookie_live',
-                    'systemdk_adminrows_perpage',
-                    'systemdk_smtp_port',
-                    'systemdk_account_maxusers',
-                    'systemdk_account_maxactivationdays',
-                    'systemdk_ipantispam_num'
-                );
-                if(in_array($key,$keys)) {
+            'systemdk_admin_interface_lang',
+        ];
+        if (!empty($post_array)) {
+            $keys2 = [
+                'cache_lifetime',
+                'session_cookie_live',
+                'systemdk_adminrows_perpage',
+                'systemdk_smtp_port',
+                'systemdk_account_maxusers',
+                'systemdk_account_maxactivationdays',
+                'systemdk_ipantispam_num',
+            ];
+            foreach ($post_array as $key => $value) {
+                if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
-                if(in_array($key,$keys2)) {
+                if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
                 }
             }
         }
-        if((!isset($post_array['site_id']) or !isset($post_array['mod_rewrite']) or !isset($post_array['db_persistency']) or !isset($post_array['smarty_caching']) or !isset($post_array['smarty_debugging']) or !isset($post_array['adodb_debugging']) or !isset($post_array['gzip']) or !isset($post_array['cache_lifetime']) or !isset($post_array['session_cookie_live']) or !isset($post_array['site_charset']) or !isset($post_array['admin_email']) or !isset($post_array['site_url']) or !isset($post_array['site_name']) or !isset($post_array['site_keywords']) or !isset($post_array['site_description']) or !isset($post_array['site_status']) or !isset($post_array['site_status_notes']) or !isset($post_array['site_theme']) or !isset($post_array['language']) or !isset($post_array['Home_Module']) or !isset($post_array['enter_check']) or !isset($post_array['display_admin_graphic']) or !isset($post_array['systemdk_adminrows_perpage']) or !isset($post_array['systemdk_mail_method']) or !isset($post_array['systemdk_smtp_host']) or !isset($post_array['systemdk_smtp_port']) or !isset($post_array['systemdk_smtp_user']) or !isset($post_array['systemdk_smtp_pass']) or !isset($post_array['systemdk_account_registration']) or !isset($post_array['systemdk_account_activation']) or !isset($post_array['systemdk_account_rules']) or !isset($post_array['systemdk_account_maxusers']) or !isset($post_array['systemdk_account_maxactivationdays']) or !isset($post_array['systemdk_statistics']) or !isset($post_array['systemdk_player_autoplay']) or !isset($post_array['systemdk_player_autobuffer']) or !isset($post_array['systemdk_player_controls']) or !isset($post_array['systemdk_player_audioautoplay']) or !isset($post_array['systemdk_player_audioautobuffer']) or !isset($post_array['systemdk_player_audio_controls']) or !isset($post_array['systemdk_player_ratio']) or !isset($post_array['systemdk_player_skin']) or !isset($post_array['systemdk_feedback_receiver']) or !isset($post_array['systemdk_ipantispam']) or !isset($post_array['systemdk_ipantispam_num']) or !isset($post_array['systemdk_site_lang']) or !isset($post_array['systemdk_admin_site_lang']) or !isset($post_array['systemdk_interface_lang']) or !isset($post_array['systemdk_admin_interface_lang'])) or ($data_array['site_id'] == "" or $data_array['mod_rewrite'] == "" or $data_array['db_persistency'] == "" or $data_array['smarty_caching'] == "" or $data_array['smarty_debugging'] == "" or $data_array['adodb_debugging'] == "" or $data_array['gzip'] == "" or $data_array['cache_lifetime'] === "" or $data_array['session_cookie_live'] === "" or $data_array['site_charset'] == "" or $data_array['admin_email'] == "" or $data_array['site_url'] == "" or $data_array['site_name'] == "" or $data_array['site_keywords'] == "" or $data_array['site_description'] == "" or $data_array['site_status'] == "" or $data_array['site_theme'] == "" or $data_array['language'] == "" or $data_array['enter_check'] == "" or $data_array['display_admin_graphic'] == "" or $data_array['systemdk_mail_method'] == "" or $data_array['systemdk_account_registration'] == "" or $data_array['systemdk_account_activation'] == "" or $data_array['systemdk_account_rules'] == "" or $data_array['systemdk_statistics'] == "" or $data_array['systemdk_player_autoplay'] == "" or $data_array['systemdk_player_autobuffer'] == "" or $data_array['systemdk_player_controls'] == "" or $data_array['systemdk_player_audioautoplay'] == "" or $data_array['systemdk_player_audioautobuffer'] == "" or $data_array['systemdk_player_audio_controls'] == "" or $data_array['systemdk_player_skin'] == "" or $data_array['systemdk_feedback_receiver'] == "" or $data_array['systemdk_ipantispam'] == "" or $data_array['systemdk_site_lang'] == "" or $data_array['systemdk_admin_site_lang'] == "" or $data_array['systemdk_interface_lang'] == "" or $data_array['systemdk_admin_interface_lang'] == "")) {
+        if ((!isset($post_array['site_id']) || !isset($post_array['mod_rewrite']) || !isset($post_array['db_persistency']) || !isset($post_array['smarty_caching'])
+             || !isset($post_array['smarty_debugging'])
+             || !isset($post_array['adodb_debugging'])
+             || !isset($post_array['gzip'])
+             || !isset($post_array['cache_lifetime'])
+             || !isset($post_array['session_cookie_live'])
+             || !isset($post_array['site_charset'])
+             || !isset($post_array['admin_email'])
+             || !isset($post_array['site_url'])
+             || !isset($post_array['site_name'])
+             || !isset($post_array['site_keywords'])
+             || !isset($post_array['site_description'])
+             || !isset($post_array['site_status'])
+             || !isset($post_array['site_status_notes'])
+             || !isset($post_array['site_theme'])
+             || !isset($post_array['language'])
+             || !isset($post_array['Home_Module'])
+             || !isset($post_array['enter_check'])
+             || !isset($post_array['display_admin_graphic'])
+             || !isset($post_array['systemdk_adminrows_perpage'])
+             || !isset($post_array['systemdk_mail_method'])
+             || !isset($post_array['systemdk_smtp_host'])
+             || !isset($post_array['systemdk_smtp_port'])
+             || !isset($post_array['systemdk_smtp_user'])
+             || !isset($post_array['systemdk_smtp_pass'])
+             || !isset($post_array['systemdk_account_registration'])
+             || !isset($post_array['systemdk_account_activation'])
+             || !isset($post_array['systemdk_account_rules'])
+             || !isset($post_array['systemdk_account_maxusers'])
+             || !isset($post_array['systemdk_account_maxactivationdays'])
+             || !isset($post_array['systemdk_statistics'])
+             || !isset($post_array['systemdk_player_autoplay'])
+             || !isset($post_array['systemdk_player_autobuffer'])
+             || !isset($post_array['systemdk_player_controls'])
+             || !isset($post_array['systemdk_player_audioautoplay'])
+             || !isset($post_array['systemdk_player_audioautobuffer'])
+             || !isset($post_array['systemdk_player_audio_controls'])
+             || !isset($post_array['systemdk_player_ratio'])
+             || !isset($post_array['systemdk_player_skin'])
+             || !isset($post_array['systemdk_feedback_receiver'])
+             || !isset($post_array['systemdk_ipantispam'])
+             || !isset($post_array['systemdk_ipantispam_num'])
+             || !isset($post_array['systemdk_site_lang'])
+             || !isset($post_array['systemdk_admin_site_lang'])
+             || !isset($post_array['systemdk_interface_lang'])
+             || !isset($post_array['systemdk_admin_interface_lang']))
+            || ($data_array['site_id'] == "" || $data_array['mod_rewrite'] == "" || $data_array['db_persistency'] == "" || $data_array['smarty_caching'] == ""
+                || $data_array['smarty_debugging'] == ""
+                || $data_array['adodb_debugging'] == ""
+                || $data_array['gzip'] == ""
+                || $data_array['cache_lifetime'] === ""
+                || $data_array['session_cookie_live'] === ""
+                || $data_array['site_charset'] == ""
+                || $data_array['admin_email'] == ""
+                || $data_array['site_url'] == ""
+                || $data_array['site_name'] == ""
+                || $data_array['site_keywords'] == ""
+                || $data_array['site_description'] == ""
+                || $data_array['site_status'] == ""
+                || $data_array['site_theme'] == ""
+                || $data_array['language'] == ""
+                || $data_array['enter_check'] == ""
+                || $data_array['display_admin_graphic'] == ""
+                || $data_array['systemdk_mail_method'] == ""
+                || $data_array['systemdk_account_registration'] == ""
+                || $data_array['systemdk_account_activation'] == ""
+                || $data_array['systemdk_account_rules'] == ""
+                || $data_array['systemdk_statistics'] == ""
+                || $data_array['systemdk_player_autoplay'] == ""
+                || $data_array['systemdk_player_autobuffer'] == ""
+                || $data_array['systemdk_player_controls'] == ""
+                || $data_array['systemdk_player_audioautoplay'] == ""
+                || $data_array['systemdk_player_audioautobuffer'] == ""
+                || $data_array['systemdk_player_audio_controls'] == ""
+                || $data_array['systemdk_player_skin'] == ""
+                || $data_array['systemdk_feedback_receiver'] == ""
+                || $data_array['systemdk_ipantispam'] == ""
+                || $data_array['systemdk_site_lang'] == ""
+                || $data_array['systemdk_admin_site_lang'] == ""
+                || $data_array['systemdk_interface_lang'] == ""
+                || $data_array['systemdk_admin_interface_lang'] == "")
+        ) {
             $this->error = 'not_all_data';
+
             return;
         }
-        foreach($data_array as $key => $value) {
-            if(in_array($key,$keys)) {
+        foreach ($data_array as $key => $value) {
+            if (in_array($key, $keys)) {
                 $data_array[$key] = $this->registry->main_class->format_htmlspecchars_stripslashes_striptags($value);
             }
         }
-        if($data_array['systemdk_adminrows_perpage'] == 0) {
+        if ($data_array['systemdk_adminrows_perpage'] == 0) {
             $data_array['systemdk_adminrows_perpage'] = 5;
         }
-        if(!$this->registry->main_class->check_email($data_array['admin_email'])) {
+        if (!$this->registry->main_class->check_email($data_array['admin_email'])) {
             $this->error = 'incorrect_email';
+
             return;
         }
-        @chmod("../includes/data/config.inc",0777);
-        $file = @fopen("../includes/data/config.inc","w");
-        if(!$file) {
+        @chmod("../includes/data/config.inc", 0777);
+        $file = @fopen("../includes/data/config.inc", "w");
+        if (!$file) {
             $this->error = 'no_file';
+
             return;
         }
         $content = "<?php\n\n";
-        $content .= 'define("SYSTEMDK_VERSION","'.SYSTEMDK_VERSION."\");\n";
-        $content .= 'define("SYSTEMDK_MODREWRITE","'.$data_array['mod_rewrite']."\");\n";
-        $content .= 'define("SYSTEMDK_DESCRIPTION","'.SYSTEMDK_DESCRIPTION."\");\n";
-        $content .= 'define("SITE_ID","'.$data_array['site_id']."\");\n";
-        $content .= 'define("SITE_DIR","'.SITE_DIR."\");\n";
-        $content .= 'define("ADMIN_DIR","'.ADMIN_DIR."\");\n";
-        $content .= 'define("ADMIN_EMAIL","'.$data_array['admin_email']."\");\n";
-        $content .= 'define("DB_HOST","'.DB_HOST."\");\n";
-        $content .= 'define("DB_PORT","'.DB_PORT."\");\n";
-        $content .= 'define("DB_USER_NAME","'.DB_USER_NAME."\");\n";
-        $content .= 'define("DB_PASSWORD","'.DB_PASSWORD."\");\n";
-        $content .= 'define("DB_NAME","'.DB_NAME."\");\n";
-        $content .= 'define("DB_PERSISTENCY","'.$data_array['db_persistency']."\");\n";
-        $content .= 'define("PREFIX","'.PREFIX."\");\n";
-        $content .= 'define("DBTYPE","'.DBTYPE."\");\n";
-        $content .= 'define("DB_CHARACTER","'.DB_CHARACTER."\");\n";
-        $content .= 'define("DB_COLLATE","'.DB_COLLATE."\");\n";
-        $content .= 'define("SMARTY_CACHING","'.$data_array['smarty_caching']."\");\n";
-        $content .= 'define("SMARTY_DEBUGGING","'.$data_array['smarty_debugging']."\");\n";
-        $content .= 'define("ADODB_DEBUGGING","'.$data_array['adodb_debugging']."\");\n";
-        $content .= 'define("CACHE_LIFETIME","'.$data_array['cache_lifetime']."\");\n";
-        $content .= 'define("SITE_CHARSET","'.$data_array['site_charset']."\");\n";
-        $content .= 'define("SITE_URL","'.$data_array['site_url']."\");\n";
-        $content .= 'define("SITE_NAME","'.$data_array['site_name']."\");\n";
-        $content .= 'define("SITE_LOGO","'.$data_array['site_logo']."\");\n";
-        $content .= 'define("SITE_STARTDATE","'.$data_array['site_startdate']."\");\n";
-        $content .= 'define("SITE_KEYWORDS","'.$data_array['site_keywords']."\");\n";
-        $content .= 'define("SITE_DESCRIPTION","'.$data_array['site_description']."\");\n";
-        $content .= 'define("SITE_STATUS","'.$data_array['site_status']."\");\n";
-        $content .= 'define("SITE_STATUS_NOTES","'.$data_array['site_status_notes']."\");\n";
-        $content .= 'define("SITE_THEME","'.$data_array['site_theme']."\");\n";
-        $content .= 'define("LANGUAGE","'.$data_array['language']."\");\n";
-        $content .= 'define("SYSTEMDK_SITE_LANG","'.$data_array['systemdk_site_lang']."\");\n";
-        $content .= 'define("SYSTEMDK_ADMIN_SITE_LANG","'.$data_array['systemdk_admin_site_lang']."\");\n";
-        $content .= 'define("SYSTEMDK_INTERFACE_LANG","'.$data_array['systemdk_interface_lang']."\");\n";
-        $content .= 'define("SYSTEMDK_ADMIN_INTERFACE_LANG","'.$data_array['systemdk_admin_interface_lang']."\");\n";
-        $content .= 'define("HOME_MODULE","'.$data_array['Home_Module']."\");\n";
-        $content .= 'define("GZIP","'.$data_array['gzip']."\");\n";
-        $content .= 'define("ENTER_CHECK","'.$data_array['enter_check']."\");\n";
-        $content .= 'define("SESSION_COOKIE_LIVE","'.$data_array['session_cookie_live']."\");\n";
-        $content .= 'define("DISPLAY_ADMIN_GRAPHIC","'.$data_array['display_admin_graphic']."\");\n";
-        $content .= 'define("SYSTEMDK_ADMINROWS_PERPAGE","'.$data_array['systemdk_adminrows_perpage']."\");\n";
-        $content .= 'define("SYSTEMDK_MAIL_METHOD","'.$data_array['systemdk_mail_method']."\");\n";
-        $content .= 'define("SYSTEMDK_SMTP_HOST","'.$data_array['systemdk_smtp_host']."\");\n";
-        $content .= 'define("SYSTEMDK_SMTP_PORT","'.$data_array['systemdk_smtp_port']."\");\n";
-        $content .= 'define("SYSTEMDK_SMTP_USER","'.$data_array['systemdk_smtp_user']."\");\n";
-        $content .= 'define("SYSTEMDK_SMTP_PASS","'.$data_array['systemdk_smtp_pass']."\");\n";
-        $content .= 'define("SYSTEMDK_ACCOUNT_REGISTRATION","'.$data_array['systemdk_account_registration']."\");\n";
-        $content .= 'define("SYSTEMDK_ACCOUNT_ACTIVATION","'.$data_array['systemdk_account_activation']."\");\n";
-        $content .= 'define("SYSTEMDK_ACCOUNT_RULES","'.$data_array['systemdk_account_rules']."\");\n";
-        $content .= 'define("SYSTEMDK_ACCOUNT_MAXUSERS","'.$data_array['systemdk_account_maxusers']."\");\n";
-        $content .= 'define("SYSTEMDK_ACCOUNT_MAXACTIVATIONDAYS","'.$data_array['systemdk_account_maxactivationdays']."\");\n";
-        $content .= 'define("SYSTEMDK_STATISTICS","'.$data_array['systemdk_statistics']."\");\n";
-        $content .= 'define("SYSTEMDK_PLAYER_AUTOPLAY","'.$data_array['systemdk_player_autoplay']."\");\n";
-        $content .= 'define("SYSTEMDK_PLAYER_AUTOBUFFER","'.$data_array['systemdk_player_autobuffer']."\");\n";
-        $content .= 'define("SYSTEMDK_PLAYER_CONTROLS","'.$data_array['systemdk_player_controls']."\");\n";
-        $content .= 'define("SYSTEMDK_PLAYER_AUDIOAUTOPLAY","'.$data_array['systemdk_player_audioautoplay']."\");\n";
-        $content .= 'define("SYSTEMDK_PLAYER_AUDIOAUTOBUFFER","'.$data_array['systemdk_player_audioautobuffer']."\");\n";
-        $content .= 'define("SYSTEMDK_PLAYER_AUDIOCONTROLS","'.$data_array['systemdk_player_audio_controls']."\");\n";
-        $content .= 'define("SYSTEMDK_PLAYER_RATIO","'.$this->registry->main_class->float_to_db($data_array['systemdk_player_ratio'])."\");\n";
-        $content .= 'define("SYSTEMDK_PLAYER_SKIN","'.$data_array['systemdk_player_skin']."\");\n";
-        $content .= 'define("SYSTEMDK_IPANTISPAM","'.$data_array['systemdk_ipantispam']."\");\n";
-        $content .= 'define("SYSTEMDK_IPANTISPAM_NUM","'.$data_array['systemdk_ipantispam_num']."\");\n";
-        $content .= 'define("SYSTEMDK_FEEDBACK_RECEIVER","'.$data_array['systemdk_feedback_receiver']."\");\n";
-        $write_file = @fwrite($file,$content);
-        if(!$write_file) {
+        $content .= 'define("SYSTEMDK_VERSION","' . SYSTEMDK_VERSION . "\");\n";
+        $content .= 'define("SYSTEMDK_MODREWRITE","' . $data_array['mod_rewrite'] . "\");\n";
+        $content .= 'define("SYSTEMDK_DESCRIPTION","' . SYSTEMDK_DESCRIPTION . "\");\n";
+        $content .= 'define("SITE_ID","' . $data_array['site_id'] . "\");\n";
+        $content .= 'define("SITE_DIR","' . SITE_DIR . "\");\n";
+        $content .= 'define("ADMIN_DIR","' . ADMIN_DIR . "\");\n";
+        $content .= 'define("ADMIN_EMAIL","' . $data_array['admin_email'] . "\");\n";
+        $content .= 'define("DB_HOST","' . DB_HOST . "\");\n";
+        $content .= 'define("DB_PORT","' . DB_PORT . "\");\n";
+        $content .= 'define("DB_USER_NAME","' . DB_USER_NAME . "\");\n";
+        $content .= 'define("DB_PASSWORD","' . DB_PASSWORD . "\");\n";
+        $content .= 'define("DB_NAME","' . DB_NAME . "\");\n";
+        $content .= 'define("DB_PERSISTENCY","' . $data_array['db_persistency'] . "\");\n";
+        $content .= 'define("PREFIX","' . PREFIX . "\");\n";
+        $content .= 'define("DBTYPE","' . DBTYPE . "\");\n";
+        $content .= 'define("DB_CHARACTER","' . DB_CHARACTER . "\");\n";
+        $content .= 'define("DB_COLLATE","' . DB_COLLATE . "\");\n";
+        $content .= 'define("SMARTY_CACHING","' . $data_array['smarty_caching'] . "\");\n";
+        $content .= 'define("SMARTY_DEBUGGING","' . $data_array['smarty_debugging'] . "\");\n";
+        $content .= 'define("ADODB_DEBUGGING","' . $data_array['adodb_debugging'] . "\");\n";
+        $content .= 'define("CACHE_LIFETIME","' . $data_array['cache_lifetime'] . "\");\n";
+        $content .= 'define("SITE_CHARSET","' . $data_array['site_charset'] . "\");\n";
+        $content .= 'define("SITE_URL","' . $data_array['site_url'] . "\");\n";
+        $content .= 'define("SITE_NAME","' . $data_array['site_name'] . "\");\n";
+        $content .= 'define("SITE_LOGO","' . $data_array['site_logo'] . "\");\n";
+        $content .= 'define("SITE_STARTDATE","' . $data_array['site_startdate'] . "\");\n";
+        $content .= 'define("SITE_KEYWORDS","' . $data_array['site_keywords'] . "\");\n";
+        $content .= 'define("SITE_DESCRIPTION","' . $data_array['site_description'] . "\");\n";
+        $content .= 'define("SITE_STATUS","' . $data_array['site_status'] . "\");\n";
+        $content .= 'define("SITE_STATUS_NOTES","' . $data_array['site_status_notes'] . "\");\n";
+        $content .= 'define("SITE_THEME","' . $data_array['site_theme'] . "\");\n";
+        $content .= 'define("LANGUAGE","' . $data_array['language'] . "\");\n";
+        $content .= 'define("SYSTEMDK_SITE_LANG","' . $data_array['systemdk_site_lang'] . "\");\n";
+        $content .= 'define("SYSTEMDK_ADMIN_SITE_LANG","' . $data_array['systemdk_admin_site_lang'] . "\");\n";
+        $content .= 'define("SYSTEMDK_INTERFACE_LANG","' . $data_array['systemdk_interface_lang'] . "\");\n";
+        $content .= 'define("SYSTEMDK_ADMIN_INTERFACE_LANG","' . $data_array['systemdk_admin_interface_lang'] . "\");\n";
+        $content .= 'define("HOME_MODULE","' . $data_array['Home_Module'] . "\");\n";
+        $content .= 'define("GZIP","' . $data_array['gzip'] . "\");\n";
+        $content .= 'define("ENTER_CHECK","' . $data_array['enter_check'] . "\");\n";
+        $content .= 'define("SESSION_COOKIE_LIVE","' . $data_array['session_cookie_live'] . "\");\n";
+        $content .= 'define("DISPLAY_ADMIN_GRAPHIC","' . $data_array['display_admin_graphic'] . "\");\n";
+        $content .= 'define("SYSTEMDK_ADMINROWS_PERPAGE","' . $data_array['systemdk_adminrows_perpage'] . "\");\n";
+        $content .= 'define("SYSTEMDK_MAIL_METHOD","' . $data_array['systemdk_mail_method'] . "\");\n";
+        $content .= 'define("SYSTEMDK_SMTP_HOST","' . $data_array['systemdk_smtp_host'] . "\");\n";
+        $content .= 'define("SYSTEMDK_SMTP_PORT","' . $data_array['systemdk_smtp_port'] . "\");\n";
+        $content .= 'define("SYSTEMDK_SMTP_USER","' . $data_array['systemdk_smtp_user'] . "\");\n";
+        $content .= 'define("SYSTEMDK_SMTP_PASS","' . $data_array['systemdk_smtp_pass'] . "\");\n";
+        $content .= 'define("SYSTEMDK_ACCOUNT_REGISTRATION","' . $data_array['systemdk_account_registration'] . "\");\n";
+        $content .= 'define("SYSTEMDK_ACCOUNT_ACTIVATION","' . $data_array['systemdk_account_activation'] . "\");\n";
+        $content .= 'define("SYSTEMDK_ACCOUNT_RULES","' . $data_array['systemdk_account_rules'] . "\");\n";
+        $content .= 'define("SYSTEMDK_ACCOUNT_MAXUSERS","' . $data_array['systemdk_account_maxusers'] . "\");\n";
+        $content .= 'define("SYSTEMDK_ACCOUNT_MAXACTIVATIONDAYS","' . $data_array['systemdk_account_maxactivationdays'] . "\");\n";
+        $content .= 'define("SYSTEMDK_STATISTICS","' . $data_array['systemdk_statistics'] . "\");\n";
+        $content .= 'define("SYSTEMDK_PLAYER_AUTOPLAY","' . $data_array['systemdk_player_autoplay'] . "\");\n";
+        $content .= 'define("SYSTEMDK_PLAYER_AUTOBUFFER","' . $data_array['systemdk_player_autobuffer'] . "\");\n";
+        $content .= 'define("SYSTEMDK_PLAYER_CONTROLS","' . $data_array['systemdk_player_controls'] . "\");\n";
+        $content .= 'define("SYSTEMDK_PLAYER_AUDIOAUTOPLAY","' . $data_array['systemdk_player_audioautoplay'] . "\");\n";
+        $content .= 'define("SYSTEMDK_PLAYER_AUDIOAUTOBUFFER","' . $data_array['systemdk_player_audioautobuffer'] . "\");\n";
+        $content .= 'define("SYSTEMDK_PLAYER_AUDIOCONTROLS","' . $data_array['systemdk_player_audio_controls'] . "\");\n";
+        $content .= 'define("SYSTEMDK_PLAYER_RATIO","' . $this->registry->main_class->float_to_db($data_array['systemdk_player_ratio']) . "\");\n";
+        $content .= 'define("SYSTEMDK_PLAYER_SKIN","' . $data_array['systemdk_player_skin'] . "\");\n";
+        $content .= 'define("SYSTEMDK_IPANTISPAM","' . $data_array['systemdk_ipantispam'] . "\");\n";
+        $content .= 'define("SYSTEMDK_IPANTISPAM_NUM","' . $data_array['systemdk_ipantispam_num'] . "\");\n";
+        $content .= 'define("SYSTEMDK_FEEDBACK_RECEIVER","' . $data_array['systemdk_feedback_receiver'] . "\");\n";
+        $write_file = @fwrite($file, $content);
+        if (!$write_file) {
             $this->error = 'not_write';
+
             return;
         } else {
             $this->registry->main_class->clearAllCache();
             $this->result = 'ok';
         }
         @fclose($file);
-        @chmod("../includes/data/config.inc",0604);
+        @chmod("../includes/data/config.inc", 0604);
     }
 
 
-    public function clearallcache() {
+    public function clearallcache()
+    {
         $this->result = false;
         $this->error = false;
         $done = $this->registry->main_class->clearAllCache();
-        if($done) {
+        if ($done) {
             $this->result = 'ok';
         } else {
             $this->error = 'clear_no';

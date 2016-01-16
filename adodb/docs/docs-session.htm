@@ -20,9 +20,11 @@ font-size: 8pt;
 </head>
 <body style="background-color: rgb(255, 255, 255);">
 <h1>ADODB Session 2 Management Manual</h1>
-<p>
-V5.19  23-Apr-2014  (c) 2000-2014 John Lim (jlim#natsoft.com)
-</p>
+
+<p>v5.20.2  27-Dec-2015<br>
+&copy; 2000-2013 John Lim (jlim#natsoft.com)<br>
+&copy; 2014 Damien Regad, Mark Newnham and the ADOdb community</p>
+
 <p> <font size="1">This software is dual licensed using BSD-Style and
 LGPL. This means you can use it in compiled proprietary and commercial
 products. </font>
@@ -245,13 +247,13 @@ based on the userid. When the user logs in, we store the id in the global sessio
 $USERID. The function name is 'NotifyFn'.
 <p>
 So we define (before session_start() is called): </p>
-<pre> <font color="#004040">
-	$ADODB_SESSION_EXPIRE_NOTIFY = array('USERID','NotifyFn');
+<pre><font color="#004040">
+	$GLOBALS['ADODB_SESSION_EXPIRE_NOTIFY'] = array('USERID', 'NotifyFn');
 </font></pre>
-And when the NotifyFn is called (when the session expires), the
+<p>And when the NotifyFn is called (when the session expires), the
 $EXPIREREF holding the user id is passed in as the first parameter, eg. NotifyFn($userid, $sesskey). The
 session key (which is the primary key of the record in the sessions
-table) is the 2nd parameter.
+table) is the 2nd parameter.</p>
 <p> Here is an example of a Notification function that deletes some
 records in the database and temporary files: </p>
 <pre><font color="#004040">
@@ -262,13 +264,13 @@ records in the database and temporary files: </p>
 
 		$ADODB_SESS_CONN-&gt;Execute("delete from shopping_cart where user=$user");
 		system("rm /work/tmpfiles/$expireref/*");
-	}</font>
-			  </pre>
+	}
+</font></pre>
 <p> NOTE 1: If you have register_globals disabled in php.ini, then you
 will have to manually set the EXPIREREF. E.g. </p>
 <pre> <font color="#004040">
-$GLOBALS['USERID'] = GetUserID();
-$ADODB_SESSION_EXPIRE_NOTIFY = array('USERID','NotifyFn');</font>
+	$GLOBALS['USERID'] = GetUserID();
+	$GLOBALS['ADODB_SESSION_EXPIRE_NOTIFY'] = array('USERID', 'NotifyFn');</font>
 </pre>
 <p> NOTE 2: If you want to change the EXPIREREF after the session
 record has been created, you will need to modify any session variable
@@ -299,7 +301,7 @@ will compress and then encrypt the record in the database.
 <h2>Session Cookie Regeneration: adodb_session_regenerate_id()</h2>
 <p>Dynamically change the current session id with a newly generated one and update
   database. Currently only works with cookies. Useful to improve security by
-  reducing the risk of session-hijacking. See this article on <a href=http://shiflett.org/articles/security-corner-feb2004>Session
+  reducing the risk of session-hijacking. See this article on <a href="http://shiflett.org/articles/session-fixation">Session
   Fixation</a> for more info
 on the theory behind this feature. Usage:<pre>
 	include('path/to/adodb/session/adodb-session2.php');
