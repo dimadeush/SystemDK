@@ -108,7 +108,7 @@ class model_main extends model_base
             $version = explode('.', PHP_VERSION);
             define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
         }
-        if (PHP_VERSION_ID < 50200) {
+        if (PHP_VERSION_ID < 50400) {
             return 'version_php';
         }
         foreach ($_GET as $secvalue) {

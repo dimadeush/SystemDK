@@ -2906,7 +2906,7 @@ class install
             $version = explode('.', PHP_VERSION);
             define('PHP_VERSION_ID', ($version[0] * 10000 + $version[1] * 100 + $version[2]));
         }
-        if (PHP_VERSION_ID < 50200 && $this->func !== 'step2') {
+        if (PHP_VERSION_ID < 50400 && $this->func !== 'step2') {
             if ($this->func == 'step5' || $this->func == 'step6') {
                 if (session_id() == "") {
                     session_start();
@@ -2920,7 +2920,7 @@ class install
             }
             header("Location: ../index.php");
             exit();
-        } elseif (PHP_VERSION_ID < 50200 && $this->func == 'step2') {
+        } elseif (PHP_VERSION_ID < 50400 && $this->func == 'step2') {
             $this->smarty->assign("servconf", "no");
         } elseif ($this->func == 'step2') {
             $this->smarty->assign("servconf", "yes");
