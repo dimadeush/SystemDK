@@ -441,7 +441,7 @@ class install
                 || $data_array['db_type'] === 'maxsql'
             ) {
                 if ($i == 0) {
-                    $insert = $adodb->Execute("SET storage_engine=INNODB");
+                    $insert = $adodb->Execute("SET default_storage_engine=INNODB");
                     if (!$insert) {
                         $error_message = $adodb->ErrorMsg();
                         $error_code = $adodb->ErrorNo();
