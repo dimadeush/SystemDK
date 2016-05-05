@@ -2635,7 +2635,7 @@ class install
         $site_startdate = date("d/m/Y");
         $file = @fopen("../includes/data/config.inc", "w");
         $content = "<?php\n\n";
-        $content .= 'define("SYSTEMDK_VERSION","3.4.0");' . "\n";
+        $content .= 'define("SYSTEMDK_VERSION","3.4.1");' . "\n";
         $content .= 'define("SYSTEMDK_MODREWRITE","' . $data_array['mod_rewrite'] . "\");\n";
         $content .= 'define("SYSTEMDK_DESCRIPTION","");' . "\n";
         $content .= 'define("SITE_ID","' . $data_array['site_id'] . "\");\n";
