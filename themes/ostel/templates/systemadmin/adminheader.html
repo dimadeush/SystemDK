@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset={$site_charset}">
+<META NAME="KEYWORDS" CONTENT="{$site_keywords}">
+<META NAME="DESCRIPTION" CONTENT="{$site_description}">
+<TITLE>{$site_name}</TITLE>
+<LINK REL="SHORTCUT ICON" HREF="../themes/ostel/images/favicon.ico" TYPE="image/x-icon">
+<LINK REL="StyleSheet" HREF="../themes/ostel/css/style.css" TYPE="text/css">
+{if isset($include_jquery) and $include_jquery eq "yes"}
+<script type="text/javascript" src="../themes/ostel/js/jquery.tools.min.js"></script>
+{if isset($include_jquery_data) and $include_jquery_data eq "dateinput"}
+<LINK REL="StyleSheet" HREF="../themes/ostel/css/jqdate.css" TYPE="text/css">
+{/if}
+<script type="text/javascript">
+    var jQuery_1_4_2 = $.noConflict(true);
+</script>
+{/if}
+{if isset($addon_multiselect)}
+    <LINK REL="StyleSheet" HREF="../themes/ostel/multiselect/css/jquery-ui.css" TYPE="text/css">
+    <link REL="StyleSheet" href="../themes/ostel/multiselect/css/jquery.uix.multiselect.css" TYPE="text/css">
+    <script type="text/javascript" src="../flowplayer/jquery.min.js"></script>
+    <script type="text/javascript" src="../themes/ostel/multiselect/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../themes/ostel/multiselect/js/jquery.uix.multiselect.js"></script>
+    <script type="text/javascript" src="../themes/ostel/multiselect/js/locales/jquery.uix.multiselect_{$language}.js"></script>
+{/if}
+<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="../ckeditor/Djenx.Explorer/djenx-explorer.js"></script>
+</head>
+<BODY bgColor="{#color2#}" style="margin: 0">
+<div style="width:100%; height:70px; background-image:url(../{#bgimage1#}); background-color:{#color3#};">
+<table width="100%" border="0" cellpadding="0"  cellspacing="0">
+ <tr>
+   <td width="15%"><img src="../{#bgimage23#}" border="0" align="left" alt=""></td>
+   <td width="65%"><center>{if $site_logo ne ""}<img src="../themes/ostel/images/{$site_logo}" border="0" alt="">{/if}<br><span class="remarks">{nocache}{$include_header_data_tpl}{/nocache}</span></center>  </td>
+   <td width="5%" align="right" nowrap> {if $langlist ne "no" and $display_adminsite_lang eq "yes"}<span class="remarks">Site:</span> {foreach $langlist as $langlist_tpl}{if $langlist_tpl.installed eq "yes"}{if $langlist_tpl.count_installed gt 0}<span class="remarks">|</span>{/if}<a href="index.php?lang={$langlist_tpl.name}" class="remarks">{if $site_language ne $langlist_tpl.name}<u>{/if}{$langlist_tpl.name|capitalize}{if $site_language ne $langlist_tpl.name}</u>{/if}</a>{/if}{/foreach}{/if}<br>
+   {if $langlist ne "no" and $display_adminint_lang eq "yes"}<span class="remarks">Interface:</span> {foreach $langlist as $langlist_tpl}{if $langlist_tpl.item gt 0}<span class="remarks">|</span>{/if}<a href="index.php?lang={$site_language}&amp;ilang={$langlist_tpl.name}" class="remarks">{if $language ne $langlist_tpl.name}<u>{/if}{$langlist_tpl.name|capitalize}{if $language ne $langlist_tpl.name}</u>{/if}</a>{/foreach}{/if}
+   </td>
+   <td width="15%"><img src="../{#bgimage24#}" border="0" align="right" alt=""></td>
+ </tr>
+</table>
+</div>
+<div style="width:100%; background-image:url(../{#bgimage2#}); height:20px; background-color:{#color3#};">
+<table width="100%" border="0" cellpadding="0"  cellspacing="0">
+ <tr>
+   <td width="10%">&nbsp;<a href="index.php?lang={$site_language}"><img src="../{#bgimage4#}" border="0" align="middle" alt=""></a>&nbsp;<a href="javascript:history.back(1)"><img src="../{#bgimage6#}" border="0" align="middle" alt=""></a>&nbsp;<a href="javascript:history.go(1)"><img src="../{#bgimage5#}" border="0" align="middle" alt=""></a></td>
+   <td width="80%">&nbsp;</td>
+   <td width="10%">&nbsp;</td>
+ </tr>
+</table>
+</div>
+<div style="width: 100%; height: 3px; background-color:{#color2#};"></div>
+<div style="width:100%; background-color:{#color2#};">
+<center>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" bgcolor="{#color2#}">
+ <tr align="left">
+   <td width="170" valign="top" bgcolor="{#color10#}">
+   <table width="100%" border="0" cellpadding="0" cellspacing="0"  bgcolor="{#color10#}">
+    <tr bgcolor="{#color11#}">
+      <td width="100%" height="17">
+       <center><span class="blockname">{#_ADMINBLOCKMAINNAME#}</span></center>
+      </td>
+    </tr>
+    <tr valign="top" bgcolor="{#color5#}">
+      <td style="width:100%; height:100%; border-left-color:{#color5#}; border-left-style:solid; border-left-width:3px; border-right-color:{#color5#}; border-right-style:solid; border-right-width:3px;">
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 3px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 3px"><a href="#" class="menublock">{#_MENUADMINISTRATION#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_settings&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUCONFIGS#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_modules&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUMODULES#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_blocks&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUBLOCKS#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_menu&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUNAVIGATION#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_administrators&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUADMINS#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_users&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUUSERS#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_main_pages&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUPAGES#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_messages&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUMESSAGES#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_system_pages&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUSYSTEMPAGES#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_including&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUENTERS#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_uploads&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUUPLOADS#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_feedback&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUFEEDBACK#}</a></td></tr></table></td></tr></table>
+      <table width="100%"  border="0" cellspacing="0" cellpadding="0" style="background-color:{#color5#};"><tr><td><table width="100%"  border="0" cellspacing="0" cellpadding="0"><tr><td bgColor="{#color9#}" colSpan="2" height="1"></td></tr><tr style="CURSOR:POINTER;" onmouseover="this.style.backgroundColor='{#color8#}'" onmouseout="this.style.backgroundColor='{#color5#}'" onclick="location.href='index.php?path=admin_banip&amp;func=index&amp;lang={$site_language}'"><td width="5%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><img src="../{#bgimage25#}" alt=""></td><td width="95%" style="PADDING-BOTTOM: 1px; PADDING-TOP: 2px"><a href="#" class="menublock">{#_MENUBANIP#}</a></td></tr></table></td></tr></table>
+      </td>
+    </tr>
+    <tr bgcolor="{#color12#}">
+      <td height="2"></td>
+    </tr>
+   </table><br>
+   <table width="100%" border="0" cellpadding="0" cellspacing="0"  bgcolor="{#color10#}">
+    <tr bgcolor="{#color11#}">
+      <td width="100%" height="17">
+       <center><span class="blockname">{#_ADMINBLOCKWHO#}</span></center>
+      </td>
+    </tr>
+    <tr valign="top" bgcolor="{#color5#}">
+      <td style="width:100%; height:100%; border-left-color:{#color5#}; border-left-style:solid; border-left-width:3px; border-right-color:{#color5#}; border-right-style:solid; border-right-width:3px;">
+      <br><center><span class="leftrightblocktext">{#_HELLO#},<br>
+      {nocache}
+      {$admin_name}</span></center>
+      {/nocache}<br>
+      &nbsp;<img src="../{#bgimage25#}" border="0" alt=""> <a href="index.php?func=mainadmin_edit&amp;lang={$site_language}" class="link">{#_CHANGELINK#}</a><br>
+      &nbsp;<img src="../{#bgimage25#}" border="0" alt=""> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}lang/{$site_language}/{else}/{$system_dir}index.php?lang={$site_language}{/if}" class="link">{#_BACKONSITELINK#}</a><br>
+      &nbsp;<img src="../{#bgimage25#}" border="0" alt=""> <a href="index.php?func=logout&amp;lang={$site_language}" class="link">{#_ADMINEXIT#}</a>
+      </td>
+    </tr>
+    <tr bgcolor="{#color12#}">
+      <td height="2"></td>
+    </tr>
+   </table><br>
+   <hr width="170" style="color:{#color10#}; border:0;">
+   </td>
+   <td width="1"><hr width="4" style="color:{#color10#}; border:0;"></td>
+   <td valign="top" width="100%" bgcolor="{#color10#}">

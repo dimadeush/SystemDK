@@ -64,6 +64,11 @@ RewriteRule ^([^/]+)/questionnaires(/?)+$ index.php?path=questionnaires&lang=$1 
 RewriteRule ^([^/]+)/questionnaires/([0-9]+)(/?)+$ index.php?path=questionnaires&func=view&questionnaire_id=$2&lang=$1 [L]
 RewriteCond %{REQUEST_URI} !/modules/questionnaires
 RewriteRule ^([^/]+)/questionnaires/([^/]+)(/?)+$ index.php?path=questionnaires&func=$2&lang=$1 [L]
+
+# images
+RewriteRule ^images/([^/]+)(/?)+$ images.php?dir=$1 [L]
+RewriteRule ^images/([^/]+)/width/([0-9]+)(/?)+$ images.php?dir=$1&width=$2 [L]
+
 # hide content of some directories
 RewriteRule ^adodb(/?)+$ index.php [L]
 RewriteRule ^adodb/([^/]+)(/?)+$ index.php [L]

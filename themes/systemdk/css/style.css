@@ -153,6 +153,37 @@ color: #000000;
 font-size: 10px;
 font-family: Verdana, Arial, Helvetica, sans-serif;
 }
+.button-buy {
+background: #787878;
+background-image: -webkit-linear-gradient(top, #787878, #575959);
+background-image: -moz-linear-gradient(top, #787878, #575959);
+background-image: -ms-linear-gradient(top, #787878, #575959);
+background-image: -o-linear-gradient(top, #787878, #575959);
+background-image: linear-gradient(to bottom, #787878, #575959);
+-webkit-border-radius: 0;
+-moz-border-radius: 0;
+border-radius: 0px;
+-webkit-box-shadow: 0px 2px 3px #666666;
+-moz-box-shadow: 0px 2px 3px #666666;
+box-shadow: 0px 2px 3px #666666;
+font-family: Arial;
+color: #ffffff;
+font-size: 12px;
+padding: 4px 8px 4px 8px;
+border: solid #1f628d 0px;
+text-decoration: none;
+margin-top: 8px;
+}
+
+.button-buy:hover {
+background: #3d3d3d;
+background-image: -webkit-linear-gradient(top, #3d3d3d, #171717);
+background-image: -moz-linear-gradient(top, #3d3d3d, #171717);
+background-image: -ms-linear-gradient(top, #3d3d3d, #171717);
+background-image: -o-linear-gradient(top, #3d3d3d, #171717);
+background-image: linear-gradient(to bottom, #3d3d3d, #171717);
+text-decoration: none;
+}
 .remarks {
 color: #FFFFFF;
 font-size: 9px;
@@ -275,4 +306,15 @@ ul#cssmenu ul li:hover ul,
 ul#cssmenu li.iehover ul,
 ul#cssmenu ul li.iehover ul {
 	display: block;
+}
+.multiselect {
+    width: 550px;
+    height: 200px;
+}
+
+.systemdk_multiselect {
+    font: 12px 'Helvetica', arial, clean, sans-serif;
+    *font-size: small;
+    *font: x-small;
+    line-height: 1.22em;
 }

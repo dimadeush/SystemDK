@@ -1,0 +1,68 @@
+{#_SHOP#}</span></center>
+</div><br>
+<div align="center">
+    <a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> <span class="tablecenterblocktext2">|</span>
+    <a href="index.php?path=admin_shop&amp;func=additional_param_group_add&amp;lang={$site_language}" class="link">{#_SHOP_ADD_ITEM_ADDITIONAL_PARAM_GROUP#}</a>
+    <br><br>
+    <img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_SHOP_ITEM_ADDITIONAL_PARAM_GROUPS#}</span>
+    <br><br>
+    <form action="index.php?path=admin_shop&amp;func=additional_param_group_status&amp;lang={$site_language}" method="POST">
+        <table border="0" width="99%" cellspacing="2"  cellpadding="0">
+            <tr align="center">
+                <td width="1%" bgcolor="{#color7#}" class="td2"></td>
+                <td width="1%" bgcolor="{#color7#}" class="td2"></td>
+                <td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPNAMETITLE#}</span></td>
+                <td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOP_TYPE_TITLE#}</span></td>
+                <td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPSTATUSTITLE#}</span></td>
+                <td width="26%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPFUNCTIONTITLE#}</span></td>
+            </tr>
+            {if $additional_param_groups ne "no_groups"}
+            {foreach $additional_param_groups as $additional_param_group}
+            <tr>
+                <td width="1%" bgcolor="{#color7#}" nowrap><img src="../{#bgimage15#}" border="0" alt=""></td>
+                <td width="1%" bgcolor="{#color7#}" align="center"><input type="checkbox" name="group_id[]" value="{$additional_param_group.id}" class="formenter"></td>
+                <td width="24%" bgcolor="{#color7#}" class="td1" align="left"><span class="tablecenterblocktext2"> {$additional_param_group.group_name|truncate:30:"...":true}</span></td>
+                <td width="24%" bgcolor="{#color7#}" class="td2" align="center"><span class="tablecenterblocktext2"> {#$additional_param_group.group_type_description#}</span></td>
+                <td width="24%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{if $additional_param_group.group_status eq 0}{#_SHOPITEMOFF#}{else}{#_SHOPITEMON#}{/if}</span></td>
+                <td width="26%" bgcolor="{#color7#}" class="td2" align="left" nowrap>
+                    <a href="index.php?path=admin_shop&amp;func=additional_param_group_params&amp;group_id={$additional_param_group.id}&amp;lang={$site_language}" class="link">{#_SHOP_ITEM_ADDITIONAL_PARAMS#}</a><span class="tablecenterblocktext2">|</span><a href="index.php?path=admin_shop&amp;func=additional_param_group_edit&amp;group_id={$additional_param_group.id}&amp;lang={$site_language}" class="link">{#_SHOPFUNCTIONEDIT#}</a><span class="tablecenterblocktext2">|</span><a href="index.php?path=admin_shop&amp;func=additional_param_group_status&amp;action={if $additional_param_group.group_status eq 1}off{else}on{/if}&amp;group_id={$additional_param_group.id}&amp;lang={$site_language}" class="link">{if $additional_param_group.group_status eq 1}{#_SHOPFUNCTIONOFF#}{else}{#_SHOPFUNCTIONON#}{/if}</a><span class="tablecenterblocktext2">|</span><a href="index.php?path=admin_shop&amp;func=additional_param_group_status&amp;action=confirm_delete&amp;group_id={$additional_param_group.id}&amp;lang={$site_language}" class="link">{#_SHOPFUNCTIONDELETE#}</a>
+                </td>
+            </tr>
+            {/foreach}
+            {else}
+            <tr>
+                <td width="100%" colspan="6" align="center" bgcolor="{#color7#}"><span class="tablecenterblocktext2">{#_SHOP_EMPTY_ITEM_ADDITIONAL_PARAM_GROUPS#}</span></td>
+            </tr>
+            {/if}
+        </table>
+        {if $additional_param_groups ne "no_groups"}
+        <table border="0" width="99%" cellspacing="2"  cellpadding="0">
+            <tr align="right">
+                <td><span class="tablecenterblocktext2">{#_SHOPACTIONWITHSELECTED#}:</span>
+                    <select name="action" class="formenter">
+                        <option value="off">{#_SHOPFUNCTIONOFF#}</option>
+                        <option value="on">{#_SHOPFUNCTIONON#}</option>
+                        <option value="confirm_delete">{#_SHOPFUNCTIONDELETE#}</option>
+                    </select>
+                    <input type="submit" value="{#_SHOPBUTTONDONE#}" class="button">
+                </td>
+            </tr>
+        </table>
+        {/if}
+    </form>
+</div>
+{if $pages_menu ne "no"}
+<table width="100%" cellpadding="0" cellspacing="2" border="0">
+    <tr>
+        <td><center><span class="tablecenterblocktext2">{#_SHOPITEMSCOUNTTOTAL#}:{$total_additional_param_groups} ({#_SHOPPAGESTOTAL#}:{$num_pages})</span></center></td>
+    </tr>
+</table>
+<div align="center">
+    {if $prevpage ne "no"}<a href="index.php?path=admin_shop&amp;func=additional_param_groups&amp;num_page={$prevpage}&amp;lang={$site_language}" title="{#_SHOPPREVPAGE#}" class="link"><img src="../{#bgimage19#}" border="0" alt="{#_SHOPPREVPAGE#}"></a> {/if}
+    {foreach $pages_menu as $pages_menu_tpl}
+    {if $pages_menu_tpl.param1 eq "1"} <span class="tablecenterblocktext2">[{$pages_menu_tpl.number}]</span> {elseif $pages_menu_tpl.param1 eq "2"} <a href="index.php?path=admin_shop&amp;func=additional_param_groups&amp;num_page={$pages_menu_tpl.number}&amp;lang={$site_language}" class="link">[{$pages_menu_tpl.number}]</a> {elseif $pages_menu_tpl.param1 eq "3"} ...<a href="index.php?path=admin_shop&amp;func=additional_param_groups&amp;num_page={$pages_menu_tpl.number}&amp;lang={$site_language}" class="link">[{$pages_menu_tpl.number}]</a> {elseif $pages_menu_tpl.param1 eq "4"} <a href="index.php?path=admin_shop&amp;func=additional_param_groups&amp;num_page={$pages_menu_tpl.number}&amp;lang={$site_language}" class="link">[{$pages_menu_tpl.number}]</a>... {/if}
+    {/foreach}
+    {if $nextpage ne "no"} <a href="index.php?path=admin_shop&amp;func=additional_param_groups&amp;num_page={$nextpage}&amp;lang={$site_language}" title="{#_SHOPNEXTPAGE#}" class="link"><img src="../{#bgimage20#}" border="0" alt="{#_SHOPNEXTPAGE#}"></a>{/if}
+</div>
+{/if}
+<br><br>

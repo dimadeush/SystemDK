@@ -8,7 +8,7 @@
  * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.4
+ * @version   3.5
  */
 class install
 {
@@ -737,6 +737,101 @@ class install
                     $error_code = $adodb->ErrorNo();
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
+
+
+                if ($i == 0) {
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_add_par_g_types (
+                        id int(11) not null auto_increment,
+                        type_name varchar(255) not null,
+                        type_description varchar(255) not null,
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types (id,type_name,type_description) VALUES
+                        (1,'check_more', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_MORE'),
+                        (2,'check_single', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_SINGLE'),
+                        (3,'select_list', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_SELECT_LIST');"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_add_par_groups_" . $install_lang[$i] . " (
+                    id int(11) not null auto_increment,
+                    group_name varchar(255) not null,
+                    group_type_id int(11) not null,
+                    group_status enum('0','1') not null default '1',
+                    PRIMARY KEY (id)
+                  ) ENGINE=InnoDB"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_add_params_" . $install_lang[$i] . " (
+                    id int(11) not null auto_increment,
+                    param_group_id int(11) not null,
+                    param_value varchar(255) not null,
+                    param_status enum('0','1') not null default '1',
+                    PRIMARY KEY (id)
+                  ) ENGINE=InnoDB"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_item_add_params_" . $install_lang[$i] . " (
+                    item_id int(11) not null,
+                    item_param_id int(11) not null,
+                    UNIQUE KEY item_id_param_id (item_id,item_param_id)
+                  ) ENGINE=InnoDB"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_order_i_params_" . $install_lang[$i] . " (
+                    id int(11) not null auto_increment,
+                    order_id int(11) not null,
+                    order_item_id int(11) not null,
+                    order_suborder_id int(11) not null,
+                    order_item_param_group_id int(11) not null,
+                    order_item_param_id int(11) not null,
+                    PRIMARY KEY (id)
+                  ) ENGINE=InnoDB"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
                 //shop end
                 // questionnaire start
                 $insert = $adodb->Execute(
@@ -962,7 +1057,7 @@ class install
                     main_menu_module varchar(255),
                     main_menu_submodule varchar(255),
                     main_menu_add_param varchar(255),
-                    main_menu_target varchar(20) default '_parent' not null,
+                    main_menu_target varchar(20) default '_self' not null,
                     main_menu_priority int(3) not null,
                     main_menu_in_menu enum('0','1') default '1' not null,
                     PRIMARY KEY (main_menu_id)
@@ -1691,6 +1786,224 @@ class install
                     $error_code = $adodb->ErrorNo();
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
+
+                if ($i == 0) {
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_add_par_g_types (
+                        id NUMBER(11,0) NOT NULL,
+                        type_name VARCHAR2(255 CHAR) NOT NULL,
+                        type_description VARCHAR2(255 CHAR) NOT NULL
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "ALTER TABLE " . $data_array['prefix'] . "_s_add_par_g_types ADD (
+                        PRIMARY KEY(id)
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    // do not need sequence because type_id using in code to determine question type
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types VALUES (1, 'check_more', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_MORE')"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types VALUES (2, 'check_single', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_SINGLE')"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types VALUES (3, 'select_list', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_SELECT_LIST')"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_add_par_groups_" . $install_lang[$i] . " (
+                    id NUMBER(11,0) NOT NULL,
+                    group_name VARCHAR2(255 CHAR) NOT NULL,
+                    group_type_id NUMBER(11,0) NOT NULL,
+                    group_status NUMBER(1,0) DEFAULT 1 NOT NULL
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "ALTER TABLE " . $data_array['prefix'] . "_s_add_par_groups_" . $install_lang[$i] . " ADD (
+                    PRIMARY KEY(id)
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE SEQUENCE " . $data_array['prefix'] . "_s_add_par_groups_id_" . $install_lang[$i] . "
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  "
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_add_params_" . $install_lang[$i] . " (
+                    id NUMBER(11,0) NOT NULL,
+                    param_group_id NUMBER(11,0) NOT NULL,
+                    param_value VARCHAR2(255 CHAR) NOT NULL,
+                    param_status NUMBER(1,0) DEFAULT 1 NOT NULL
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "ALTER TABLE " . $data_array['prefix'] . "_s_add_params_" . $install_lang[$i] . " ADD (
+                    PRIMARY KEY(id)
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE SEQUENCE " . $data_array['prefix'] . "_s_add_params_id_" . $install_lang[$i] . "
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  "
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_item_add_params_" . $install_lang[$i] . " (
+                    item_id NUMBER(11,0) NOT NULL,
+                    item_param_id NUMBER(11,0) NOT NULL
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "ALTER TABLE " . $data_array['prefix'] . "_s_item_add_params_" . $install_lang[$i] . " ADD (
+                    UNIQUE (item_id,item_param_id)
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_order_i_params_" . $install_lang[$i] . " (
+                    id NUMBER(11,0) NOT NULL,
+                    order_id NUMBER(11,0) NOT NULL,
+                    order_item_id NUMBER(11,0) NOT NULL,
+                    order_suborder_id NUMBER(11,0) NOT NULL,
+                    order_item_param_group_id NUMBER(11,0) NOT NULL,
+                    order_item_param_id NUMBER(11,0) NOT NULL
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "ALTER TABLE " . $data_array['prefix'] . "_s_order_i_params_" . $install_lang[$i] . " ADD (
+                    PRIMARY KEY(id)
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE SEQUENCE " . $data_array['prefix'] . "_s_order_i_params_id_" . $install_lang[$i] . "
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  "
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
                 //shop end
                 // questionnaire start
                 $insert = $adodb->Execute(
@@ -2248,7 +2561,7 @@ class install
                     main_menu_module VARCHAR2(255 CHAR),
                     main_menu_submodule VARCHAR2(255 CHAR),
                     main_menu_add_param VARCHAR2(255 CHAR),
-                    main_menu_target VARCHAR2(20 CHAR) DEFAULT '_parent' NOT NULL,
+                    main_menu_target VARCHAR2(20 CHAR) DEFAULT '_self' NOT NULL,
                     main_menu_priority NUMBER(3,0) NOT NULL,
                     main_menu_in_menu NUMBER(1,0) DEFAULT 1 NOT NULL
                   )"
@@ -2635,7 +2948,7 @@ class install
         $site_startdate = date("d/m/Y");
         $file = @fopen("../includes/data/config.inc", "w");
         $content = "<?php\n\n";
-        $content .= 'define("SYSTEMDK_VERSION","3.4.1");' . "\n";
+        $content .= 'define("SYSTEMDK_VERSION","3.5.0");' . "\n";
         $content .= 'define("SYSTEMDK_MODREWRITE","' . $data_array['mod_rewrite'] . "\");\n";
         $content .= 'define("SYSTEMDK_DESCRIPTION","");' . "\n";
         $content .= 'define("SITE_ID","' . $data_array['site_id'] . "\");\n";

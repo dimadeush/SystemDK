@@ -1,0 +1,24 @@
+{if isset($additional_params.groups) }
+    {foreach $additional_params.groups as $groups_tpl}
+        {if isset($additional_params.params.{$groups_tpl.group_id}) }
+            <br>
+            {$groups_tpl.group_name}:
+            {if $groups_tpl.type_id eq '1'}
+                {foreach $additional_params.params.{$groups_tpl.group_id} as $params_tpl}
+                    {$params_tpl.param_value}:<input class="formenter" type="checkbox" value="{$params_tpl.param_id}" name="shop_additional_params[{$item_id}][{$groups_tpl.group_id}][]" {if isset($shop_cart_allowchange) && $shop_cart_allowchange eq 0}disabled{/if}>
+                {/foreach}
+            {elseif $groups_tpl.type_id eq '2'}
+                {foreach $additional_params.params.{$groups_tpl.group_id} as $params_tpl}
+                    {$params_tpl.param_value}:<input class="formenter" type="radio" value="{$params_tpl.param_id}" name="shop_additional_params[{$item_id}][{$groups_tpl.group_id}][]" {if isset($shop_cart_allowchange) && $shop_cart_allowchange eq 0}disabled{/if}>
+                {/foreach}
+            {elseif $groups_tpl.type_id eq '3'}
+                <select name="shop_additional_params[{$item_id}][{$groups_tpl.group_id}][]" class="formenter" {if isset($shop_cart_allowchange) && $shop_cart_allowchange eq 0}disabled{/if}>
+                    {foreach $additional_params.params.{$groups_tpl.group_id} as $params_tpl}
+                        <option value="{$params_tpl.param_id}">{$params_tpl.param_value}</option>
+                    {/foreach}
+                </select>
+            {/if}
+            <br>
+        {/if}
+    {/foreach}
+{/if}

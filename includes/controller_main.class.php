@@ -8,7 +8,7 @@
  * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.4
+ * @version   3.5
  */
 class controller_main extends controller_base
 {
@@ -281,6 +281,12 @@ class controller_main extends controller_base
     public function get_user_name()
     {
         return $this->model->get_user_name();
+    }
+
+
+    public function get_site_url()
+    {
+        return $this->model->getSiteUrl();
     }
 
 

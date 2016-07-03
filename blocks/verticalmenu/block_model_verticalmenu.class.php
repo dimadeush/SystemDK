@@ -8,7 +8,7 @@
  * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.4
+ * @version   3.5
  */
 class block_verticalmenu extends model_base
 {
@@ -114,7 +114,7 @@ class block_verticalmenu extends model_base
                         $mainmenu_parent_name = "Other";
                         $mainmenu_parent_element = "other";
                         $mainmenu_parent_element_type = "parent";
-                        $mainmenu_parent_target = "_parent";
+                        $mainmenu_parent_target = "_self";
                         $mainmenu_parent_access = "no";
                     }
                     $mainmenu_childs[$mainmenu_id][] = [

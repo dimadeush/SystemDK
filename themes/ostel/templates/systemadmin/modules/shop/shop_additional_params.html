@@ -1,0 +1,52 @@
+<script type="text/javascript">
+    $(function() {
+
+        {literal}
+        var defaultOptions = {
+            //availableListPosition: 'bottom',
+            moveEffect: 'blind',
+            moveEffectOptions: {direction:'vertical'},
+            moveEffectSpeed: 'fast'
+        };
+
+        var widgets = {
+            'simple': $.extend($.extend({}, defaultOptions), {
+                sortMethod: 'natural',
+                sortable: true
+            }),
+            'disabled': $.extend({}, defaultOptions),
+            'groups': $.extend($.extend({}, defaultOptions), {
+                sortMethod: 'natural',
+                showEmptyGroups: true,
+                sortable: true
+            }),
+            'dynamic': $.extend({}, defaultOptions)
+        };
+
+        $.each(widgets, function(k, i) {
+            $('#multiselect_'+k).multiselect(i);
+        });
+        {/literal}
+
+        $('.multiselect').multiselect('locale', '{$language}' );
+    });
+</script>
+<div id="content" class="systemdk_multiselect">
+    <div id="usage_groups">
+        <div class="example-container ui-helper-clearfix">
+            <select id="multiselect_groups" name="item_additional_params[]" class="multiselect" multiple="multiple">
+                {if isset($adminmodules_shop_additional_params.groups) }
+                {foreach $adminmodules_shop_additional_params.groups as $groups}
+                <optgroup label="{$groups.group_name}">
+                    {if isset($adminmodules_shop_additional_params.params.{$groups.group_id}) }
+                    {foreach $adminmodules_shop_additional_params.params.{$groups.group_id} as $params}
+                    <option value="{$params.param_id}" {if $params.param_selected gt 0}selected="selected"{/if}>{$params.param_value}</option>
+                    {/foreach}
+                    {/if}
+                </optgroup>
+                {/foreach}
+                {/if}
+            </select>
+        </div>
+    </div>
+</div>

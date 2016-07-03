@@ -8,7 +8,7 @@
  * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.4
+ * @version   3.5
  */
 class admin_shop extends model_base
 {
@@ -1193,11 +1193,22 @@ class admin_shop extends model_base
         } elseif ($action == "delete") {
             $this->db->StartTrans();
             $this->shop_delete_images($item_id, $action);
-            $sql0 = "DELETE FROM " . PREFIX . "_items_" . $this->registry->sitelang . " WHERE item_subcategory_id IN (SELECT subcategory_id FROM " . PREFIX
+            $from = PREFIX . "_items_" . $this->registry->sitelang . " WHERE item_subcategory_id IN (SELECT subcategory_id FROM " . PREFIX
                     . "_subcategories_" . $this->registry->sitelang . " WHERE subcategory_cat_id IN (SELECT category_id FROM " . PREFIX . "_categories_"
                     . $this->registry->sitelang . " where cat_catalog_id IN (" . $item_id . "))) or item_category_id IN (SELECT category_id FROM " . PREFIX
                     . "_categories_"
                     . $this->registry->sitelang . " WHERE cat_catalog_id IN (" . $item_id . ")) or item_catalog_id IN (" . $item_id . ")";
+                    
+            $sql = "DELETE FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " WHERE item_id IN (SELECT item_id FROM " . $from . ")";
+            $resultAdditionalParams = $this->db->Execute($sql);
+            
+            if ($resultAdditionalParams === false) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $this->error_array[] = ["code" => $error_code, "message" => $error_message];
+            }
+            
+            $sql0 = "DELETE FROM " . $from;
             $result0 = $this->db->Execute($sql0);
             if ($result0 === false) {
                 $error_message = $this->db->ErrorMsg();
@@ -1262,7 +1273,7 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $this->error_array[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($result0 === false || $result1 === false || $result2 === false || $result3 === false || (isset($result4) && $result4 === false)
+            if ($resultAdditionalParams === false || $result0 === false || $result1 === false || $result2 === false || $result3 === false || (isset($result4) && $result4 === false)
                 || (isset($result5)
                     && $result5 === false)
                 || !empty($this->error_array)
@@ -1284,8 +1295,18 @@ class admin_shop extends model_base
         } elseif ($action == "delete1") {
             $this->db->StartTrans();
             $this->shop_delete_images($item_id, $action);
-            $sql0 = "DELETE FROM " . PREFIX . "_items_" . $this->registry->sitelang . " WHERE item_subcategory_id IN (SELECT subcategory_id FROM " . PREFIX
+            $from = PREFIX . "_items_" . $this->registry->sitelang . " WHERE item_subcategory_id IN (SELECT subcategory_id FROM " . PREFIX
                     . "_subcategories_" . $this->registry->sitelang . " WHERE subcategory_cat_id IN (" . $item_id . ")) or item_category_id IN (" . $item_id . ")";
+            $sql = "DELETE FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " WHERE item_id IN (SELECT item_id FROM " . $from . ")";
+            $resultAdditionalParams = $this->db->Execute($sql);
+
+            if ($resultAdditionalParams === false) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $this->error_array[] = ["code" => $error_code, "message" => $error_message];
+            }
+
+            $sql0 = "DELETE FROM " . $from;
             $result0 = $this->db->Execute($sql0);
             if ($result0 === false) {
                 $error_message = $this->db->ErrorMsg();
@@ -1344,7 +1365,7 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $this->error_array[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($result0 === false || $result1 === false || $result2 === false || (isset($result3) && $result3 === false) || (isset($result4) && $result4 === false)
+            if ($resultAdditionalParams === false || $result0 === false || $result1 === false || $result2 === false || (isset($result3) && $result3 === false) || (isset($result4) && $result4 === false)
                 || !empty($this->error_array)
             ) {
                 $result = false;
@@ -1364,7 +1385,17 @@ class admin_shop extends model_base
         } elseif ($action == "delete2") {
             $this->db->StartTrans();
             $this->shop_delete_images($item_id, $action);
-            $sql0 = "DELETE FROM " . PREFIX . "_items_" . $this->registry->sitelang . " WHERE item_subcategory_id IN (" . $item_id . ")";
+            $from = PREFIX . "_items_" . $this->registry->sitelang . " WHERE item_subcategory_id IN (" . $item_id . ")";
+            $sql = "DELETE FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " WHERE item_id IN (SELECT item_id FROM " . $from . ")";
+            $resultAdditionalParams = $this->db->Execute($sql);
+
+            if ($resultAdditionalParams === false) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $this->error_array[] = ["code" => $error_code, "message" => $error_message];
+            }
+
+            $sql0 = "DELETE FROM " . $from;
             $result0 = $this->db->Execute($sql0);
             if ($result0 === false) {
                 $error_message = $this->db->ErrorMsg();
@@ -1418,7 +1449,9 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $this->error_array[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($result0 === false || $result1 === false || (isset($result2) && $result2 === false) || (isset($result3) && $result3 === false)
+            if ($resultAdditionalParams === false || $result0 === false || $result1 === false || (isset($result2) && $result2 === false)
+                || (isset($result3)
+                    && $result3 === false)
                 || !empty($this->error_array)
             ) {
                 $result = false;
@@ -1586,7 +1619,17 @@ class admin_shop extends model_base
                     $this->error_array[] = ["code" => $error_code, "message" => $error_message];
                 }
             }
-            $sql = "DELETE FROM " . PREFIX . "_items_" . $this->registry->sitelang . " WHERE item_id IN (" . $item_id . ")";
+            $from = PREFIX . "_items_" . $this->registry->sitelang . " WHERE item_id IN (" . $item_id . ")";
+            $sql = "DELETE FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " WHERE item_id IN (SELECT item_id FROM " . $from . ")";
+            $resultAdditionalParams = $this->db->Execute($sql);
+
+            if ($resultAdditionalParams === false) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $this->error_array[] = ["code" => $error_code, "message" => $error_message];
+            }
+
+            $sql = "DELETE FROM " . $from;
             $result = $this->db->Execute($sql);
             if ($result) {
                 $num_result = $this->db->Affected_Rows();
@@ -1595,7 +1638,7 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $this->error_array[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($result1 === false || (isset($result2) && $result2 === false) || (isset($result3) && $result3 === false) || !empty($this->error_array)) {
+            if ($resultAdditionalParams === false || $result1 === false || (isset($result2) && $result2 === false) || (isset($result3) && $result3 === false) || !empty($this->error_array)) {
                 $result = false;
             } else {
                 $this->shop_delete_img_process();
@@ -2251,6 +2294,14 @@ class admin_shop extends model_base
             $result->MoveNext();
         }
         $this->result['item_all'] = $item_all;
+        $additionalParams = $this->getAdditionalParams($item_id);
+
+        if($additionalParams === false && !empty($this->error)) {
+            return;
+        }
+
+        $this->result['addon_multiselect'] = true;
+        $this->result['adminmodules_shop_additional_params'] = $additionalParams;
         $this->result['adminmodules_shop_item_id'] = $item_id;
         $this->result['adminmodules_shop_cat'] = $data_array['cat'];
         $this->result['adminmodules_shop_categ'] = $data_array['categ'];
@@ -2267,6 +2318,122 @@ class admin_shop extends model_base
         $this->result['adminmodules_shop_depth'] = $cache;
         $this->result['include_jquery'] = "yes";
         $this->result['include_jquery_data'] = "dateinput";
+    }
+
+
+    /**
+     * @param int $itemId
+     *
+     * @return bool|array
+     */
+    private function getAdditionalParams($itemId = 0)
+    {
+        $itemId = intval($itemId);
+        $additionalParams = false;
+        $addSqlPart = false;
+
+        if ($itemId > 0) {
+            $addSqlPart = ",c.item_id";
+        }
+
+        $sql = "SELECT a.id as group_id,a.group_name,a.group_status,b.id as param_id,b.param_value,b.param_status" . $addSqlPart . " FROM "
+               . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " a LEFT OUTER JOIN "
+               . PREFIX . "_s_add_params_" . $this->registry->sitelang . " b ON a.id=b.param_group_id ";
+
+        if ($itemId > 0) {
+            $sql .= "LEFT OUTER JOIN " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " c ON b.id=c.item_param_id and c.item_id='" . $itemId . "' ";
+        }
+
+        $sql .= "ORDER BY a.id,b.param_value ASC";
+
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = ["code" => $error_code, "message" => $error_message];
+            $this->error = ($itemId > 0 ) ? 'edit_item_sql_error' : 'add_item_sql_error';
+            $this->error_array = $error;
+
+            return false;
+        }
+
+        if (isset($result->fields['0'])) {
+            $row_exist = intval($result->fields['0']);
+        } else {
+            $row_exist = 0;
+        }
+
+        if ($row_exist > 0) {
+            while (!$result->EOF) {
+                $groupId = intval($result->fields['0']);
+                $groupName = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                $groupStatus = intval($result->fields['2']);
+                $paramId = intval($result->fields['3']);
+                $paramValue = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4']));
+                $paramStatus = intval($result->fields['5']);
+                $paramSelected = 0;
+
+                if ($itemId > 0 && isset($result->fields['6']) && intval($result->fields['6']) > 0) {
+                    $paramSelected = 1;
+                }
+
+                $additionalParams['groups'][$groupId] = [
+                    'group_id'     => $groupId,
+                    'group_name'   => $groupName,
+                    'group_status' => $groupStatus,
+                ];
+
+                if ($paramId > 0) {
+                    $additionalParams['params'][$groupId][$paramId] = [
+                        'param_id'       => $paramId,
+                        'param_value'    => $paramValue,
+                        'param_status'   => $paramStatus,
+                        'param_selected' => $paramSelected,
+                    ];
+                }
+
+                $result->MoveNext();
+            }
+        }
+
+        return $additionalParams;
+    }
+    
+    
+    private function setItemAdditionalParams($itemId, $additionalParams, $type = 'add')
+    {
+        $sql = "DELETE FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " WHERE item_id='" . $itemId . "'";
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error_message = $this->db->ErrorMsg();
+            $error_code = $this->db->ErrorNo();
+            $error[] = ["code" => $error_code, "message" => $error_message];
+            $this->error = $type . '_item_sql_error';
+            $this->error_array = $error;
+
+            return false;
+        }
+        
+        if (!empty($additionalParams) && is_array($additionalParams)) {
+            foreach($additionalParams as $key => $value) {
+                $sql = "INSERT INTO " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " (item_id,item_param_id) VALUES ('" . $itemId . "','" . $value . "')";
+                $result = $this->db->Execute($sql);
+                
+                if (!$result) {
+                    $error_message = $this->db->ErrorMsg();
+                    $error_code = $this->db->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                    $this->error = $type . '_item_sql_error';
+                    $this->error_array = $error;
+
+                    return false;
+                }
+            }
+        }
+        
+        return true;
     }
 
 
@@ -2309,12 +2476,20 @@ class admin_shop extends model_base
                 'item_minute',
                 'depth',
             ];
+            $keys3 = [
+                'item_additional_params',
+            ];
             foreach ($array as $key => $value) {
                 if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
                 if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
+                }
+                if (in_array($key, $keys3) && is_array($array[$key])) {
+                    foreach ($array[$key] as $param_key => $param_value) {
+                        $data_array[$key][intval($param_key)] = intval($param_value);
+                    }
                 }
             }
         }
@@ -2329,6 +2504,9 @@ class admin_shop extends model_base
         }
         if (!isset($data_array['item_minute'])) {
             $data_array['item_minute'] = 0;
+        }
+        if(!isset($data_array['item_additional_params'])) {
+            $data_array['item_additional_params'] = false;
         }
         if (isset($data_array['depth']) && $data_array['depth'] == 1) {
             $cache = "cati";
@@ -2713,6 +2891,15 @@ class admin_shop extends model_base
                 $result = false;
             }
         }
+        
+        if ($result && isset($data_array['item_additional_params'])) {
+            $result = $this->setItemAdditionalParams($data_array['item_id'], $data_array['item_additional_params'], 'edit');
+            
+            if ($result) {
+                $num_result = 1;
+            }
+        }
+        
         $this->db->CompleteTrans();
         if ($result === false) {
             $this->error = 'edit_item_sql_error';
@@ -3224,6 +3411,14 @@ class admin_shop extends model_base
                 $this->result['subcategories_all'] = $subcategories_all;
             }
         }
+        $additionalParams = $this->getAdditionalParams();
+
+        if($additionalParams === false && !empty($this->error)) {
+            return;
+        }
+
+        $this->result['addon_multiselect'] = true;
+        $this->result['adminmodules_shop_additional_params'] = $additionalParams;
         $this->result['adminmodules_shop_depth'] = $cache;
         $this->result['include_jquery'] = "yes";
         $this->result['include_jquery_data'] = "dateinput";
@@ -3263,12 +3458,20 @@ class admin_shop extends model_base
                 'item_minute',
                 'depth',
             ];
+            $keys3 = [
+                'item_additional_params',
+            ];
             foreach ($array as $key => $value) {
                 if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
                 if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
+                }
+                if (in_array($key, $keys3) && is_array($array[$key])) {
+                    foreach ($array[$key] as $param_key => $param_value) {
+                        $data_array[$key][intval($param_key)] = intval($param_value);
+                    }
                 }
             }
         }
@@ -3283,6 +3486,9 @@ class admin_shop extends model_base
         }
         if (!isset($array['item_minute'])) {
             $data_array['item_minute'] = 0;
+        }
+        if(!isset($data_array['item_additional_params'])) {
+            $data_array['item_additional_params'] = false;
         }
         if (isset($data_array['depth']) && $data_array['depth'] == 1) {
             $cache = "cati";
@@ -3457,10 +3663,11 @@ class admin_shop extends model_base
         if (!isset($item_position)) {
             $item_position = 1;
         }
+        $this->db->StartTrans();
         $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_items_id_" . $this->registry->sitelang, 'item_id');
+        $itemId = $sequence_array['sequence_value_string'];
         $check_db_need_lobs = $this->registry->main_class->check_db_need_lobs();
         if ($check_db_need_lobs == 'yes') {
-            $this->db->StartTrans();
             $sql = "INSERT INTO " . PREFIX . "_items_" . $this->registry->sitelang . " (" . $sequence_array['field_name_string']
                    . "item_img,item_name,item_price,item_price_discounted,item_catalog_id,item_category_id,item_subcategory_id,item_short_description,item_description,item_position,item_show,item_quantity,item_quantity_unlim,item_quantity_param,item_display,item_date,item_meta_title,item_meta_keywords,item_meta_description) VALUES ("
                    . $sequence_array['sequence_value_string'] . "" . $item_img . "," . $data_array['item_name'] . ",'" . $data_array['item_price'] . "',"
@@ -3474,6 +3681,10 @@ class admin_shop extends model_base
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = ["code" => $error_code, "message" => $error_message];
+            } else {
+                if (empty($itemId)) {
+                    $itemId = $this->registry->main_class->db_get_last_insert_id();
+                }
             }
             $data_array['item_short_description'] = substr(substr($data_array['item_short_description'], 0, -1), 1);
             $result2 = $this->db->UpdateClob(
@@ -3494,7 +3705,6 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $error[] = ["code" => $error_code, "message" => $error_message];
             }
-            $this->db->CompleteTrans();
             if ($result2 === false || $result3 === false) {
                 $result = false;
             }
@@ -3513,8 +3723,19 @@ class admin_shop extends model_base
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = ["code" => $error_code, "message" => $error_message];
+            } else {
+                if (empty($itemId)) {
+                    $itemId = $this->registry->main_class->db_get_last_insert_id();
+                }
             }
         }
+        
+        if ($result && isset($data_array['item_additional_params'])) {
+            $result = $this->setItemAdditionalParams($itemId, $data_array['item_additional_params'], 'add');
+        }
+        
+        $this->db->CompleteTrans();
+        
         if ($result === false) {
             $this->error = 'add_item_sql_error';
             $this->error_array = $error;
@@ -4305,36 +4526,37 @@ class admin_shop extends model_base
                 $order_comments = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['19']));
                 $order_ip = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['20']));
                 $order_all[] = [
-                    "order_id"               => $order_id,
-                    "order_customer_id"      => $order_customer_id,
-                    "order_amount"           => number_format($order_amount, 2, '.', ' '),
-                    "order_amount2"          => number_format($order_amount2, 2, '.', ' '),
-                    "order_date"             => $order_date2,
-                    "order_hour"             => $order_hour,
-                    "order_minute"           => $order_minute,
-                    "ship_date"              => $ship_date2,
-                    "ship_hour"              => $ship_hour,
-                    "ship_minute"            => $ship_minute,
-                    "order_status"           => $order_status,
-                    "ship_name"              => $ship_name,
-                    "ship_street"            => $ship_street,
-                    "ship_house"             => $ship_house,
-                    "ship_flat"              => $ship_flat,
-                    "ship_city"              => $ship_city,
-                    "ship_state"             => $ship_state,
-                    "ship_postalcode"        => $ship_postalcode,
-                    "ship_country"           => $ship_country,
-                    "ship_telephone"         => $ship_telephone,
-                    "ship_email"             => $ship_email,
-                    "ship_addinfo"           => $ship_addinfo,
-                    "order_delivery"         => $order_delivery,
-                    "order_pay"              => $order_pay,
-                    "order_comments"         => $order_comments,
-                    "order_customer_login"   => $order_customer_login,
-                    "order_customer_name"    => $order_customer_name,
-                    "order_customer_surname" => $order_customer_surname,
-                    "order_customer_type"    => $user_type,
-                    "order_ip"               => $order_ip,
+                    "order_id"                      => $order_id,
+                    "order_customer_id"             => $order_customer_id,
+                    "order_amount"                  => number_format($order_amount, 2, '.', ' '),
+                    "order_amount2"                 => number_format($order_amount2, 2, '.', ' '),
+                    "order_date"                    => $order_date2,
+                    "order_hour"                    => $order_hour,
+                    "order_minute"                  => $order_minute,
+                    "ship_date"                     => $ship_date2,
+                    "ship_hour"                     => $ship_hour,
+                    "ship_minute"                   => $ship_minute,
+                    "order_status"                  => $order_status,
+                    "ship_name"                     => $ship_name,
+                    "ship_street"                   => $ship_street,
+                    "ship_house"                    => $ship_house,
+                    "ship_flat"                     => $ship_flat,
+                    "ship_city"                     => $ship_city,
+                    "ship_state"                    => $ship_state,
+                    "ship_postalcode"               => $ship_postalcode,
+                    "ship_country"                  => $ship_country,
+                    "ship_telephone"                => $ship_telephone,
+                    "ship_email"                    => $ship_email,
+                    "ship_addinfo"                  => $ship_addinfo,
+                    "order_delivery"                => $order_delivery,
+                    "order_pay"                     => $order_pay,
+                    "order_comments"                => $order_comments,
+                    "order_customer_login"          => $order_customer_login,
+                    "order_customer_name"           => $order_customer_name,
+                    "order_customer_surname"        => $order_customer_surname,
+                    "order_customer_type"           => $user_type,
+                    "order_ip"                      => $order_ip,
+                    "order_items_additional_params" => $this->getOrderItemsAdditionalParams($order_id),
                 ];
             }
             if (isset($result->fields['21']) && intval($result->fields['21']) > 0) {
@@ -4398,6 +4620,58 @@ class admin_shop extends model_base
         $this->result['adminmodules_shop_orderid'] = $order_id;
         $this->result['include_jquery'] = "yes";
         $this->result['include_jquery_data'] = "dateinput";
+    }
+    
+    
+    private function getOrderItemsAdditionalParams($orderId)
+    {
+        $data = false;
+        $sql = "SELECT a.id,a.order_item_id,a.order_suborder_id,a.order_item_param_group_id,b.group_name,a.order_item_param_id,c.param_value "
+                . "FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " a "
+                . "LEFT OUTER JOIN " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " b ON a.order_item_param_group_id=b.id "
+                . "LEFT OUTER JOIN " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " c ON a.order_item_param_id=c.id "
+                . "WHERE a.order_id='" . $orderId . "' "
+                . "ORDER BY a.order_suborder_id,b.id,c.param_value ASC";
+        $result = $this->db->Execute($sql);
+        
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'order_proc_sql_error';
+            $this->error_array = $error;
+
+            return $data;
+        }
+        
+        if (isset($result->fields['0'])) {
+            $row_exist = intval($result->fields['0']);
+        } else {
+            $row_exist = 0;
+        }
+        
+        if ($row_exist < 1) {
+
+            return $data;
+        }
+        
+        while (!$result->EOF) {
+            $orderItemId = intval($result->fields['1']);
+            $orderSuborderId = intval($result->fields['2']);
+            $orderItemParamGroupId = intval($result->fields['3']);
+            $orderItemParamGroupName = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4']));
+            $orderItemParamId = intval($result->fields['5']);
+            $orderItemParamValue = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']));
+            $data[$orderItemId][$orderSuborderId]['groups'][$orderItemParamGroupId] = [
+                'group_id' => $orderItemParamGroupId,
+                'group_name' => $orderItemParamGroupName,
+            ];
+            $data[$orderItemId][$orderSuborderId]['groups_data'][$orderItemParamGroupId][$orderItemParamId] = [
+                'param_id' => $orderItemParamId,
+                'param_value' => $orderItemParamValue,
+            ];
+            $result->MoveNext();
+        }
+        
+        return $data;
     }
 
 
@@ -4487,6 +4761,11 @@ class admin_shop extends model_base
         if ($data_array['order_edit'] == 0) {
             $sql = "UPDATE " . PREFIX . "_orders_" . $this->registry->sitelang . " SET order_status =  '" . $data_array['order_status'] . "' WHERE order_id = "
                    . $data_array['order_id'];
+            if ($data_array['order_status'] == 7 || $data_array['order_status'] == 8) {
+                $data_array['ship_date'] = "'" . $this->registry->main_class->get_time() . "'";
+                $sql2 = "UPDATE " . PREFIX . "_orders_" . $this->registry->sitelang . " SET ship_date =  " . $data_array['ship_date'] . " WHERE order_id = "
+                        . $data_array['order_id'] . " and ship_date is NULL";
+            }
         } elseif ($data_array['order_edit'] == 1) {
             $data_array['order_date'] = $this->registry->main_class->format_striptags($data_array['order_date']);
             $data_array['order_date'] = $data_array['order_date'] . " " . sprintf("%02d", $data_array['order_hour']) . ":" . sprintf("%02d", $data_array['order_minute']);
@@ -4558,7 +4837,18 @@ class admin_shop extends model_base
 
             return;
         }
-        $result = $this->db->Execute($sql);
+
+        $this->db->StartTrans();
+        $result = true;
+
+        if (isset($sql2)) {
+            $result = $this->db->Execute($sql2);
+        }
+
+        if ($result) {
+            $result = $this->db->Execute($sql);
+        }
+
         if ($result) {
             $num_result = $this->db->Affected_Rows();
         } else {
@@ -4566,6 +4856,9 @@ class admin_shop extends model_base
             $error_code = $this->db->ErrorNo();
             $error[] = ["code" => $error_code, "message" => $error_message];
         }
+
+        $this->db->CompleteTrans();
+
         if ($result === false) {
             $this->error = 'order_save_sql_error';
             $this->error_array = $error;
@@ -4735,6 +5028,15 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $error[] = ["code" => $error_code, "message" => $error_message];
             }
+            $sql = "DELETE FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " WHERE order_id IN (" . $item_id . ")";
+            $resultAdditionalParams = $this->db->Execute($sql);
+            
+            if ($resultAdditionalParams === false) {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $error[] = ["code" => $error_code, "message" => $error_message];
+            }
+            
             $sql = "DELETE FROM " . PREFIX . "_orders_" . $this->registry->sitelang . " WHERE order_id IN (" . $item_id . ")";
             $result = $this->db->Execute($sql);
             if ($result) {
@@ -4744,7 +5046,7 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $error[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($result1 === false) {
+            if ($result1 === false || $resultAdditionalParams === false) {
                 $result = false;
             }
             $this->db->CompleteTrans();
@@ -4771,7 +5073,18 @@ class admin_shop extends model_base
 
                     return;
                 }
-                $sql = "DELETE FROM " . PREFIX . "_order_items_" . $this->registry->sitelang . " WHERE order_item_id IN (" . $item_id . ")";
+                
+                $from = PREFIX . "_order_items_" . $this->registry->sitelang . " WHERE order_item_id IN (" . $item_id . ")";
+                $sql = "DELETE FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " WHERE order_item_id IN (SELECT item_id FROM " . $from . ")";
+                $resultAdditionalParams = $this->db->Execute($sql);
+                
+                if ($resultAdditionalParams === false) {
+                    $error_message = $this->db->ErrorMsg();
+                    $error_code = $this->db->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+                
+                $sql = "DELETE FROM " . $from;
                 $result = $this->db->Execute($sql);
                 if ($result) {
                     $num_result = $this->db->Affected_Rows();
@@ -4793,7 +5106,7 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $error[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($result1 === false || (isset($result2) && $result2 === false)) {
+            if ($result1 === false || (isset($resultAdditionalParams) && $resultAdditionalParams === false) || (isset($result2) && $result2 === false)) {
                 $result = false;
             }
             $this->db->CompleteTrans();
@@ -5549,6 +5862,9 @@ class admin_shop extends model_base
         $this->result['systemdk_shop_valuta'] = trim(SYSTEMDK_SHOP_VALUTA);
         $this->result['systemdk_shop_antispam_ipaddr'] = intval(SYSTEMDK_SHOP_ANTISPAM_IPADDR);
         $this->result['systemdk_shop_antispam_num'] = intval(SYSTEMDK_SHOP_ANTISPAM_NUM);
+        $this->result['systemdk_shop_order_notify_email'] = intval(SYSTEMDK_SHOP_ORDER_NOTIFY_EMAIL);
+        $this->result['systemdk_shop_order_notify_type'] = trim(SYSTEMDK_SHOP_ORDER_NOTIFY_TYPE);
+        $this->result['systemdk_shop_order_notify_custom_mailbox'] = trim(SYSTEMDK_SHOP_ORDER_NOTIFY_CUSTOM_MAILBOX);
     }
 
 
@@ -5571,6 +5887,8 @@ class admin_shop extends model_base
                 'systemdk_shop_image_path',
                 'systemdk_shop_image_position',
                 'systemdk_shop_valuta',
+                'systemdk_shop_order_notify_type',
+                'systemdk_shop_order_notify_custom_mailbox',
             ];
             $keys2 = [
                 'systemdk_shop_homeitems_perpage',
@@ -5592,6 +5910,7 @@ class admin_shop extends model_base
                 'systemdk_shop_items_underparent',
                 'systemdk_shop_antispam_ipaddr',
                 'systemdk_shop_antispam_num',
+                'systemdk_shop_order_notify_email',
             ];
             foreach ($array as $key => $value) {
                 if (in_array($key, $keys)) {
@@ -5630,7 +5949,10 @@ class admin_shop extends model_base
              || !isset($array['systemdk_shop_items_underparent'])
              || !isset($array['systemdk_shop_valuta'])
              || !isset($array['systemdk_shop_antispam_ipaddr'])
-             || !isset($array['systemdk_shop_antispam_num']))
+             || !isset($array['systemdk_shop_antispam_num'])
+             || !isset($array['systemdk_shop_order_notify_email'])
+             || !isset($array['systemdk_shop_order_notify_type'])
+             || !isset($array['systemdk_shop_order_notify_custom_mailbox']))
             || ($data_array['systemdk_shop_catalogs_order'] == "" || $data_array['systemdk_shop_homeitems_perpage'] == 0
                 || $data_array['systemdk_shop_homeitems_order'] == ""
                 || $data_array['systemdk_shop_categories_order'] == ""
@@ -5657,7 +5979,8 @@ class admin_shop extends model_base
                 || $data_array['systemdk_shop_image_maxheight'] == 0
                 || $data_array['systemdk_shop_image_width'] == 0
                 || $data_array['systemdk_shop_items_columns'] == 0
-                || $data_array['systemdk_shop_valuta'] == "")
+                || $data_array['systemdk_shop_valuta'] == ""
+                || $data_array['systemdk_shop_order_notify_type'] == "")
         ) {
             $this->error = 'not_all_data';
 
@@ -5707,6 +6030,9 @@ class admin_shop extends model_base
         $content .= 'define("SYSTEMDK_SHOP_VALUTA","' . $data_array['systemdk_shop_valuta'] . "\");\n";
         $content .= 'define("SYSTEMDK_SHOP_ANTISPAM_IPADDR",' . $data_array['systemdk_shop_antispam_ipaddr'] . ");\n";
         $content .= 'define("SYSTEMDK_SHOP_ANTISPAM_NUM",' . $data_array['systemdk_shop_antispam_num'] . ");\n";
+        $content .= 'define("SYSTEMDK_SHOP_ORDER_NOTIFY_EMAIL",' . $data_array['systemdk_shop_order_notify_email'] . ");\n";
+        $content .= 'define("SYSTEMDK_SHOP_ORDER_NOTIFY_TYPE","' . $data_array['systemdk_shop_order_notify_type'] . "\");\n";
+        $content .= 'define("SYSTEMDK_SHOP_ORDER_NOTIFY_CUSTOM_MAILBOX","' . $data_array['systemdk_shop_order_notify_custom_mailbox'] . "\");\n";
         $write_file = @fwrite($file, $content);
         @fclose($file);
         @chmod("../modules/shop/shop_config.inc", 0604);
@@ -5718,5 +6044,1022 @@ class admin_shop extends model_base
         $this->registry->main_class->systemdk_clearcache("modules|shop");
         $this->registry->main_class->systemdk_clearcache("systemadmin|modules|shop");
         $this->result = 'config_ok';
+    }
+
+
+    public function additionalParams($array, $entity)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $numPage = 1;
+
+        if ($entity === 'group_params') {
+            $groupId = 0;
+        }
+
+        if (isset($array['num_page']) && intval($array['num_page']) > 0) {
+            $numPage = intval($array['num_page']);
+        }
+
+        if ($entity === 'group_params' && isset($array['group_id']) && intval($array['group_id']) > 0) {
+            $groupId = intval($array['group_id']);
+        }
+
+        if ($entity === 'group_params' && $groupId < 1) {
+            $this->error = 'empty_data';
+
+            return;
+        }
+
+        $numStringRows = SYSTEMDK_ADMINROWS_PERPAGE;
+        $offset = ($numPage - 1) * $numStringRows;
+
+        if ($entity === 'groups') {
+            $sql = "SELECT count(*) FROM " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang;
+        } else {
+            $sql = "SELECT count(*) FROM " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " WHERE param_group_id='" . $groupId . "'";
+        }
+
+        $result = $this->db->Execute($sql);
+
+        if ($result) {
+            $numRows = intval($result->fields['0']);
+
+            if ($entity === 'groups') {
+                $sql = "SELECT a.id,a.group_name,a.group_type_id,a.group_status, b.type_name,b.type_description FROM "
+                       . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " a,"
+                       . PREFIX . "_s_add_par_g_types b WHERE a.group_type_id=b.id ORDER BY a.id ASC";
+            } else {
+                $sql = "SELECT a.id,a.group_name,b.id,b.param_value,b.param_status FROM "
+                       . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " a LEFT OUTER JOIN "
+                       . PREFIX . "_s_add_params_" . $this->registry->sitelang . " b ON a.id=b.param_group_id WHERE a.id='" . $groupId
+                       . "' ORDER BY b.id ASC";
+            }
+
+            $result = $this->db->SelectLimit($sql, $numStringRows, $offset);
+        }
+
+        if (!$result) {
+            $error[] = ['code' => $this->db->ErrorNo(), 'message' => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        if (isset($result->fields['0'])) {
+            $rowExist = intval($result->fields['0']);
+        } else {
+            $rowExist = 0;
+        }
+
+        if ($rowExist == 0 && $numPage > 1) {
+            $this->error = 'unknown_page';
+
+            return;
+        }
+
+        if ($rowExist < 1 && $entity === 'group_params') {
+            $this->error = 'group_not_found';
+
+            return;
+        } elseif ($rowExist < 1) {
+            $this->result['additional_param_' . $entity] = 'no_' . $entity;
+            $this->result['pages_menu'] = 'no';
+
+            return;
+        }
+
+        while (!$result->EOF) {
+
+            if ($entity === 'groups') {
+                $id = intval($result->fields['0']);
+                $groupName = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                $groupTypeId = intval($result->fields['2']);
+                $groupStatus = intval($result->fields['3']);
+                $groupTypeName = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4']));
+                $groupTypeDescription = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5']));
+                $data[] = [
+                    'id'                     => $id,
+                    'group_name'             => $groupName,
+                    'group_type_id'          => $groupTypeId,
+                    'group_status'           => $groupStatus,
+                    'group_type_name'        => $groupTypeName,
+                    'group_type_description' => $groupTypeDescription,
+                ];
+            } else {
+                $groupId = intval($result->fields['0']);
+                $groupName = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                $id = intval($result->fields['2']);
+                $paramValue = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
+                $paramStatus = intval($result->fields['4']);
+
+                if (empty($this->result['additional_params_group_id'])) {
+                    $this->result['additional_params_group_id'] = $groupId;
+                }
+
+                if (empty($this->result['additional_params_group_name'])) {
+                    $this->result['additional_params_group_name'] = $groupName;
+                }
+
+                if ($id > 0) {
+                    $data[] = [
+                        'id'             => $id,
+                        'param_group_id' => $groupId,
+                        'param_value'    => $paramValue,
+                        'param_status'   => $paramStatus,
+                    ];
+                }
+            }
+            $result->MoveNext();
+        }
+
+        if (empty($data) && $entity === 'group_params') {
+            $this->result['additional_param_' . $entity] = 'no_' . $entity;
+            $this->result['pages_menu'] = 'no';
+
+            return;
+        } else {
+            $this->result['additional_param_' . $entity] = $data;
+        }
+
+        if (isset($numRows)) {
+            $numPages = @ceil($numRows / $numStringRows);
+        } else {
+            $numPages = 0;
+        }
+
+        if ($numPages > 1) {
+
+            if ($numPage > 1) {
+                $prevpage = $numPage - 1;
+                $this->result['prevpage'] = $prevpage;
+            } else {
+                $this->result['prevpage'] = 'no';
+            }
+
+            for ($i = 1; $i < $numPages + 1; $i++) {
+
+                if ($i == $numPage) {
+                    $html[] = ["number" => $i, "param1" => "1"];
+                } else {
+                    $pagelink = 5;
+
+                    if (($i > $numPage) && ($i < $numPage + $pagelink) || ($i < $numPage) && ($i > $numPage - $pagelink)) {
+                        $html[] = ["number" => $i, "param1" => "2"];
+                    }
+
+                    if (($i == $numPages) && ($numPage < $numPages - $pagelink)) {
+                        $html[] = ["number" => $i, "param1" => "3"];
+                    }
+
+                    if (($i == 1) && ($numPage > $pagelink + 1)) {
+                        $html[] = ["number" => $i, "param1" => "4"];
+                    }
+                }
+            }
+
+            if ($numPage < $numPages) {
+                $nextpage = $numPage + 1;
+                $this->result['nextpage'] = $nextpage;
+            } else {
+                $this->result['nextpage'] = 'no';
+            }
+
+            $this->result['pages_menu'] = $html;
+            $this->result['total_additional_param_' . $entity] = $numRows;
+            $this->result['num_pages'] = $numPages;
+        } else {
+            $this->result['pages_menu'] = 'no';
+        }
+    }
+
+
+    public function additionalParamsAdd($array, $entity)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if ($entity === 'param_add') {
+            $groupId = 0;
+        }
+
+        if ($entity === 'param_add' && isset($array['group_id']) && intval($array['group_id']) > 0) {
+            $groupId = intval($array['group_id']);
+        }
+
+        if ($entity === 'param_add' && $groupId < 1) {
+            $this->error = 'empty_data';
+
+            return;
+        }
+
+        if ($entity == 'group_add') {
+            $sql = "SELECT id,type_name,type_description FROM " . PREFIX . "_s_add_par_g_types ORDER BY id ASC";
+        } else {
+            $sql = "SELECT id,group_name FROM " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " WHERE id ='" . $groupId . "'";
+        }
+
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        if (isset($result->fields['0'])) {
+            $row_exist = intval($result->fields['0']);
+        } else {
+            $row_exist = 0;
+        }
+
+        if ($row_exist < 1) {
+            $this->error = ($entity == 'group_add') ? 'empty_group_types' : 'group_not_found';
+
+            return;
+        }
+
+        if ($entity == 'group_add') {
+            while (!$result->EOF) {
+                $id = intval($result->fields['0']);
+                $type_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                $type_description = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
+                $group_types_all[] = [
+                    "id"               => $id,
+                    "type_name"        => $type_name,
+                    "type_description" => $type_description,
+                ];
+                $result->MoveNext();
+            }
+            $this->result['item_additional_params_group_types_all'] = $group_types_all;
+        } else {
+            $this->result = [
+                'item_additional_params_group_id'   => intval($result->fields['0']),
+                'item_additional_params_group_name' => $this->registry->main_class->format_htmlspecchars(
+                    $this->registry->main_class->extracting_data($result->fields['1'])
+                ),
+            ];
+        }
+    }
+
+
+    public function additionalParamsGroupAddInDb($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if (!empty($array)) {
+            $keys = [
+                'item_additional_param_group_name',
+            ];
+            $keys2 = [
+                'item_additional_param_group_status',
+                'item_additional_param_group_type_id',
+            ];
+            foreach ($array as $key => $value) {
+
+                if (in_array($key, $keys)) {
+                    $data_array[$key] = trim($this->registry->main_class->format_striptags($value));
+                }
+
+                if (in_array($key, $keys2)) {
+                    $data_array[$key] = intval($value);
+                }
+            }
+        }
+
+        if (empty($data_array['item_additional_param_group_name']) || !isset($data_array['item_additional_param_group_status'])
+            || empty($data_array['item_additional_param_group_type_id'])
+        ) {
+            $this->error = 'not_all_data';
+
+            return;
+        }
+
+        $data_array['item_additional_param_group_name'] = $this->registry->main_class->processing_data($data_array['item_additional_param_group_name']);
+        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_s_add_par_groups_id_" . $this->registry->sitelang, 'id');
+        $sql = "INSERT INTO " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . "(" . $sequence_array['field_name_string']
+               . "group_name,group_type_id,group_status) VALUES (" . $sequence_array['sequence_value_string'] . $data_array['item_additional_param_group_name'] . ",'"
+               . $data_array['item_additional_param_group_type_id'] . "','" . $data_array['item_additional_param_group_status'] . "')";
+        $result = $this->db->Execute($sql);
+
+        if ($result === false) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|additional_param_groups");
+        $this->result['shop_message'] = 'addition_params_group_add_ok';
+    }
+
+
+    public function additionalParamsParamAddInDb($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if (!empty($array)) {
+            $keys = [
+                'item_additional_param_value',
+            ];
+            $keys2 = [
+                'item_additional_param_group_id',
+                'item_additional_param_status',
+            ];
+            foreach ($array as $key => $value) {
+
+                if (in_array($key, $keys)) {
+                    $data_array[$key] = trim($this->registry->main_class->format_striptags($value));
+                }
+
+                if (in_array($key, $keys2)) {
+                    $data_array[$key] = intval($value);
+                }
+            }
+        }
+
+        if (empty($data_array['item_additional_param_value']) || !isset($data_array['item_additional_param_status'])
+            || empty($data_array['item_additional_param_group_id'])
+        ) {
+            $this->error = 'not_all_data';
+
+            return;
+        }
+
+        $data_array['item_additional_param_value'] = $this->registry->main_class->processing_data($data_array['item_additional_param_value']);
+        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_s_add_params_id_" . $this->registry->sitelang, 'id');
+        $sql = "INSERT INTO " . PREFIX . "_s_add_params_" . $this->registry->sitelang . "(" . $sequence_array['field_name_string']
+               . "param_value,param_group_id,param_status) VALUES (" . $sequence_array['sequence_value_string'] . $data_array['item_additional_param_value'] . ",'"
+               . $data_array['item_additional_param_group_id'] . "','" . $data_array['item_additional_param_status'] . "')";
+        $result = $this->db->Execute($sql);
+
+        if ($result === false) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|modules|shop");
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop");
+        $this->result = [
+            'shop_message'                    => 'addition_params_param_added',
+            'item_additional_params_group_id' => $data_array['item_additional_param_group_id'],
+        ];
+    }
+
+
+    public function additionalParamsGroupEdit($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if (isset($array['group_id'])) {
+            $array['group_id'] = intval($array['group_id']);
+        }
+
+        if (empty($array['group_id']) || $array['group_id'] < 1) {
+            $this->error = 'empty_data';
+
+            return;
+        }
+
+        $sql = "SELECT a.id,a.type_name,a.type_description,b.id,b.group_name,b.group_type_id,b.group_status FROM " . PREFIX . "_s_add_par_g_types a LEFT OUTER JOIN "
+               . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " b ON a.id=b.group_type_id and b.id='" . $array['group_id'] . "' ORDER BY a.id ASC";
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $row_exist1 = 0;
+        $row_exist2 = 0;
+
+        if (isset($result->fields['0'])) {
+            $row_exist1 = intval($result->fields['0']);
+        }
+
+        if (isset($result->fields['3'])) {
+            $row_exist2 = intval($result->fields['3']);
+        }
+
+        if ($row_exist1 < 1 && $row_exist2 < 1) {
+
+            if ($row_exist1 < 1) {
+                $this->error = 'empty_group_types';
+            } else {
+                $this->error = 'group_not_found';
+            }
+
+            return;
+        }
+
+        while (!$result->EOF) {
+
+            if (empty($this->result['item_additional_param_group_data']) && intval($result->fields['3']) > 0) {
+                $group_id = intval($result->fields['3']);
+                $group_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4']));
+                $group_type_id = intval($result->fields['5']);
+                $group_status = intval($result->fields['6']);
+                $this->result['item_additional_param_group_data'] = [
+                    "id"            => $group_id,
+                    "group_name"    => $group_name,
+                    "group_type_id" => $group_type_id,
+                    "group_status"  => $group_status,
+                ];
+            }
+
+            if (isset($result->fields['0']) && intval($result->fields['0']) > 0) {
+                $id = intval($result->fields['0']);
+                $type_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                $type_description = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
+                $this->result['item_additional_params_group_types_all'][] = [
+                    "id"               => $id,
+                    "type_name"        => $type_name,
+                    "type_description" => $type_description,
+                ];
+            }
+
+            $result->MoveNext();
+        }
+
+        if (empty($this->result['item_additional_param_group_data'])) {
+            $this->error = 'group_not_found';
+
+            return;
+        }
+
+        if (empty($this->result['item_additional_params_group_types_all'])) {
+            $this->error = 'empty_group_types';
+
+            return;
+        }
+
+        $this->result['item_additional_param_group_edit'] = true;
+    }
+
+
+    public function additionalParamsParamEdit($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if (isset($array['group_id'])) {
+            $array['group_id'] = intval($array['group_id']);
+        }
+
+        if (isset($array['param_id'])) {
+            $array['param_id'] = intval($array['param_id']);
+        }
+
+        if (empty($array['group_id']) || empty($array['param_id']) || $array['group_id'] < 1 || $array['param_id'] < 1) {
+            $this->error = 'empty_data';
+
+            return;
+        }
+
+        $sql = "SELECT a.id,a.group_name,b.id,b.param_value,b.param_status FROM " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " a "
+               . "," . PREFIX . "_s_add_params_" . $this->registry->sitelang . " b WHERE  a.id=b.param_group_id and a.id = '" . $array['group_id'] . "' and "
+               . "b.id ='" . $array['param_id'] . "'";
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $row_exist = 0;
+
+        if (isset($result->fields['0'])) {
+            $row_exist = intval($result->fields['0']);
+        }
+
+        if ($row_exist < 1) {
+            $this->error = 'param_not_found';
+
+            return;
+        }
+
+        $this->result = [
+            'item_additional_params_group_id'   => intval($result->fields['0']),
+            'item_additional_params_group_name' => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
+            'item_additional_param_data'        => [
+                'param_id'     => intval($result->fields['2']),
+                'param_value'  => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3'])),
+                'param_status' => intval($result->fields['4']),
+            ],
+            'additional_param_edit_mode'        => true,
+        ];
+    }
+
+
+    public function additionalParamsGroupEditInDb($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if (!empty($array)) {
+            $keys = [
+                'item_additional_param_group_name',
+            ];
+            $keys2 = [
+                'item_additional_param_group_id',
+                'item_additional_param_group_type_id',
+                'item_additional_param_group_status',
+            ];
+            foreach ($array as $key => $value) {
+
+                if (in_array($key, $keys)) {
+                    $data_array[$key] = trim($this->registry->main_class->format_striptags($value));
+                }
+
+                if (in_array($key, $keys2)) {
+                    $data_array[$key] = intval($value);
+                }
+            }
+        }
+
+        if (empty($data_array['item_additional_param_group_name'])
+            || empty($data_array['item_additional_param_group_id'])
+            || empty($data_array['item_additional_param_group_type_id'])
+            || !isset($data_array['item_additional_param_group_status'])
+        ) {
+            $this->error = 'not_all_data';
+
+            return;
+        }
+
+        $data_array['item_additional_param_group_name'] = $this->registry->main_class->processing_data($data_array['item_additional_param_group_name']);
+        $sql = "UPDATE " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " SET group_name = " . $data_array['item_additional_param_group_name']
+               . ", group_type_id = '" . $data_array['item_additional_param_group_type_id'] . "',group_status = '" . $data_array['item_additional_param_group_status']
+               . "' WHERE id = '" . $data_array['item_additional_param_group_id'] . "'";
+        $result = $this->db->Execute($sql);
+        $num_result = $this->db->Affected_Rows();
+
+        if ($result === false) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        } elseif ($result !== false && $num_result == 0) {
+            $this->error = 'not_save';
+
+            return;
+        }
+
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|modules|shop");
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop");
+        $this->result['shop_message'] = 'group_edit_done';
+    }
+
+
+    public function additionalParamsParamEditInDb($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if (!empty($array)) {
+            $keys = [
+                'item_additional_param_value',
+            ];
+            $keys2 = [
+                'item_additional_param_group_id',
+                'item_additional_param_id',
+                'item_additional_param_status',
+            ];
+            foreach ($array as $key => $value) {
+
+                if (in_array($key, $keys)) {
+                    $data_array[$key] = trim($this->registry->main_class->format_striptags($value));
+                }
+
+                if (in_array($key, $keys2)) {
+                    $data_array[$key] = intval($value);
+                }
+            }
+        }
+
+        if (empty($data_array['item_additional_param_value'])
+            || empty($data_array['item_additional_param_group_id'])
+            || empty($data_array['item_additional_param_id'])
+            || !isset($data_array['item_additional_param_status'])
+        ) {
+            $this->error = 'not_all_data';
+
+            return;
+        }
+
+        $data_array['item_additional_param_value'] = $this->registry->main_class->processing_data($data_array['item_additional_param_value']);
+        $sql = "UPDATE " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " SET param_value = " . $data_array['item_additional_param_value']
+               . ",param_status = '" . $data_array['item_additional_param_status'] . "' "
+               . "WHERE id = '" . $data_array['item_additional_param_id'] . "' and param_group_id = '" . $data_array['item_additional_param_group_id'] . "'";
+        $result = $this->db->Execute($sql);
+        $num_result = $this->db->Affected_Rows();
+
+        if ($result === false) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        } elseif ($result !== false && $num_result == 0) {
+            $this->error = 'not_save';
+
+            return;
+        }
+
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|modules|shop");
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop");
+        $this->result = [
+            'shop_message'                    => 'addition_params_param_edited',
+            'item_additional_params_group_id' => $data_array['item_additional_param_group_id'],
+        ];
+    }
+
+
+    public function additionalParamsGroupStatus($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $action = "";
+
+        if (isset($array['get_action'])) {
+            $action = trim($array['get_action']);
+        }
+
+        if (!isset($array['get_action']) && isset($array['post_action'])) {
+            $action = trim($array['post_action']);
+        }
+
+        $groupId = 0;
+
+        if (isset($array['get_group_id'])) {
+            $groupId = intval($array['get_group_id']);
+        }
+
+        if ($groupId == 0 && isset($array['post_group_id']) && is_array($array['post_group_id']) && count($array['post_group_id']) > 0) {
+            for ($i = 0, $size = count($array['post_group_id']); $i < $size; ++$i) {
+                $groupsIds[$i] = intval($array['post_group_id'][$i]);
+
+                if ($i == 0) {
+                    $groupId = "'" . intval($array['post_group_id'][$i]) . "'";
+                } else {
+                    $groupId .= ",'" . intval($array['post_group_id'][$i]) . "'";
+                }
+
+            }
+        } else {
+            $groupsIds[0] = $groupId;
+            $groupId = "'" . $groupId . "'";
+        }
+
+        $action = $this->registry->main_class->format_striptags($action);
+
+        if (!isset($groupId) || $action == "" || $groupId == "'0'") {
+            $this->error = 'empty_data';
+
+            return;
+        }
+
+        if ($action == "on") {
+            $sql = "UPDATE " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " SET group_status = '1' WHERE id in (" . $groupId . ")";
+            $result = $this->db->Execute($sql);
+
+            if ($result) {
+                $numResult = $this->db->Affected_Rows();
+            }
+
+        } elseif ($action == "off") {
+            $sql = "UPDATE " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " SET group_status = '0' WHERE id IN (" . $groupId . ")";
+            $result = $this->db->Execute($sql);
+
+            if ($result) {
+                $numResult = $this->db->Affected_Rows();
+            }
+
+        } elseif ($action == "confirm_delete") {
+            $sql = "SELECT (SELECT count(a.id) FROM " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " a WHERE a.param_group_id IN (" . $groupId . ")) "
+                   . "as total_params,"
+                   . "(SELECT count(*) FROM (SELECT b.order_id FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " b "
+                   . "WHERE b.order_item_param_group_id IN (" . $groupId . ") GROUP BY b.order_id) as data2) as total_orders, "
+                   . "(SELECT count(*) FROM (SELECT c.item_id FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " c "
+                   . "WHERE c.item_param_id IN (SELECT id FROM " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " WHERE param_group_id IN (" . $groupId . ")) "
+                   . "GROUP BY c.item_id) as data3) as total_items " . $this->registry->main_class->check_db_need_from_clause();
+            $result = $this->db->Execute($sql);
+
+            if (!$result) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+                $this->error = 'sql_error';
+                $this->error_array = $error;
+
+                return;
+            }
+
+            $totalParams = 0;
+            $totalOrders = 0;
+            $totalItems = 0;
+
+            if (isset($result->fields['0']) || isset($result->fields['1']) || isset($result->fields['2'])) {
+                while (!$result->EOF) {
+
+                    if (!empty($result->fields['0']) && intval($result->fields['0']) > 0) {
+                        $totalParams = intval($result->fields['0']);
+                    }
+
+                    if (!empty($result->fields['1']) && intval($result->fields['1']) > 0) {
+                        $totalOrders = intval($result->fields['1']);
+                    }
+
+                    if (!empty($result->fields['2']) && intval($result->fields['2']) > 0) {
+                        $totalItems = intval($result->fields['2']);
+                    }
+
+                    $result->MoveNext();
+                }
+            }
+
+            $this->result = [
+                'shop_message'                       => 'group_confirm_delete',
+                'total_additional_params'            => $totalParams,
+                'total_order_item_additional_params' => $totalOrders,
+                'total_item_additional_params'       => $totalItems,
+                'delete_groups_ids'                  => $groupsIds,
+            ];
+
+            return;
+        } elseif ($action == "delete") {
+            $this->db->StartTrans();
+            $sql1 = "DELETE FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " WHERE order_item_param_group_id IN (" . $groupId . ")";
+            $result1 = $this->db->Execute($sql1);
+
+            if ($result1 === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            }
+
+            $sql2 = "DELETE FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . "  WHERE item_param_id IN "
+                    . "(SELECT id FROM " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " WHERE param_group_id IN (" . $groupId . "))";
+            $result2 = $this->db->Execute($sql2);
+
+            if ($result2 === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            }
+
+            $sql3 = "DELETE FROM " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " WHERE param_group_id IN (" . $groupId . ")";
+            $result3 = $this->db->Execute($sql3);
+
+            if ($result3 === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            }
+
+            $sql4 = "DELETE FROM " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " WHERE id IN (" . $groupId . ")";
+            $result = $this->db->Execute($sql4);
+
+            if ($result === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            } else {
+                $numResult = $this->db->Affected_Rows();
+            }
+
+            if (in_array(false, [$result1, $result2, $result3])) {
+                $result = false;
+            }
+
+            $this->db->CompleteTrans();
+        } else {
+            $this->error = 'unknown_action';
+
+            return;
+        }
+
+        if ($result === false) {
+
+            if ($action != "delete") {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $error[] = ["code" => $error_code, "message" => $error_message];
+            }
+
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        } elseif ($result !== false && $numResult == 0) {
+            $this->error = 'not_save';
+
+            return;
+        }
+
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|modules|shop");
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop");
+        $this->result['shop_message'] = 'param_group_' . $action;
+    }
+
+
+    public function additionalParamsParamStatus($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $action = "";
+
+        if (isset($array['get_action'])) {
+            $action = trim($array['get_action']);
+        }
+
+        if (!isset($array['get_action']) && isset($array['post_action'])) {
+            $action = trim($array['post_action']);
+        }
+
+        $key = 'param_id';
+        $paramId = 0;
+        $groupId = 0;
+
+        if (isset($array['group_id']) && intval($array['group_id']) > 0) {
+            $groupId = intval($array['group_id']);
+        }
+
+        if (isset($array['get_' . $key])) {
+            $paramId = intval($array['get_' . $key]);
+        }
+
+        if ($paramId == 0 && isset($array['post_' . $key]) && is_array($array['post_' . $key]) && count($array['post_' . $key]) > 0) {
+            for ($i = 0, $size = count($array['post_' . $key]); $i < $size; ++$i) {
+                $paramsIds[$i] = intval($array['post_' . $key][$i]);
+
+                if ($i == 0) {
+                    $paramId = "'" . intval($array['post_' . $key][$i]) . "'";
+                } else {
+                    $paramId .= ",'" . intval($array['post_' . $key][$i]) . "'";
+                }
+
+            }
+        } else {
+            $paramsIds[0] = $paramId;
+            $paramId = "'" . $paramId . "'";
+        }
+
+        $action = $this->registry->main_class->format_striptags($action);
+
+        if (!isset($paramId) || $action == "" || $paramId == "'0'" || empty($groupId)) {
+            $this->error = 'empty_data';
+
+            return;
+        }
+
+        if ($action == "on") {
+            $sql = "UPDATE " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " SET param_status = '1' WHERE id in (" . $paramId . ")";
+            $result = $this->db->Execute($sql);
+
+            if ($result) {
+                $numResult = $this->db->Affected_Rows();
+            }
+
+        } elseif ($action == "off") {
+            $sql = "UPDATE " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " SET param_status = '0' WHERE id IN (" . $paramId . ")";
+            $result = $this->db->Execute($sql);
+
+            if ($result) {
+                $numResult = $this->db->Affected_Rows();
+            }
+
+        } elseif ($action == "confirm_delete") {
+            $sql = "SELECT (SELECT count(a.id) FROM " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " a "
+                   . "WHERE a.param_group_id = '" . $groupId . "' and a.id IN (" . $paramId . ")) as total_params,"
+                   . "(SELECT count(*) FROM (SELECT b.order_id FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " b WHERE "
+                   . "b.order_item_param_group_id='" . $groupId . "' and b.order_item_param_id IN (" . $paramId . ") GROUP BY b.order_id) as data2) as total_orders,"
+                   . "(SELECT count(*) FROM (SELECT c.item_id FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " c "
+                   . "WHERE c.item_param_id IN (SELECT id FROM " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " "
+                   . "WHERE param_group_id='" . $groupId . "' and id IN (" . $paramId . ")) "
+                   . "GROUP BY c.item_id) as data3) as total_items " . $this->registry->main_class->check_db_need_from_clause();
+            $result = $this->db->Execute($sql);
+
+            if (!$result) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+                $this->error = 'sql_error';
+                $this->error_array = $error;
+
+                return;
+            }
+
+            $totalParams = 0;
+            $totalOrders = 0;
+            $totalItems = 0;
+
+            if (isset($result->fields['0']) || isset($result->fields['1']) || isset($result->fields['2'])) {
+                while (!$result->EOF) {
+
+                    if (!empty($result->fields['0']) && intval($result->fields['0']) > 0) {
+                        $totalParams = intval($result->fields['0']);
+                    }
+
+                    if (!empty($result->fields['1']) && intval($result->fields['1']) > 0) {
+                        $totalOrders = intval($result->fields['1']);
+                    }
+
+                    if (!empty($result->fields['2']) && intval($result->fields['2']) > 0) {
+                        $totalItems = intval($result->fields['2']);
+                    }
+
+                    $result->MoveNext();
+                }
+            }
+
+            $this->result = [
+                'shop_message'                       => 'additional_params_confirm_delete',
+                'total_additional_params'            => $totalParams,
+                'total_order_item_additional_params' => $totalOrders,
+                'total_item_additional_params'       => $totalItems,
+                'delete_params_ids'                  => $paramsIds,
+                'delete_group_id'                    => $groupId,
+            ];
+
+            return;
+        } elseif ($action == "delete") {
+            $this->db->StartTrans();
+            $sql1 = "DELETE FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " WHERE "
+                    . "order_item_param_group_id='" . $groupId . "' and order_item_param_id IN (" . $paramId . ")";
+            $result1 = $this->db->Execute($sql1);
+
+            if ($result1 === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            }
+
+            $sql2 = "DELETE FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . "  WHERE item_param_id IN ("
+                    . "SELECT id FROM " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " WHERE param_group_id='" . $groupId . "' and id IN (" . $paramId . ")"
+                    . ")";
+            $result2 = $this->db->Execute($sql2);
+
+            if ($result2 === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            }
+
+            $sql3 = "DELETE FROM " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " WHERE param_group_id='" . $groupId . "' and id IN (" . $paramId . ")";
+            $result = $this->db->Execute($sql3);
+
+            if ($result === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            } else {
+                $numResult = $this->db->Affected_Rows();
+            }
+
+            if (in_array(false, [$result1, $result2])) {
+                $result = false;
+            }
+
+            $this->db->CompleteTrans();
+        } else {
+            $this->error = 'unknown_action';
+
+            return;
+        }
+
+        if ($result === false) {
+
+            if ($action != "delete") {
+                $error_message = $this->db->ErrorMsg();
+                $error_code = $this->db->ErrorNo();
+                $error[] = ["code" => $error_code, "message" => $error_message];
+            }
+
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        } elseif ($result !== false && $numResult == 0) {
+            $this->error = 'not_save';
+
+            return;
+        }
+
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|modules|shop");
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop");
+        $this->result = [
+            'shop_message'                    => 'param_' . $action,
+            'item_additional_params_group_id' => $groupId,
+        ];
     }
 }

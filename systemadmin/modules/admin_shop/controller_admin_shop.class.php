@@ -8,7 +8,7 @@
  * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.4
+ * @version   3.5
  */
 class controller_admin_shop extends controller_base
 {
@@ -657,12 +657,20 @@ class controller_admin_shop extends controller_base
                 'item_minute',
                 'depth',
             ];
+            $keys3 = [
+                'item_additional_params',
+            ];
             foreach ($_POST as $key => $value) {
                 if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
                 if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
+                }
+                if (in_array($key, $keys3) && is_array($_POST[$key])) {
+                    foreach ($_POST[$key] as $param_key => $param_value) {
+                        $data_array[$key][intval($param_key)] = intval($param_value);
+                    }
                 }
             }
         }
@@ -797,12 +805,20 @@ class controller_admin_shop extends controller_base
                 'item_minute',
                 'depth',
             ];
+            $keys3 = [
+                'item_additional_params',
+            ];
             foreach ($_POST as $key => $value) {
                 if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
                 if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
+                }
+                if (in_array($key, $keys3) && is_array($_POST[$key])) {
+                    foreach ($_POST[$key] as $param_key => $param_value) {
+                        $data_array[$key][intval($param_key)] = intval($param_value);
+                    }
                 }
             }
         }
@@ -1548,6 +1564,8 @@ class controller_admin_shop extends controller_base
                 'systemdk_shop_image_path',
                 'systemdk_shop_image_position',
                 'systemdk_shop_valuta',
+                'systemdk_shop_order_notify_type',
+                'systemdk_shop_order_notify_custom_mailbox',
             ];
             $keys2 = [
                 'systemdk_shop_homeitems_perpage',
@@ -1569,6 +1587,7 @@ class controller_admin_shop extends controller_base
                 'systemdk_shop_items_underparent',
                 'systemdk_shop_antispam_ipaddr',
                 'systemdk_shop_antispam_num',
+                'systemdk_shop_order_notify_email',
             ];
             foreach ($_POST as $key => $value) {
                 if (in_array($key, $keys)) {
@@ -1591,5 +1610,459 @@ class controller_admin_shop extends controller_base
         }
         $cache_category = 'modules|shop';
         $this->shop_view($result, $title, $cache_category, $template);
+    }
+
+
+    public function additional_param_groups()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_GROUPS';
+        $cache = 'additional_param_groups';
+        $template = 'shop_additional_param_groups.html';
+        $this->additional_params($title, $cache, $template);
+    }
+
+
+    public function additional_param_group_params()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_GROUP_PARAMS';
+        $cache = 'additional_param_group_params';
+        $template = 'shop_additional_param_group_params.html';
+        $entity = 'group_params';
+        $this->additional_params($title, $cache, $template, $entity);
+    }
+
+
+    private function additional_params($title, $cache, $template, $entity = 'groups')
+    {
+        $type = $cache;
+        $data_array['num_page'] = 1;
+
+        if (isset($_GET['num_page']) && intval($_GET['num_page']) > 0) {
+            $data_array['num_page'] = intval($_GET['num_page']);
+        }
+
+        if ($entity === 'group_params' && isset($_GET['group_id']) && intval($_GET['group_id']) > 0) {
+            $data_array['group_id'] = intval($_GET['group_id']);
+            $cache = $cache . '|' . $data_array['group_id'];
+        }
+
+        $cache_category = 'modules|shop|' . $cache;
+
+        if (!$this->isCached(
+            "systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cache_category . "|" . $data_array['num_page'] . "|" . $this->registry->language
+        )
+        ) {
+            $this->model_admin_shop->additionalParams($data_array, $entity);
+            $error = $this->model_admin_shop->get_property_value('error');
+            $error_array = $this->model_admin_shop->get_property_value('error_array');
+            $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if (in_array($error, ['unknown_page', 'empty_data'])) {
+
+                    if (!empty($data_array['group_id'])) {
+                        header(
+                            "Location: index.php?path=admin_shop&func=additional_param_group_params&group_id=" . $data_array['group_id'] . "&lang="
+                            . $this->registry->sitelang
+                        );
+                    } else {
+                        header("Location: index.php?path=admin_shop&func=additional_param_groups&lang=" . $this->registry->sitelang);
+                    }
+
+                    exit();
+                }
+
+                if (!empty($error_array)) {
+                    $this->assign("error", $error_array);
+                }
+
+                $cache_category = false;
+                $template = false;
+                $this->shop_view($error, $title, $cache_category, $template, $type . '_' . $error);
+            }
+
+            $this->assign_array($result);
+        }
+
+        $this->shop_view($data_array['num_page'], $title, $cache_category, $template);
+    }
+
+
+    public function additional_param_group_add()
+    {
+        $type = 'additonal_param_group_add';
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_GROUP_ADD_TITLE';
+        $template = 'shop_additional_param_group_form.html';
+        $this->additionalParamsAdd($title, $type, $template);
+    }
+
+
+    public function additional_param_add()
+    {
+        $type = 'additonal_param_add';
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_ADD_TITLE';
+        $template = 'shop_additional_param_form.html';
+        $entity = 'param_add';
+        $this->additionalParamsAdd($title, $type, $template, $entity);
+    }
+
+
+    private function additionalParamsAdd($title, $type, $template, $entity = 'group_add')
+    {
+        $data_array = false;
+        $cache_category = 'modules|shop';
+        $cache = $type;
+
+        if ($entity === 'param_add' && isset($_GET['group_id']) && intval($_GET['group_id']) > 0) {
+            $data_array['group_id'] = intval($_GET['group_id']);
+            $cache = $cache . '|' . $data_array['group_id'];
+        }
+
+        if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cache_category . "|" . $cache . "|" . $this->registry->language)) {
+            $this->model_admin_shop->additionalParamsAdd($data_array, $entity);
+            $error = $this->model_admin_shop->get_property_value('error');
+            $error_array = $this->model_admin_shop->get_property_value('error_array');
+            $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if (in_array($error, ['empty_data'])) {
+                    header("Location: index.php?path=admin_shop&func=additional_param_groups&lang=" . $this->registry->sitelang);
+                    exit();
+                }
+
+                if (!empty($error_array)) {
+                    $this->assign("error", $error_array);
+                }
+
+                $cache_category = false;
+                $template = false;
+                $this->shop_view($error, $title, $cache_category, $template, $type . '_' . $error);
+            }
+
+            $this->assign_array($result);
+        }
+
+        $this->shop_view($cache, $title, $cache_category, $template);
+    }
+
+
+    public function additional_param_group_add_in_db()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_GROUP_ADD_TITLE';
+        $keys = [
+            'item_additional_param_group_name',
+        ];
+        $keys2 = [
+            'item_additional_param_group_status',
+            'item_additional_param_group_type_id',
+        ];
+        $entity = 'additional_params_group_add';
+        $this->additionalParamsEntityAddInDb($title, $keys, $keys2, $entity);
+    }
+
+
+    public function additional_param_add_in_db()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_ADD_TITLE';
+        $keys = [
+            'item_additional_param_value',
+        ];
+        $keys2 = [
+            'item_additional_param_group_id',
+            'item_additional_param_status',
+        ];
+        $entity = 'additional_params_param_add';
+        $this->additionalParamsEntityAddInDb($title, $keys, $keys2, $entity);
+    }
+
+
+    private function additionalParamsEntityAddInDb($title, $keys, $keys2, $entity)
+    {
+        $data_array = false;
+
+        if (!empty($_POST)) {
+
+            foreach ($_POST as $key => $value) {
+
+                if (in_array($key, $keys)) {
+                    $data_array[$key] = trim($value);
+                }
+
+                if (in_array($key, $keys2)) {
+                    $data_array[$key] = intval($value);
+                }
+            }
+        }
+
+        $cache_category = 'modules|shop';
+
+        if ($entity == 'additional_params_group_add') {
+            $this->model_admin_shop->additionalParamsGroupAddInDb($data_array);
+        } else {
+            $this->model_admin_shop->additionalParamsParamAddInDb($data_array);
+        }
+
+        $error = $this->model_admin_shop->get_property_value('error');
+        $error_array = $this->model_admin_shop->get_property_value('error_array');
+        $result = $this->model_admin_shop->get_property_value('result');
+
+        if (!empty($error)) {
+
+            if (!empty($error_array)) {
+                $this->assign("error", $error_array);
+            }
+
+            $cache_category = false;
+            $template = false;
+            $this->shop_view($error, $title, $cache_category, $template, $entity . '_' . $error);
+        }
+
+        $this->assign_array($result);
+        $this->shop_view($result['shop_message'], $title, $cache_category);
+    }
+
+
+    public function additional_param_group_edit()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_GROUP_EDIT_TITLE';
+        $template = 'shop_additional_param_group_form.html';
+        $type = 'additional_params_group_edit';
+        $this->additionalParamsEdit($title, $template, $type);
+    }
+
+
+    public function additional_param_edit()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_EDIT_TITLE';
+        $template = 'shop_additional_param_form.html';
+        $type = 'additional_params_param_edit';
+        $this->additionalParamsEdit($title, $template, $type);
+    }
+
+
+    private function additionalParamsEdit($title, $template, $type)
+    {
+        $data_array['group_id'] = 0;
+        $data_array['param_id'] = 0;
+
+        if (isset($_GET['group_id']) && intval($_GET['group_id']) > 0) {
+            $data_array['group_id'] = intval($_GET['group_id']);
+        }
+
+        if ($type === 'additional_params_param_edit' && isset($_GET['param_id']) && intval($_GET['param_id']) > 0) {
+            $data_array['param_id'] = intval($_GET['param_id']);
+        }
+
+        if ($type === 'additional_params_group_edit') {
+            $cache_category = 'modules|shop|' . $type;
+            $cache = $data_array['group_id'];
+        } else {
+            $cache_category = 'modules|shop|' . $type . '|' . $data_array['group_id'];
+            $cache = $data_array['param_id'];
+        }
+
+        if (!$this->isCached(
+            "systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cache_category . "|" . $cache . "|" . $this->registry->language
+        )
+        ) {
+
+            if ($type === 'additional_params_group_edit') {
+                $this->model_admin_shop->additionalParamsGroupEdit($data_array);
+            } else {
+                $this->model_admin_shop->additionalParamsParamEdit($data_array);
+            }
+
+            $error = $this->model_admin_shop->get_property_value('error');
+            $error_array = $this->model_admin_shop->get_property_value('error_array');
+            $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if ($error === 'empty_data') {
+                    header("Location: index.php?path=admin_shop&func=additional_param_groups&lang=" . $this->registry->sitelang);
+                    exit();
+                }
+
+                if (!empty($error_array)) {
+                    $this->assign("error", $error_array);
+                }
+
+                $cache_category = false;
+                $template = false;
+                $this->shop_view($error, $title, $cache_category, $template, $type . '_' . $error);
+            }
+
+            $this->assign_array($result);
+        }
+
+        $this->shop_view($cache, $title, $cache_category, $template);
+    }
+
+
+    public function additional_param_group_edit_in_db()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_GROUP_EDIT_TITLE';
+        $keys = [
+            'item_additional_param_group_name',
+        ];
+        $keys2 = [
+            'item_additional_param_group_id',
+            'item_additional_param_group_type_id',
+            'item_additional_param_group_status',
+        ];
+        $entity = 'additional_params_group_edit';
+        $this->additionalParamsEntityEditInDb($title, $keys, $keys2, $entity);
+    }
+
+
+    public function additional_param_edit_in_db()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_EDIT_TITLE';
+        $keys = [
+            'item_additional_param_value',
+        ];
+        $keys2 = [
+            'item_additional_param_group_id',
+            'item_additional_param_id',
+            'item_additional_param_status',
+        ];
+        $entity = 'additional_params_param_edit';
+        $this->additionalParamsEntityEditInDb($title, $keys, $keys2, $entity);
+    }
+
+
+    private function additionalParamsEntityEditInDb($title, $keys, $keys2, $entity)
+    {
+        $data_array = false;
+
+        if (!empty($_POST)) {
+            foreach ($_POST as $key => $value) {
+
+                if (in_array($key, $keys)) {
+                    $data_array[$key] = trim($value);
+                }
+
+                if (in_array($key, $keys2)) {
+                    $data_array[$key] = intval($value);
+                }
+
+            }
+        }
+
+        $cache_category = 'modules|shop';
+
+        if ($entity == 'additional_params_group_edit') {
+            $this->model_admin_shop->additionalParamsGroupEditInDb($data_array);
+        } else {
+            $this->model_admin_shop->additionalParamsParamEditInDb($data_array);
+        }
+
+        $error = $this->model_admin_shop->get_property_value('error');
+        $error_array = $this->model_admin_shop->get_property_value('error_array');
+        $result = $this->model_admin_shop->get_property_value('result');
+
+        if (!empty($error)) {
+
+            if (!empty($error_array)) {
+                $this->assign("error", $error_array);
+            }
+
+            $cache_category = false;
+            $template = false;
+            $this->shop_view($error, $title, $cache_category, $template, $entity . '_' . $error);
+        }
+
+        $this->assign_array($result);
+        $this->shop_view($result['shop_message'], $title, $cache_category);
+    }
+
+
+    public function additional_param_group_status()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_GROUPS';
+        $cache = 'additional_params_group_status';
+        $key = 'group_id';
+        $this->additionalParamsEntityStatus($title, $cache, $key);
+    }
+
+
+    public function additional_param_status()
+    {
+        $title = '_SHOP_ITEM_ADDITIONAL_PARAM_GROUP_PARAMS';
+        $cache = 'additional_params_param_status';
+        $key = 'param_id';
+        $this->additionalParamsEntityStatus($title, $cache, $key);
+    }
+
+
+    private function additionalParamsEntityStatus($title, $cache, $key)
+    {
+        $data_array = false;
+        $entity = $cache;
+
+        if (isset($_GET['action'])) {
+            $data_array['get_action'] = trim($_GET['action']);
+        }
+
+        if (isset($_POST['action'])) {
+            $data_array['post_action'] = trim($_POST['action']);
+        }
+
+        if (isset($_GET[$key])) {
+            $data_array['get_' . $key] = intval($_GET[$key]);
+        }
+
+        if (isset($_POST[$key])) {
+            $data_array['post_' . $key] = $_POST[$key];
+        }
+
+        if ($entity == 'additional_params_param_status') {
+
+            if (isset($_GET['group_id'])) {
+                $data_array['group_id'] = intval($_GET['group_id']);
+            }
+
+            if (isset($_POST['group_id'])) {
+                $data_array['group_id'] = intval($_POST['group_id']);
+            }
+        }
+
+        $cache_category = 'modules|shop|' . $cache;
+
+        if ($entity == 'additional_params_group_status') {
+            $this->model_admin_shop->additionalParamsGroupStatus($data_array);
+        } else {
+            $this->model_admin_shop->additionalParamsParamStatus($data_array);
+        }
+
+        $error = $this->model_admin_shop->get_property_value('error');
+        $error_array = $this->model_admin_shop->get_property_value('error_array');
+        $result = $this->model_admin_shop->get_property_value('result');
+
+        if (!empty($error)) {
+
+            if (in_array($error, ['empty_data', 'unknown_action']) && $entity == 'additional_params_param_status' && !empty($data_array['group_id'])) {
+                header(
+                    "Location: index.php?path=admin_shop&func=additional_param_group_params&group_id=" . $data_array['group_id'] . "&lang=" . $this->registry->sitelang
+                );
+                exit();
+            } elseif (in_array($error, ['empty_data', 'unknown_action'])) {
+                header("Location: index.php?path=admin_shop&func=additional_param_groups&lang=" . $this->registry->sitelang);
+                exit();
+            }
+
+            if (!empty($error_array)) {
+                $this->assign("error", $error_array);
+            }
+
+            $cache_category = false;
+            $template = false;
+            $this->shop_view($error, $title, $cache_category, $template, $entity . '_' . $error);
+        }
+
+        $this->assign_array($result);
+        $this->shop_view($result['shop_message'], $title, $cache_category);
     }
 }

@@ -1,0 +1,25 @@
+{nocache}
+{config_load file="$language/systemadmin/modules/blocks/blocks.conf"}
+{if $rss_data ne "no" and $rss_data ne "error" and $rss_data ne "addline"}
+{foreach $rss_data as $rsslink}
+<br><br>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+ <tr bgcolor="{#color7#}">
+  <td width="100%" height="17" nowrap><img src="{#bgimage14#}" border="0" width="14" height="14" alt=""><span class="tablenamecenterblock"> {$rsslink.title|truncate:60:"...":true}</span></td><td align="right" nowrap><span class="leftrightblocktext">{#_BLOCKRSSDATEWRITE#}: [{$rsslink.rssdate}]</span></td>
+ </tr>
+ <tr>
+  <td colspan="2"><table width="100%" cellpadding="4" cellspacing="0" border="0"><tr><td>{if $rsslink.image ne ""}{$rsslink.image}{/if}</td><td width = "100%"><span class="textbig">{$rsslink.description}</span></td></tr></table></td>
+ </tr>
+ <tr bgcolor="{#color7#}">
+  <td colspan="2" width="100%" height="17" nowrap><a href="{$rsslink.link}" target="_blank" class="link">{#_BLOCKRSSREADALL#}</a> </td>
+ </tr>
+</table>
+{/foreach}
+{elseif $rss_data eq "no"}
+<br><center><span class="errorsmall">{#_BLOCKRSSCONNECTERROR#} {$url}</span></center>
+{elseif $rss_data eq "error"}
+<br><center><span class="errorsmall">{#_BLOCKRSSERROR#}</span></center>
+{elseif $rss_data eq "addline"}
+<br><a href="http://{$rssurl}" target="_blank" class="link">{#_BLOCKLINKON#} {$rssurl}</a><br><br>
+{/if}
+{/nocache}

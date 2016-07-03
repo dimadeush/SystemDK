@@ -8,7 +8,7 @@
  * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.4
+ * @version   3.5
  */
 class shop extends model_base
 {
@@ -20,6 +20,7 @@ class shop extends model_base
     private $systemdk_shop_cart;
     private $systemdk_shop_items;
     private $systemdk_shop_total_price;
+    private $systemdk_shop_cart_item_additional_params;
     private $systemdk_shop_catalogs_order;
     private $systemdk_shop_homeitems_perpage;
     private $systemdk_shop_homeitems_order;
@@ -27,6 +28,7 @@ class shop extends model_base
     private $systemdk_shop_itemimage_path;
     private $systemdk_shop_itemimage_position;
     private $systemdk_shop_itemimage_width;
+    private $systemdk_shop_itemimage_width2;
     private $systemdk_shop_image_path;
     private $systemdk_shop_image_position;
     private $systemdk_shop_image_width;
@@ -45,8 +47,21 @@ class shop extends model_base
     private $shop_cart_items_all;
     private $systemdk_shop_antispam_ipaddr;
     private $systemdk_shop_antispam_num;
+    /**
+     * @var int
+     */
+    private $systemdk_shop_order_notify_email;
+    /**
+     * @var string
+     */
+    private $systemdk_shop_order_notify_type;
+    /**
+     * @var string
+     */
+    private $systemdk_shop_order_notify_custom_mailbox;
     private $shop_order_delivery_id;
     private $shop_order_pay_id;
+    private $itemAdditionalParams = [];
 
 
     public function __construct($registry)
@@ -56,6 +71,7 @@ class shop extends model_base
         $this->systemdk_shop_cart = 'systemdk_shop_cart_' . $this->registry->sitelang;
         $this->systemdk_shop_items = 'systemdk_shop_items_' . $this->registry->sitelang;
         $this->systemdk_shop_total_price = 'systemdk_shop_total_price_' . $this->registry->sitelang;
+        $this->systemdk_shop_cart_item_additional_params = 'additional_params';
         $this->systemdk_shop_catalogs_order = SYSTEMDK_SHOP_CATALOGS_ORDER;
         $this->systemdk_shop_homeitems_perpage = SYSTEMDK_SHOP_HOMEITEMS_PERPAGE;
         $this->systemdk_shop_homeitems_order = SYSTEMDK_SHOP_HOMEITEMS_ORDER;
@@ -63,6 +79,7 @@ class shop extends model_base
         $this->systemdk_shop_itemimage_path = SYSTEMDK_SHOP_ITEMIMAGE_PATH;
         $this->systemdk_shop_itemimage_position = SYSTEMDK_SHOP_ITEMIMAGE_POSITION;
         $this->systemdk_shop_itemimage_width = SYSTEMDK_SHOP_ITEMIMAGE_WIDTH;
+        $this->systemdk_shop_itemimage_width2 = SYSTEMDK_SHOP_ITEMIMAGE_WIDTH2;
         $this->systemdk_shop_image_path = SYSTEMDK_SHOP_IMAGE_PATH;
         $this->systemdk_shop_image_position = SYSTEMDK_SHOP_IMAGE_POSITION;
         $this->systemdk_shop_image_width = SYSTEMDK_SHOP_IMAGE_WIDTH;
@@ -80,6 +97,9 @@ class shop extends model_base
         $this->systemdk_shop_itemimage_height3 = SYSTEMDK_SHOP_ITEMIMAGE_HEIGHT3;
         $this->systemdk_shop_antispam_ipaddr = SYSTEMDK_SHOP_ANTISPAM_IPADDR;
         $this->systemdk_shop_antispam_num = SYSTEMDK_SHOP_ANTISPAM_NUM;
+        $this->systemdk_shop_order_notify_email = SYSTEMDK_SHOP_ORDER_NOTIFY_EMAIL;
+        $this->systemdk_shop_order_notify_type = SYSTEMDK_SHOP_ORDER_NOTIFY_TYPE;
+        $this->systemdk_shop_order_notify_custom_mailbox = SYSTEMDK_SHOP_ORDER_NOTIFY_CUSTOM_MAILBOX;
     }
 
 
@@ -95,51 +115,89 @@ class shop extends model_base
 
     public function shop_header($data_array)
     {
-        $systemdk_shop_cart = 'systemdk_shop_cart_' . $this->registry->sitelang;
-        $systemdk_shop_items = 'systemdk_shop_items_' . $this->registry->sitelang;
-        $systemdk_shop_total_price = 'systemdk_shop_total_price_' . $this->registry->sitelang;
         if ((isset($data_array['path']) && isset($data_array['func']) && $this->registry->main_class->format_striptags(trim($data_array['path'])) == "shop"
              && $this->registry->main_class->format_striptags(trim($data_array['func'])) == "cart")
         ) {
             if (isset($data_array['shop_new']) && intval($data_array['shop_new']) != 0) {
                 $systemdk_shop_new_item = intval($data_array['shop_new']);
-                if (!isset($_SESSION[$systemdk_shop_cart])) {
-                    $_SESSION[$systemdk_shop_cart] = [];
-                    $_SESSION[$systemdk_shop_items] = 0;
-                    $_SESSION[$systemdk_shop_total_price] = 0.00;
+
+                if (!isset($_SESSION[$this->systemdk_shop_cart])) {
+                    $_SESSION[$this->systemdk_shop_cart] = [];
+                    $_SESSION[$this->systemdk_shop_items] = 0;
+                    $_SESSION[$this->systemdk_shop_total_price] = 0.00;
                 }
-                if (isset($_SESSION[$systemdk_shop_cart][$systemdk_shop_new_item])) {
-                    $_SESSION[$systemdk_shop_cart][$systemdk_shop_new_item]++;
+
+                if (isset($_SESSION[$this->systemdk_shop_cart][$systemdk_shop_new_item])) {
+                    $_SESSION[$this->systemdk_shop_cart][$systemdk_shop_new_item]['amount']++;
+                    //$_SESSION[$this->systemdk_shop_cart][$systemdk_shop_new_item]++;
                 } else {
-                    $_SESSION[$systemdk_shop_cart][$systemdk_shop_new_item] = 1;
+                    $_SESSION[$this->systemdk_shop_cart][$systemdk_shop_new_item] = [];
+                    $_SESSION[$this->systemdk_shop_cart][$systemdk_shop_new_item]['amount'] = 1;
+                    $_SESSION[$this->systemdk_shop_cart][$systemdk_shop_new_item][$this->systemdk_shop_cart_item_additional_params] = [];
+                    //$_SESSION[$this->systemdk_shop_cart][$systemdk_shop_new_item] = 1;
                 }
-                $calculate_result = $this->shop_calculate_price($_SESSION[$systemdk_shop_cart]);
-                $_SESSION[$systemdk_shop_total_price] = $calculate_result['2'];
-                $_SESSION[$systemdk_shop_items] = $calculate_result['1'];
+
+                if (!empty($data_array['shop_additional_params'][$systemdk_shop_new_item])
+                    && $this->checkItemAdditionalParams(
+                        $systemdk_shop_new_item, $data_array['shop_additional_params'][$systemdk_shop_new_item]
+                    )
+                ) {
+                    $this->addItemAdditionalParams($systemdk_shop_new_item, $data_array['shop_additional_params'][$systemdk_shop_new_item]);
+                }
+
+                $calculate_result = $this->shop_calculate_price($_SESSION[$this->systemdk_shop_cart]);
+                $_SESSION[$this->systemdk_shop_total_price] = $calculate_result['2'];
+                $_SESSION[$this->systemdk_shop_items] = $calculate_result['1'];
             }
+
             if (isset($data_array['shop_save'])) {
-                foreach ($_SESSION[$systemdk_shop_cart] as $item_id => $qty) {
-                    if ((isset($data_array['shop_items'][$item_id]) && intval($data_array['shop_items'][$item_id]) == 0) || !isset($data_array['shop_items'][$item_id])
-                        || intval($data_array['shop_items'][$item_id]) == 0
-                    ) {
-                        unset($_SESSION[$systemdk_shop_cart][$item_id]);
+                foreach ($_SESSION[$this->systemdk_shop_cart] as $item_id => $data) {
+                    //(isset($data_array['shop_items'][$item_id]) && intval($data_array['shop_items'][$item_id]) == 0) ||
+                    if (!isset($data_array['shop_items'][$item_id]) || intval($data_array['shop_items'][$item_id]) == 0) {
+                        unset($_SESSION[$this->systemdk_shop_cart][$item_id]);
                     } else {
-                        $_SESSION[$systemdk_shop_cart][$item_id] = $data_array['shop_items'][$item_id];
+                        $previousAmount = $_SESSION[$this->systemdk_shop_cart][$item_id]['amount'];
+                        $_SESSION[$this->systemdk_shop_cart][$item_id]['amount'] = intval($data_array['shop_items'][$item_id]);
+
+                        if (!empty($_SESSION[$this->systemdk_shop_cart][$item_id][$this->systemdk_shop_cart_item_additional_params])) {
+                            $count_additional_params = count($_SESSION[$this->systemdk_shop_cart][$item_id][$this->systemdk_shop_cart_item_additional_params]);
+
+                            if ($_SESSION[$this->systemdk_shop_cart][$item_id]['amount'] < $count_additional_params) {
+                                for ($i = $_SESSION[$this->systemdk_shop_cart][$item_id]['amount'], $size = $count_additional_params; $i < $size; $i++) {
+                                    unset($_SESSION[$this->systemdk_shop_cart][$item_id][$this->systemdk_shop_cart_item_additional_params][$i]);
+                                }
+                            }
+                        }
+
+                        if (!empty($data_array['shop_additional_params'][$item_id]) && $previousAmount < $_SESSION[$this->systemdk_shop_cart][$item_id]['amount']
+                            && $this->checkItemAdditionalParams(
+                                $item_id, $data_array['shop_additional_params'][$item_id]
+                            )
+                        ) {
+                            for ($i = $previousAmount, $size = $_SESSION[$this->systemdk_shop_cart][$item_id]['amount']; $i < $size; $i++) {
+                                $this->addItemAdditionalParams($item_id, $data_array['shop_additional_params'][$item_id]);
+                            }
+                        }
+                        //$_SESSION[$this->systemdk_shop_cart][$item_id] = $data_array['shop_items'][$item_id];
                     }
                 }
-                $calculate_result = $this->shop_calculate_price($_SESSION[$systemdk_shop_cart]);
-                $_SESSION[$systemdk_shop_total_price] = $calculate_result['2'];
-                $_SESSION[$systemdk_shop_items] = $calculate_result['1'];
+                $calculate_result = $this->shop_calculate_price($_SESSION[$this->systemdk_shop_cart]);
+                $_SESSION[$this->systemdk_shop_total_price] = $calculate_result['2'];
+                $_SESSION[$this->systemdk_shop_items] = $calculate_result['1'];
             }
         }
-        if (!isset($_SESSION[$systemdk_shop_items])) {
-            $_SESSION[$systemdk_shop_items] = 0;
+        
+        if (!isset($_SESSION[$this->systemdk_shop_items])) {
+            $_SESSION[$this->systemdk_shop_items] = 0;
         }
-        if (!isset($_SESSION[$systemdk_shop_total_price])) {
-            $_SESSION[$systemdk_shop_total_price] = 0.00;
+
+        if (!isset($_SESSION[$this->systemdk_shop_total_price])) {
+            $_SESSION[$this->systemdk_shop_total_price] = 0.00;
         }
-        $result['shop_carttotal_items'] = $_SESSION[$systemdk_shop_items];
-        $result['shop_carttotal_price'] = number_format($_SESSION[$systemdk_shop_total_price], 2, '.', ' ');
+
+        $result['shop_carttotal_items'] = $_SESSION[$this->systemdk_shop_items];
+        $result['shop_carttotal_price'] = number_format($_SESSION[$this->systemdk_shop_total_price], 2, '.', ' ');
+
         if ($this->registry->main_class->is_admin()) {
             $result['shop_carttotal_display'] = "no";
         } else {
@@ -154,19 +212,24 @@ class shop extends model_base
     {
         $systemdk_shop_items = 0;
         $systemdk_shop_price = 0.0;
+
         if ($cart != 0 && is_array($cart) && count($cart) > 0) {
             $i = 0;
             $item_id = null;
-            foreach ($cart as $cart_item_id => $qty) {
+            foreach ($cart as $cart_item_id => $data) {
+
                 if (isset($cart_item_id) && intval($cart_item_id) != 0) {
+
                     if ($i == 0) {
                         $item_id = "'" . intval($cart_item_id) . "'";
                     } else {
                         $item_id .= ",'" . intval($cart_item_id) . "'";
                     }
+
                     $i++;
                 }
             }
+
             if (isset($item_id)) {
                 $from = "FROM " . PREFIX . "_items_" . $this->registry->sitelang . " a LEFT OUTER JOIN " . PREFIX . "_catalogs_" . $this->registry->sitelang
                         . " c ON a.item_catalog_id = c.catalog_id and a.item_catalog_id is NOT NULL " . "LEFT OUTER JOIN " . PREFIX . "_categories_"
@@ -181,27 +244,33 @@ class shop extends model_base
                         . ") and ((a.item_catalog_id is NULL and a.item_category_id is NULL and a.item_subcategory_id is NULL) or (a.item_catalog_id is NOT NULL) or (a.item_category_id is NOT NULL) or (a.item_subcategory_id is NOT NULL)) and (c.catalog_show is NULL or c.catalog_show = '1') and (d.category_show is NULL or d.category_show = '1') and (f.catalog_show is NULL or f.catalog_show = '1') and (e.subcategory_show is NULL or e.subcategory_show = '1') and (g.category_show is NULL or g.category_show = '1') and (h.catalog_show is NULL or h.catalog_show = '1')";
                 $sql = "SELECT a.item_id,a.item_price,a.item_show,a.item_price_discounted " . $from;
                 $result = $this->db->Execute($sql);
+
                 if ($result) {
+
                     if (isset($result->fields['0'])) {
                         $row_exist = intval($result->fields['0']);
                     } else {
                         $row_exist = 0;
                     }
+
                     if ($row_exist > 0) {
                         while (!$result->EOF) {
                             $item_id = intval($result->fields['0']);
                             $systemdk_shop_item_price = floatval($result->fields['1']);
                             $systemdk_shop_item_price_discounted = floatval($result->fields['3']);
-                            if (isset($cart[$item_id])) {
-                                $item_qty = $cart[$item_id];
+
+                            if (isset($cart[$item_id]['amount'])) {
+                                $item_qty = $cart[$item_id]['amount'];
                             } else {
                                 $item_qty = 0;
                             }
+
                             if ($systemdk_shop_item_price_discounted > 0) {
                                 $systemdk_shop_price += $systemdk_shop_item_price_discounted * $item_qty;
                             } else {
                                 $systemdk_shop_price += $systemdk_shop_item_price * $item_qty;
                             }
+
                             $systemdk_shop_items += $item_qty;
                             $result->MoveNext();
                         }
@@ -211,6 +280,70 @@ class shop extends model_base
         }
 
         return [1 => $systemdk_shop_items, 2 => $systemdk_shop_price];
+    }
+
+
+    /**
+     * Set in session selected additional params for every item in order
+     *
+     * @param int   $itemId
+     * @param array $additionalParams
+     */
+    private function addItemAdditionalParams($itemId, $additionalParams)
+    {
+        $countAdditionalParams = 0;
+
+        if (isset($_SESSION[$this->systemdk_shop_cart][$itemId][$this->systemdk_shop_cart_item_additional_params])) {
+            $countAdditionalParams = count($_SESSION[$this->systemdk_shop_cart][$itemId][$this->systemdk_shop_cart_item_additional_params]);
+        }
+
+        if (!empty($additionalParams)) {
+            $_SESSION[$this->systemdk_shop_cart][$itemId][$this->systemdk_shop_cart_item_additional_params][$countAdditionalParams] = $additionalParams;
+        }
+    }
+
+
+    /**
+     * Check posted item additional params before save it in session
+     *
+     * @param int   $itemId
+     * @param array $additionalParams
+     *
+     * @return bool
+     */
+    private function checkItemAdditionalParams($itemId, $additionalParams)
+    {
+        if (!is_array($additionalParams)) {
+            return false;
+        }
+
+        $availableItemAdditionalParams = $this->getItemAdditionalParams($itemId);
+
+        if (empty($availableItemAdditionalParams) || !is_array($availableItemAdditionalParams)) {
+            return false;
+        }
+
+        foreach ($additionalParams as $groupKey => $groupData) {
+            $groupKey = intval($groupKey);
+
+            if (empty($availableItemAdditionalParams['groups'][$groupKey]['group_id'])
+                || empty($groupData)
+                || !is_array($groupData)
+                || (in_array($availableItemAdditionalParams['groups'][$groupKey]['type_id'], [2, 3]) && count($groupData) > 1)
+            ) {
+                return false;
+            }
+
+            foreach ($groupData as $paramId) {
+                $paramId = intval($paramId);
+
+                if (empty($availableItemAdditionalParams['params'][$groupKey][$paramId]['param_id'])) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
 
@@ -389,6 +522,7 @@ class shop extends model_base
                         "item_categ_cat_id"      => $item_categ_cat_id,
                         "item_subcateg_categ_id" => $item_subcateg_categ_id,
                         "item_subcateg_cat_id"   => $item_subcateg_cat_id,
+                        "item_additional_params" => $this->getItemAdditionalParams($item_id),
                     ];
                     $result->MoveNext();
                 }
@@ -446,6 +580,75 @@ class shop extends model_base
             $this->result['shop_total_items'] = "0";
             $this->result['html'] = "no";
         }
+    }
+
+
+    /**
+     * Get item additional params by item id
+     *
+     * @param int $itemId
+     *
+     * @return array|bool
+     */
+    private function getItemAdditionalParams($itemId)
+    {
+        if (isset($this->itemAdditionalParams[$itemId])) {
+            return $this->itemAdditionalParams[$itemId];
+        }
+        
+        $this->itemAdditionalParams[$itemId] = false;
+        $sql = "SELECT "
+               . "e.id as item_param_type_id,"
+               . "e.type_name as item_param_type_name,"
+               . "d.id as item_param_group_id,"
+               . "d.group_name as item_param_group_name,"
+               . "c.id as item_param_value_id,"
+               . "c.param_value as item_param_value "
+               . "FROM " . PREFIX . "_items_" . $this->registry->sitelang . " a "
+               . "LEFT OUTER JOIN " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " b ON a.item_id = b.item_id "
+               . "LEFT OUTER JOIN " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " c ON b.item_param_id=c.id and c.param_status = '1' and "
+               . "c.param_group_id IN (SELECT id FROM " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " where group_status = '1') "
+               . "LEFT OUTER JOIN " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " d ON c.param_group_id = d.id and d.group_status = '1' "
+               . "LEFT OUTER JOIN " . PREFIX . "_s_add_par_g_types e ON d.group_type_id = e.id "
+               . "WHERE a.item_id = '" . $itemId . "'";
+        $result = $this->db->Execute($sql);
+        if ($result) {
+
+            if (isset($result->fields['0'])) {
+                $row_exist = intval($result->fields['0']);
+            } else {
+                $row_exist = 0;
+            }
+
+            if ($row_exist > 0) {
+                while (!$result->EOF) {
+                    $item_additional_param_type_id = intval($result->fields['0']);
+                    $item_additional_param_type_name =
+                        $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+                    $item_additional_param_group_id = intval($result->fields['2']);
+                    $item_additional_param_group_name =
+                        $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
+                    $item_additional_param_value_id = intval($result->fields['4']);
+                    $item_additional_param_value = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5']));
+
+                    if ($item_additional_param_type_id > 0 && $item_additional_param_group_id > 0 && $item_additional_param_value_id > 0) {
+                        $this->itemAdditionalParams[$itemId]['groups'][$item_additional_param_group_id] = [
+                            'group_id'   => $item_additional_param_group_id,
+                            'group_name' => $item_additional_param_group_name,
+                            'type_id'    => $item_additional_param_type_id,
+                            'type_name'  => $item_additional_param_type_name,
+                        ];
+                        $this->itemAdditionalParams[$itemId]['params'][$item_additional_param_group_id][$item_additional_param_value_id] = [
+                            'param_id'    => $item_additional_param_value_id,
+                            'param_value' => $item_additional_param_value,
+                        ];
+                    }
+                    $result->MoveNext();
+                }
+            }
+        }
+
+        return $this->itemAdditionalParams[$itemId];
     }
 
 
@@ -670,6 +873,7 @@ class shop extends model_base
                         "item_categ_cat_id"      => $item_categ_cat_id,
                         "item_subcateg_categ_id" => $item_subcateg_categ_id,
                         "item_subcateg_cat_id"   => $item_subcateg_cat_id,
+                        "item_additional_params" => $this->getItemAdditionalParams($item_id),
                     ];
                     $result->MoveNext();
                 }
@@ -949,6 +1153,7 @@ class shop extends model_base
                         "item_categ_cat_id"      => $item_categ_cat_id,
                         "item_subcateg_categ_id" => $item_subcateg_categ_id,
                         "item_subcateg_cat_id"   => $item_subcateg_cat_id,
+                        "item_additional_params"      => $this->getItemAdditionalParams($item_id),
                     ];
                     $result->MoveNext();
                 }
@@ -1193,6 +1398,7 @@ class shop extends model_base
                         "item_subcategory_name"  => $item_subcategory_name,
                         "item_subcateg_categ_id" => $item_subcateg_categ_id,
                         "item_subcateg_cat_id"   => $item_subcateg_cat_id,
+                        "item_additional_params" => $this->getItemAdditionalParams($item_id),
                     ];
                     $result->MoveNext();
                 }
@@ -1458,6 +1664,7 @@ class shop extends model_base
             "item_quantity"          => $item_quantity,
             "item_quantity_unlim"    => $item_quantity_unlim,
             "item_quantity_param"    => $item_quantity_param,
+            "item_additional_params" => $this->getItemAdditionalParams($item_id),
         ];
         $this->result['shop_item_all'] = $item_all;
         $this->result['shop_item_name'] = $item_name;
@@ -1469,7 +1676,7 @@ class shop extends model_base
         $this->result['shop_catalog_id'] = $catalog_id;
         $this->result['systemdk_shop_image_position'] = $this->systemdk_shop_itemimage_position;
         $this->result['systemdk_shop_image_path'] = $this->systemdk_shop_itemimage_path;
-        $this->result['systemdk_shop_image_width'] = $this->systemdk_shop_itemimage_width;
+        $this->result['systemdk_shop_image_width'] = $this->systemdk_shop_itemimage_width2;
     }
 
 
@@ -1479,7 +1686,8 @@ class shop extends model_base
         $this->error = false;
         $this->error_array = false;
         $this->result['systemdk_shop_valuta'] = $this->systemdk_shop_valuta;
-        if (isset($_SESSION[$this->systemdk_shop_cart]) && (array_count_values($_SESSION[$this->systemdk_shop_cart]))) {
+
+        if (isset($_SESSION[$this->systemdk_shop_cart])) { // && (array_count_values($_SESSION[$this->systemdk_shop_cart]))
             $this->shop_display_cart_items($_SESSION[$this->systemdk_shop_cart]);
         } else {
             $this->result['shop_cart_display_items'] = "no";
@@ -1516,23 +1724,31 @@ class shop extends model_base
         if (!isset($cart) || $cart == 0 || !is_array($cart) || count($cart) == 0) {
             return false;
         }
+
         $i = 0;
-        foreach ($cart as $cart_item_id => $qty) {
+        foreach ($cart as $cart_item_id => $data) {
+
             if (isset($cart_item_id) && intval($cart_item_id) != 0) {
+
                 if ($i == 0) {
                     $item_id = "'" . intval($cart_item_id) . "'";
                 } else {
+
                     if (!isset($item_id)) {
                         $item_id = false;
                     }
+
                     $item_id .= ",'" . intval($cart_item_id) . "'";
                 }
+
                 $i++;
             }
         }
+
         if (!isset($item_id)) {
             return false;
         }
+
         $from = "FROM " . PREFIX . "_items_" . $this->registry->sitelang . " a LEFT OUTER JOIN " . PREFIX . "_catalogs_" . $this->registry->sitelang
                 . " c ON a.item_catalog_id = c.catalog_id and a.item_catalog_id is NOT NULL " . "LEFT OUTER JOIN " . PREFIX . "_categories_" . $this->registry->sitelang
                 . " d ON a.item_category_id = d.category_id and a.item_category_id is NOT NULL LEFT OUTER JOIN " . PREFIX . "_catalogs_" . $this->registry->sitelang
@@ -1545,40 +1761,51 @@ class shop extends model_base
             "SELECT a.item_id,a.item_img,a.item_name,a.item_price,a.item_price_discounted,a.item_show,a.item_quantity,a.item_quantity_unlim,a.item_catalog_id,a.item_category_id,a.item_subcategory_id,f.catalog_id as categ_cat_id,g.category_id as subcateg_categ_id,h.catalog_id as subcateg_cat_id,a.item_display "
             . $from;
         $result = $this->db->Execute($sql);
+
         if (!$result) {
             return false;
         }
+
         if (isset($result->fields['0'])) {
             $row_exist = intval($result->fields['0']);
         } else {
             $row_exist = 0;
         }
+
         if ($row_exist < 1) {
             return false;
         }
+
         while (!$result->EOF) {
             $item_id = intval($result->fields['0']);
             $item_img = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+
             if (!isset($item_img) || $item_img == "") {
                 $item_img = "no";
             }
+
             $item_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
             $item_price = floatval($result->fields['3']);
             $item_price_discounted = floatval($result->fields['4']);
+
             if ($item_price_discounted > 0) {
                 $item_price = $item_price_discounted;
             }
+
             $item_show = intval($result->fields['5']);
             $item_quantity = intval($result->fields['6']);
             $item_quantity_unlim = intval($result->fields['7']);
             $item_catalog_id = intval($result->fields['8']);
             $item_category_id = intval($result->fields['9']);
+
             if ($item_category_id > 0) {
                 $item_categ_cat_id = intval($result->fields['11']);
             } else {
                 $item_categ_cat_id = "no";
             }
+
             $item_subcategory_id = intval($result->fields['10']);
+
             if ($item_subcategory_id > 0) {
                 $item_subcateg_categ_id = intval($result->fields['12']);
                 $item_subcateg_cat_id = intval($result->fields['13']);
@@ -1586,34 +1813,99 @@ class shop extends model_base
                 $item_subcateg_categ_id = "no";
                 $item_subcateg_cat_id = "no";
             }
+
             $item_display = intval($result->fields['14']);
-            if (isset($cart[$item_id])) {
-                $item_qty = $cart[$item_id];
+
+            if (isset($cart[$item_id]['amount'])) {
+                $item_qty = $cart[$item_id]['amount'];
             } else {
                 $item_qty = 0;
             }
+
+            $selectedAdditionalParams = false;
+            $item_additional_params = $this->getItemAdditionalParams($item_id);
+
+            if (!empty($cart[$item_id][$this->systemdk_shop_cart_item_additional_params]) && !empty($item_additional_params)) {
+                $selectedAdditionalParams =
+                    $this->processSelectedAdditionalParams($cart[$item_id][$this->systemdk_shop_cart_item_additional_params], $item_additional_params);
+            }
+
             $items_all[] = [
-                "item_id"                => $item_id,
-                "item_img"               => $item_img,
-                "item_name"              => $item_name,
-                "item_price"             => number_format($item_price, 2, '.', ' '),
-                "item_qty"               => $item_qty,
-                "item_total_price"       => number_format(floatval(($item_price * $item_qty)), 2, '.', ' '),
-                "item_show"              => $item_show,
-                "item_quantity"          => $item_quantity,
-                "item_quantity_unlim"    => $item_quantity_unlim,
-                "item_display"           => $item_display,
-                "item_catalog_id"        => $item_catalog_id,
-                "item_category_id"       => $item_category_id,
-                "item_categ_cat_id"      => $item_categ_cat_id,
-                "item_subcategory_id"    => $item_subcategory_id,
-                "item_subcateg_categ_id" => $item_subcateg_categ_id,
-                "item_subcateg_cat_id"   => $item_subcateg_cat_id,
+                "item_id"                    => $item_id,
+                "item_img"                   => $item_img,
+                "item_name"                  => $item_name,
+                "item_price"                 => number_format($item_price, 2, '.', ' '),
+                "item_qty"                   => $item_qty,
+                "item_total_price"           => number_format(floatval(($item_price * $item_qty)), 2, '.', ' '),
+                "item_show"                  => $item_show,
+                "item_quantity"              => $item_quantity,
+                "item_quantity_unlim"        => $item_quantity_unlim,
+                "item_display"               => $item_display,
+                "item_catalog_id"            => $item_catalog_id,
+                "item_category_id"           => $item_category_id,
+                "item_categ_cat_id"          => $item_categ_cat_id,
+                "item_subcategory_id"        => $item_subcategory_id,
+                "item_subcateg_categ_id"     => $item_subcateg_categ_id,
+                "item_subcateg_cat_id"       => $item_subcateg_cat_id,
+                "item_additional_params"     => $item_additional_params,
+                "selected_additional_params" => $selectedAdditionalParams,
             ];
             $result->MoveNext();
         }
 
         return $items_all;
+    }
+
+
+    /**
+     * @param array $selectedItemAdditionalParams
+     * @param array $availableItemAdditionalParams
+     *
+     * @return array
+     */
+    private function processSelectedAdditionalParams($selectedItemAdditionalParams, $availableItemAdditionalParams)
+    {
+        if (!is_array($selectedItemAdditionalParams) || !is_array($availableItemAdditionalParams)) {
+            return false;
+        }
+
+        foreach ($selectedItemAdditionalParams as &$iterationData) {
+            foreach ($iterationData as $groupKey => &$groupData) {
+
+                if (empty($availableItemAdditionalParams['groups'][$groupKey])) {
+                    unset($iterationData[$groupKey]);
+                    continue;
+                }
+
+                $groupData = [
+                    'group_data' => $groupData,
+                    'group_name' => isset($availableItemAdditionalParams['groups'][$groupKey]['group_name'])
+                        ? $availableItemAdditionalParams['groups'][$groupKey]['group_name'] : false,
+                    'group_id'   => isset($availableItemAdditionalParams['groups'][$groupKey]['group_id'])
+                        ? $availableItemAdditionalParams['groups'][$groupKey]['group_id'] : false,
+                ];
+                foreach ($groupData['group_data'] as $paramKey => &$paramData) {
+
+                    if (empty($availableItemAdditionalParams['params'][$groupKey][$paramData])) {
+                        unset($groupData['group_data'][$paramKey]);
+
+                        if (count($groupData['group_data']) < 1) {
+                            unset($iterationData[$groupKey]);
+                        }
+
+                        continue;
+                    }
+
+                    $paramData = [
+                        'param_id'    => $paramData,
+                        'param_value' => isset($availableItemAdditionalParams['params'][$groupKey][$paramData]['param_value'])
+                            ? $availableItemAdditionalParams['params'][$groupKey][$paramData]['param_value'] : false,
+                    ];
+                }
+            }
+        }
+
+        return $selectedItemAdditionalParams;
     }
 
 
@@ -1623,7 +1915,7 @@ class shop extends model_base
         $this->error = false;
         $this->error_array = false;
         $this->result['systemdk_shop_valuta'] = $this->systemdk_shop_valuta;
-        if (isset($_SESSION[$this->systemdk_shop_cart]) && (array_count_values($_SESSION[$this->systemdk_shop_cart]))) {
+        if (isset($_SESSION[$this->systemdk_shop_cart])) { //&& (array_count_values($_SESSION[$this->systemdk_shop_cart]))
             $this->shop_display_cart_items($_SESSION[$this->systemdk_shop_cart], 0, 0);
             $this->shop_user_deliv_pay(1);
         } else {
@@ -1772,7 +2064,7 @@ class shop extends model_base
 
             return;
         }
-        if (isset($_SESSION[$this->systemdk_shop_cart]) && (array_count_values($_SESSION[$this->systemdk_shop_cart]))) {
+        if (isset($_SESSION[$this->systemdk_shop_cart])) { //&& (array_count_values($_SESSION[$this->systemdk_shop_cart]))
             $this->shop_display_cart_items($_SESSION[$this->systemdk_shop_cart], 0, 0);
             $this->shop_order_delivery_id = $data_array['shop_order_delivery'];
             $this->shop_order_pay_id = $data_array['shop_order_pay'];
@@ -1844,12 +2136,19 @@ class shop extends model_base
                 'shop_order_delivery',
                 'shop_order_pay',
             ];
+            $keys3 = [
+                'notify_order_mail_subject',
+                'order_notify_mail_content'
+            ];
             foreach ($post_array as $key => $value) {
                 if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
                 if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
+                }
+                if (in_array($key, $keys3)) {
+                    $data_array[$key] = $value;
                 }
             }
         }
@@ -1910,7 +2209,7 @@ class shop extends model_base
                 }
             }
         }
-        if (isset($_SESSION[$this->systemdk_shop_cart]) && (array_count_values($_SESSION[$this->systemdk_shop_cart]))) {
+        if (isset($_SESSION[$this->systemdk_shop_cart])) { //&& (array_count_values($_SESSION[$this->systemdk_shop_cart]))
             if ($this->registry->main_class->is_user()) {
                 $row = $this->registry->main_class->get_user_info();
                 if (!empty($row) && intval($row['0']) > 0) {
@@ -2011,6 +2310,37 @@ class shop extends model_base
                     $error_code = $this->db->ErrorNo();
                     $error[] = ["code" => $error_code, "message" => $error_message];
                     $insert_result = false;
+                }
+                if (!empty($items_info[$i]['selected_additional_params']) && is_array($items_info[$i]['selected_additional_params'])
+                    && count(
+                           $items_info[$i]['selected_additional_params']
+                       ) > 0
+                ) {
+                    $orderSuborderId = 1;
+                    foreach ($items_info[$i]['selected_additional_params'] as $iterationKey => $iterationData) {
+                        foreach ($iterationData as $groupKey => $groupData) {
+                            $orderItemParamGroupId = $groupData['group_id'];
+                            foreach ($groupData['group_data'] as $paramData) {
+                                $orderItemParamId = $paramData['param_id'];
+                                $sequence_array =
+                                    $this->registry->main_class->db_process_sequence(PREFIX . '_s_order_i_params_id_' . $this->registry->sitelang, 'id');
+                                $sql = "INSERT INTO " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " "
+                                       . "(" . $sequence_array['field_name_string']
+                                       . "order_id,order_item_id,order_suborder_id,order_item_param_group_id,order_item_param_id) "
+                                       . "VALUES (" . $sequence_array['sequence_value_string'] . "'" . $order_id . "','" . $item_id . "'," . $orderSuborderId . ",'"
+                                       . $orderItemParamGroupId . "','" . $orderItemParamId . "')";
+                                $insertOrderItemParamResult = $this->db->Execute($sql);
+
+                                if ($insertOrderItemParamResult === false) {
+                                    $error_message = $this->db->ErrorMsg();
+                                    $error_code = $this->db->ErrorNo();
+                                    $error[] = ["code" => $error_code, "message" => $error_message];
+                                    $insert_result = false;
+                                }
+                            }
+                        }
+                        $orderSuborderId++;
+                    }
                 }
                 $item_quantity = intval($items_info[$i]['item_quantity']);
                 $item_quantity_unlim = intval($items_info[$i]['item_quantity_unlim']);
@@ -2121,9 +2451,69 @@ class shop extends model_base
             $this->result['systemdk_shop_order_id'] = $order_id;
             $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|orders|0");
             $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|orders|1");
+            $this->processOrderNotifyMail($data_array,$order_id);
             $this->result['shop_message'] = "add_ok";
         } else {
             $this->result['shop_cart_display_items'] = 'no';
         }
+    }
+
+
+    /**
+     * Send new order notification email to admin if necessary
+     *
+     * @param array $dataArray
+     * @param int   $orderId
+     *
+     * @return bool
+     */
+    private function processOrderNotifyMail($dataArray, $orderId)
+    {
+        if (!$this->orderNotifyMail()) {
+            return true;
+        }
+
+        if (empty($dataArray['order_notify_mail_content']) || empty($dataArray['notify_order_mail_subject'])) {
+            return false;
+        }
+
+        $dataArray['order_notify_mail_content'] = str_replace("modules_shop_order_id", $orderId, $dataArray['order_notify_mail_content']);
+        $dataArray['order_notify_mail_content'] = str_replace(
+            "module_shop_order_url",
+            $this->registry->main_class->get_site_url() . 'systemadmin/index.php?path=admin_shop&func=shop_orderproc&order_id=' . $orderId . '&lang='
+            . $this->registry->sitelang,
+            $dataArray['order_notify_mail_content']
+        );
+        $dataArray['order_notify_mail_content'] =
+            str_replace("modules_shop_site_url", $this->registry->main_class->get_site_url(), $dataArray['order_notify_mail_content']);
+        $this->registry->mail->from = ADMIN_EMAIL;
+        $receiverEmail = ADMIN_EMAIL;
+
+        if ($this->systemdk_shop_order_notify_type == 'custom' && !empty($this->systemdk_shop_order_notify_custom_mailbox)) {
+            $receiverEmail = $this->systemdk_shop_order_notify_custom_mailbox;
+        }
+
+        $this->registry->mail->sendmail($receiverEmail, $dataArray['notify_order_mail_subject'] . $orderId, $dataArray['order_notify_mail_content']);
+
+        if ($this->registry->mail->send_error) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Check if need send notify mail about new order
+     *
+     * @return bool
+     */
+    public function orderNotifyMail()
+    {
+        if ($this->systemdk_shop_order_notify_email) {
+            return true;
+        }
+
+        return false;
     }
 }

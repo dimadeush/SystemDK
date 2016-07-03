@@ -8,7 +8,7 @@
  * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.4
+ * @version   3.5
  */
 header("Expires: Mon, 30 Nov 2009 00:39:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");

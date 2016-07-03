@@ -8,7 +8,7 @@
  * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.4
+ * @version   3.5
  */
 class model_main extends model_base
 {
@@ -576,6 +576,12 @@ class model_main extends model_base
     public function get_user_name()
     {
         return $this->user_name;
+    }
+
+
+    public function getSiteUrl()
+    {
+        return SITE_URL . "/" . SITE_DIR;
     }
 
 

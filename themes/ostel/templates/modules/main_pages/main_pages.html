@@ -1,0 +1,32 @@
+{config_load file="$language/modules/main_pages/main_pages.conf"}
+{if $mainpage_all ne "noaccess" and $mainpage_all ne "nopage" and $mainpage_all ne "notactive"}
+<br><table width="50%" border="0" cellpadding="0" cellspacing="0"><tr align="center"><td><b><span class="title">{$mainpage_all.mainpage_title}</span></b></td></tr></table>
+<br>
+<table width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr>
+<td class="textbig" align="left">
+{$mainpage_all.mainpage_content}<br>
+{$mainpage_all.mainpage_notes}
+</td>
+</tr>
+</table>
+{if isset($systemdk_display_player) and $systemdk_display_player eq "yes"}
+<br clear="all" />
+{else}
+<br>
+{/if}
+{if isset($pages_menu) and $pages_menu ne "no"}
+  <center>
+  {foreach $pages_menu as $pages_menu_tpl}
+  {if $pages_menu_tpl.prev_page ne "no"}<a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/main_pages/{$mainpage_all.mainpage_id}/page/{$pages_menu_tpl.prev_page}/{else}/{$system_dir}index.php?path=main_pages&amp;main_pageid={$mainpage_all.mainpage_id}&amp;num_page={$pages_menu_tpl.prev_page}&amp;lang={$site_language}{/if}" title="{#_MAINPAGEPREVPAGE#}" class="link">{#_MAINPAGEPREVPAGE#}</a> <span class="tablecenterblocktext2">|</span>{/if} <span class="tablecenterblocktext2">{#_MAINPAGEPAGECURRENT#} {$pages_menu_tpl.current_page} {#_MAINPAGEPAGEFROM#} {$pages_menu_tpl.count_num_pages}</span> {if $pages_menu_tpl.next_page ne "no"}<span class="tablecenterblocktext2">|</span> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/main_pages/{$mainpage_all.mainpage_id}/page/{$pages_menu_tpl.next_page}/{else}/{$system_dir}index.php?path=main_pages&amp;main_pageid={$mainpage_all.mainpage_id}&amp;num_page={$pages_menu_tpl.next_page}&amp;lang={$site_language}{/if}" title="{#_MAINPAGENEXTPAGE#}" class="link">{#_MAINPAGENEXTPAGE#}</a>{/if}
+  {/foreach}
+  </center>
+  <br>
+{/if}
+{elseif $mainpage_all eq "noaccess"}
+<br><center><img src="/{$system_dir}{#bgimage28#}" border="0" alt="">&nbsp;<span class="title">{#_MAINPAGENOACCESS#}</span></center>
+{elseif $mainpage_all eq "nopage"}
+<br><center><img src="/{$system_dir}{#bgimage28#}" border="0" alt="">&nbsp;<span class="title">{#_MAINPAGENOSUCHPAGE#}</span></center>
+{elseif $mainpage_all eq "notactive"}
+<br><center><img src="/{$system_dir}{#bgimage28#}" border="0" alt="">&nbsp;<span class="title">{#_MAINPAGENOTACTIVE#}</span></center>
+{/if}

@@ -8,7 +8,7 @@
  * @copyright 2016 SystemDK
  * @author    Dmitriy Kravtsov <admin@systemsdk.com>
  * @package   SystemDK
- * @version   3.4
+ * @version   3.5
  */
 class controller_shop extends controller_base
 {
@@ -78,13 +78,28 @@ class controller_shop extends controller_base
         if (isset($_POST['shop_new']) && intval($_POST['shop_new']) != 0) {
             $data_array['shop_new'] = intval($_POST['shop_new']);
         }
+        if (!empty($_POST['shop_additional_params']) && is_array($_POST['shop_additional_params'])) {
+            foreach ($_POST['shop_additional_params'] as $item_key => $item_data) {
+                if (is_numeric($item_key) && is_array($item_data)) {
+                    foreach ($item_data as $group_key => $group_data) {
+                        if (is_numeric($group_key) && is_array($group_data)) {
+                            foreach ($group_data as $key => $value) {
+                                if (is_numeric($key) && is_numeric($value)) {
+                                    $data_array['shop_additional_params'][intval($item_key)][intval($group_key)][intval($key)] = intval($value);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         if (isset($_POST['shop_save'])) {
             $data_array['shop_save'] = true;
         }
         if (!empty($_POST) && is_array($_POST)) {
             foreach ($_POST as $key => $value) {
                 if (is_numeric($key) && is_numeric($value)) {
-                    $data_array['shop_items'][$key] = $value;
+                    $data_array['shop_items'][intval($key)] = intval($value);
                 }
             }
         }
@@ -516,6 +531,13 @@ class controller_shop extends controller_base
         $titles['title'] = '_SHOP_MODULE_PROCESSORDERTITLE';
         $titles['description'] = '_SHOP_MODULE_METADESCRIPTION';
         $titles['keywords'] = '_SHOP_MODULE_METAKEYWORDS';
+
+        if ($this->model_shop->orderNotifyMail()) {
+            $this->configLoad($this->registry->sitelang . "/modules/shop/shop.conf");
+            $data_array['notify_order_mail_subject'] = $this->getConfigVars('_SHOP_MODULE_NOTIFY_ORDER_MAIL_SUBJECT');
+            $data_array['order_notify_mail_content'] = $this->fetch("modules/shop/shop_order_notify_email.html");
+        }
+
         $this->model_shop->insert($data_array);
         $error = $this->model_shop->get_property_value('error');
         $error_array = $this->model_shop->get_property_value('error_array');

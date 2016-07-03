@@ -7,14 +7,25 @@
 <TITLE>{$site_name}</TITLE>
 <LINK REL="SHORTCUT ICON" HREF="../themes/systemdk/images/favicon.ico" TYPE="image/x-icon">
 <LINK REL="StyleSheet" HREF="../themes/systemdk/css/style.css" TYPE="text/css">
-<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
-<script type="text/javascript" src="../ckeditor/Djenx.Explorer/djenx-explorer.js"></script>
 {if isset($include_jquery) and $include_jquery eq "yes"}
 <script type="text/javascript" src="../themes/systemdk/js/jquery.tools.min.js"></script>
 {if isset($include_jquery_data) and $include_jquery_data eq "dateinput"}
 <LINK REL="StyleSheet" HREF="../themes/systemdk/css/jqdate.css" TYPE="text/css">
 {/if}
+<script type="text/javascript">
+    var jQuery_1_4_2 = $.noConflict(true);
+</script>
 {/if}
+{if isset($addon_multiselect)}
+    <LINK REL="StyleSheet" HREF="../themes/ostel/multiselect/css/jquery-ui.css" TYPE="text/css">
+    <link REL="StyleSheet" href="../themes/ostel/multiselect/css/jquery.uix.multiselect.css" TYPE="text/css">
+    <script type="text/javascript" src="../flowplayer/jquery.min.js"></script>
+    <script type="text/javascript" src="../themes/ostel/multiselect/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../themes/ostel/multiselect/js/jquery.uix.multiselect.js"></script>
+    <script type="text/javascript" src="../themes/ostel/multiselect/js/locales/jquery.uix.multiselect_{$language}.js"></script>
+{/if}
+<script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
+<script type="text/javascript" src="../ckeditor/Djenx.Explorer/djenx-explorer.js"></script>
 </head>
 <BODY bgColor="{#color2#}" style="margin: 0">
 <div style="width:100%; height:70px; background-image:url(../{#bgimage1#}); background-color:{#color3#};">
