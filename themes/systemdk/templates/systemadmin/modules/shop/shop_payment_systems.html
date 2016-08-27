@@ -1,0 +1,57 @@
+{#_SHOP#}</span></center>
+</div>
+<br>
+<center>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a>
+<span class="tablecenterblocktext2">|</span>
+<a href="index.php?path=admin_shop&amp;func=exchange_rates&amp;lang={$site_language}" class="link">{#_SHOP_EXCHANGE_RATES#}</a>
+<span class="tablecenterblocktext2">|</span>
+<a href="index.php?path=admin_shop&amp;func=payment_logs&amp;lang={$site_language}" class="link">{#_SHOP_PAYMENT_SYSTEMS_LOGS#}</a>
+<br><br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_SHOP_PAYMENT_SYSTEMS#}</span>
+<br><br>
+<table border="0" width="99%" cellspacing="2"  cellpadding="0">
+<tr align="center">
+<td width="1%" bgcolor="{#color7#}" class="td2"></td>
+<td width="20%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPNAMETITLE#}</span></td>
+<td width="39%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPDESCRIPTIONTITLE#}</span></td>
+<td width="10%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPSTATUSTITLE#}</span></td>
+<td width="10%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOP_VERSION_TITLE#}</span></td>
+<td width="20%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPFUNCTIONTITLE#}</span></td>
+</tr>
+{if $payment_systems_all ne "no"}
+    {foreach $payment_systems_all as $payment_systems_all_tpl}
+    <tr>
+    <td width="1%" bgcolor="{#color7#}" class="td2" nowrap><img src="../{#bgimage15#}" border="0" alt=""></td>
+    <td width="20%" bgcolor="{#color7#}" class="td2" align="left" nowrap><span class="tablecenterblocktext2"> {$payment_systems_all_tpl.system_name|truncate:40:"...":true}</span></td>
+    <td width="39%" bgcolor="{#color7#}" class="td2" align="center"><span class="tablecenterblocktext2">{$payment_systems_all_tpl.system_integ_description}</span></td>
+    <td width="10%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{if $payment_systems_all_tpl.system_status eq 0}{#_SHOPITEMOFF#}{else}{#_SHOPITEMON#}{/if}</span></td>
+    <td width="10%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$payment_systems_all_tpl.system_version}</span></td>
+    <td width="20%" bgcolor="{#color7#}" class="td2" nowrap><a href="index.php?path=admin_shop&amp;func={if $payment_systems_all_tpl.system_class eq 'shop_portmone' && $payment_systems_all_tpl.system_integ_type eq 'acquiring_agreement'}portmone_acquiring_config{else}payment_systems{/if}&amp;item_id={$payment_systems_all_tpl.system_id}&amp;lang={$site_language}" class="link">{#_SHOP_CONFIGURE#}</a></td>
+    </tr>
+    {/foreach}
+{else}
+    <tr>
+    <td width="100%" colspan="6" align="center" bgcolor="{#color7#}"><span class="tablecenterblocktext2">{#_SHOP_PAYMENT_SYSTEMS_NOT_INSTALLED#}</span></td>
+    </tr>
+{/if}
+</table>
+</center>
+<br>
+{if $html ne "no"}
+    <table width="100%" cellpadding="0" cellspacing="2" border="0">
+     <tr>
+      <td><center><span class="tablecenterblocktext2">{#_SHOPITEMSCOUNTTOTAL#}:{$total_payment_systems} ({#_SHOPPAGESTOTAL#}:{$num_pages})</span></center></td>
+     </tr>
+    </table>
+    <center>
+    {if $prevpage ne "no"}<a href="index.php?path=admin_shop&amp;func=payment_systems&amp;num_page={$prevpage}&amp;lang={$site_language}" title="{#_SHOPPREVPAGE#}" class="link"><img src="../{#bgimage19#}" border="0" alt="{#_SHOPPREVPAGE#}"></a> {/if}
+        {foreach $html as $html_tpl}
+            {if $html_tpl.param1 eq "1"} <span class="tablecenterblocktext2">[{$html_tpl.number}]</span> {elseif $html_tpl.param1 eq "2"} <a href="index.php?path=admin_shop&amp;func=payment_systems&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "3"} ...<a href="index.php?path=admin_shop&amp;func=payment_systems&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "4"} <a href="index.php?path=admin_shop&amp;func=payment_systems&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a>... {/if}
+        {/foreach}
+    {if $nextpage ne "no"}
+        <a href="index.php?path=admin_shop&amp;func=payment_systems&amp;num_page={$nextpage}&amp;lang={$site_language}" title="{#_SHOPNEXTPAGE#}" class="link"><img src="../{#bgimage20#}" border="0" alt="{#_SHOPNEXTPAGE#}"></a>
+    {/if}
+    </center>
+{/if}
+<br>

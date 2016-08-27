@@ -103,7 +103,14 @@
          <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPITEMSUNDERPARENT#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPHOMEITEMSPERPAGENOTES#} {#_SHOPITEMSUNDERPARENTNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_items_underparent" value="{$systemdk_shop_items_underparent}" size="10" maxlength="2" class="formenter"></td>
       </tr>
       <tr>
-         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPVALUTA#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPVALUTANOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><input type="text" name="systemdk_shop_valuta" value="{$systemdk_shop_valuta}" size="10" maxlength="40" class="formenter"></td>
+         <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPVALUTA#}:</span><span class="errorsmall">*</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPVALUTANOTES#}</span></td>
+         <td nowrap bgcolor="{#color7#}" class="td2">
+            <select name="systemdk_shop_valuta" class="formenter">
+               {foreach $currencies_list as $currency}
+               <option value="{$currency.currency_code}" {if isset($systemdk_shop_valuta) && $systemdk_shop_valuta eq $currency.currency_code}selected{/if}>{$currency.currency_name} ({$currency.currency_code})</option>
+               {/foreach}
+            </select>
+         </td>
       </tr>
       <tr>
          <td bgcolor="{#color7#}" class="td1" nowrap><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="tablecenterblocktext2">{#_SHOPANTISPAMIPADDR#}:</span><br><img src="../{#bgimage16#}" border="0" alt="">&nbsp;<span class="text">{#_SHOPANTISPAMIPADDRNOTES#}</span></td><td nowrap bgcolor="{#color7#}" class="td2"><select name="systemdk_shop_antispam_ipaddr" class="formenter"><option value="1" {if $systemdk_shop_antispam_ipaddr eq 1} selected {/if}>{#_SHOPITEMON#}</option><option value="0" {if $systemdk_shop_antispam_ipaddr eq 0} selected {/if}>{#_SHOPITEMOFF#}</option></select></td>

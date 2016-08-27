@@ -392,175 +392,254 @@ class controller_shop extends controller_base
 
     public function cart()
     {
+        $cache = "other";
+
         if ($this->registry->main_class->is_admin()) {
             $cache = "admin";
-        } else {
-            $cache = "other";
         }
+
+        $titles['title'] = '_SHOP_MODULE_CARTTITLE';
+        $titles['description'] = '_SHOP_MODULE_METADESCRIPTION';
+        $titles['keywords'] = '_SHOP_MODULE_METAKEYWORDS';
         $this->model_shop->cart();
         $result = $this->model_shop->get_property_value('result');
         $this->assign_array($result);
         $type = false;
-        $titles['title'] = '_SHOP_MODULE_CARTTITLE';
-        $titles['description'] = '_SHOP_MODULE_METADESCRIPTION';
-        $titles['keywords'] = '_SHOP_MODULE_METAKEYWORDS';
-        $cache_category = 'modules|shop|cart|display';
+        $cacheCategory = 'modules|shop|cart|display';
         $template = 'shop_cart.html';
-        $this->shop_view($type, $titles, $cache_category, $cache, $template);
+        $this->shop_view($type, $titles, $cacheCategory, $cache, $template);
     }
 
 
     public function checkout()
     {
+        $cache = "other";
+
         if ($this->registry->main_class->is_admin()) {
             $cache = "admin";
-        } else {
-            $cache = "other";
         }
+
+        $titles['title'] = '_SHOP_MODULE_PROCESSORDERTITLE';
+        $titles['description'] = '_SHOP_MODULE_METADESCRIPTION';
+        $titles['keywords'] = '_SHOP_MODULE_METAKEYWORDS';
         $this->model_shop->checkout();
         $error = $this->model_shop->get_property_value('error');
         $result = $this->model_shop->get_property_value('result');
         $this->assign_array($result);
-        $titles['title'] = '_SHOP_MODULE_PROCESSORDERTITLE';
-        $titles['description'] = '_SHOP_MODULE_METADESCRIPTION';
-        $titles['keywords'] = '_SHOP_MODULE_METAKEYWORDS';
-        if ($error === 'categories_error') {
-            $cache_category = false;
-            $cache = 'checkout_' . $cache . '_' . $error;
-            $this->shop_view($error, $titles, $cache_category, $cache);
+
+        if (!empty($error)) {
+            $cacheCategory = false;
+            $cache = __FUNCTION__ . '_' . $cache . '_' . $error;
+            $this->shop_view($error, $titles, $cacheCategory, $cache);
         }
+
         $type = false;
-        $cache_category = 'modules|shop|checkout|display';
+        $cacheCategory = 'modules|shop|checkout|display';
         $template = 'shop_cart.html';
-        $this->shop_view($type, $titles, $cache_category, $cache, $template);
+        $this->shop_view($type, $titles, $cacheCategory, $cache, $template);
     }
 
 
     public function checkout2()
     {
-        $data_array = false;
-        if (!empty($_POST)) {
-            $keys = [
-                'shop_ship_name',
-                'shop_ship_telephone',
-                'shop_ship_email',
-                'shop_ship_country',
-                'shop_ship_state',
-                'shop_ship_city',
-                'shop_ship_street',
-                'shop_ship_homenumber',
-                'shop_ship_flatnumber',
-                'shop_ship_postalcode',
-                'shop_ship_addaddrnotes',
-                'shop_order_comments',
-            ];
-            $keys2 = [
-                'shop_order_delivery',
-                'shop_order_pay',
-            ];
-            foreach ($_POST as $key => $value) {
-                if (in_array($key, $keys)) {
-                    $data_array[$key] = trim($value);
-                }
-                if (in_array($key, $keys2)) {
-                    $data_array[$key] = intval($value);
-                }
+        $dataArray = false;
+        $keys = [
+            'shop_order_delivery'    => 'integer',
+            'shop_order_pay'         => 'integer',
+            'shop_ship_name'         => 'string',
+            'shop_ship_telephone'    => 'string',
+            'shop_ship_email'        => 'string',
+            'shop_ship_country'      => 'string',
+            'shop_ship_state'        => 'string',
+            'shop_ship_city'         => 'string',
+            'shop_ship_street'       => 'string',
+            'shop_ship_homenumber'   => 'string',
+            'shop_ship_flatnumber'   => 'string',
+            'shop_ship_postalcode'   => 'string',
+            'shop_ship_addaddrnotes' => 'string',
+            'shop_order_comments'    => 'string',
+        ];
+        foreach ($keys as $key => $valueType) {
+
+            if (isset($_POST[$key])) {
+                $dataArray[$key] = $valueType === 'string' ? trim($_POST[$key]) : intval($_POST[$key]);
             }
+
         }
+
+        $cache = "other";
+
         if ($this->registry->main_class->is_admin()) {
             $cache = "admin";
-        } else {
-            $cache = "other";
         }
-        $this->model_shop->checkout2($data_array);
-        $error = $this->model_shop->get_property_value('error');
-        $result = $this->model_shop->get_property_value('result');
-        $this->assign_array($result);
+
         $titles['title'] = '_SHOP_MODULE_PROCESSORDERTITLE';
         $titles['description'] = '_SHOP_MODULE_METADESCRIPTION';
         $titles['keywords'] = '_SHOP_MODULE_METAKEYWORDS';
-        if ($error === 'shop_not_all_data' || $error === 'user_email' || $error === 'categories_error') {
-            $cache_category = false;
-            $cache = 'checkout2_' . $cache . '_' . $error;
-            $this->shop_view($error, $titles, $cache_category, $cache);
+        $this->configLoad($this->registry->sitelang . "/modules/shop/shop.conf");
+        $dataArray['payment_error_notify_mail_subject'] = $this->getConfigVars('_SHOP_MODULE_PAYMENT_ERROR_NOTIFY_MAIL_SUBJECT');
+        $dataArray['payment_error_notify_mail_content'] = $this->fetch("modules/shop/shop_payment_error_notify_email.html");
+        $this->model_shop->checkout2($dataArray);
+        $error = $this->model_shop->get_property_value('error');
+        $errorArray = $this->model_shop->get_property_value('error_array');
+        $result = $this->model_shop->get_property_value('result');
+        $this->assign_array($result);
+
+        if (!empty($error)) {
+
+            if (!empty($errorArray)) {
+                $this->assign("errortext", $errorArray);
+            }
+
+            $cacheCategory = false;
+            $cache = __FUNCTION__ . '_' . $cache . '_' . $error;
+            $this->shop_view($error, $titles, $cacheCategory, $cache);
         }
+
         $type = false;
-        $cache_category = 'modules|shop|checkout2|display';
+        $cacheCategory = 'modules|shop|checkout2|display';
         $template = 'shop_cart.html';
-        $this->shop_view($type, $titles, $cache_category, $cache, $template);
+        $this->shop_view($type, $titles, $cacheCategory, $cache, $template);
     }
 
 
+    /**
+     * Create an order
+     */
     public function insert()
     {
-        $data_array = false;
-        if (!empty($_POST)) {
-            $keys = [
-                'shop_ship_name',
-                'shop_ship_telephone',
-                'shop_ship_email',
-                'shop_ship_country',
-                'shop_ship_state',
-                'shop_ship_city',
-                'shop_ship_street',
-                'shop_ship_homenumber',
-                'shop_ship_flatnumber',
-                'shop_ship_postalcode',
-                'shop_ship_addaddrnotes',
-                'shop_order_comments',
-                'captcha',
-            ];
-            $keys2 = [
-                'shop_order_delivery',
-                'shop_order_pay',
-            ];
-            foreach ($_POST as $key => $value) {
-                if (in_array($key, $keys)) {
-                    $data_array[$key] = trim($value);
-                }
-                if (in_array($key, $keys2)) {
-                    $data_array[$key] = intval($value);
-                }
+        $dataArray = false;
+        $keys = [
+            'shop_order_delivery'    => 'integer',
+            'shop_order_pay'         => 'integer',
+            'shop_ship_name'         => 'string',
+            'shop_ship_telephone'    => 'string',
+            'shop_ship_email'        => 'string',
+            'shop_ship_country'      => 'string',
+            'shop_ship_state'        => 'string',
+            'shop_ship_city'         => 'string',
+            'shop_ship_street'       => 'string',
+            'shop_ship_homenumber'   => 'string',
+            'shop_ship_flatnumber'   => 'string',
+            'shop_ship_postalcode'   => 'string',
+            'shop_ship_addaddrnotes' => 'string',
+            'shop_order_comments'    => 'string',
+            'captcha'                => 'string',
+        ];
+        foreach ($keys as $key => $valueType) {
+            if (isset($_POST[$key])) {
+                $dataArray[$key] = $valueType === 'string' ? trim($_POST[$key]) : intval($_POST[$key]);
             }
         }
+
+        $cache = "other";
+
         if ($this->registry->main_class->is_admin()) {
             $cache = "admin";
-        } else {
-            $cache = "other";
         }
+
         $titles['title'] = '_SHOP_MODULE_PROCESSORDERTITLE';
         $titles['description'] = '_SHOP_MODULE_METADESCRIPTION';
         $titles['keywords'] = '_SHOP_MODULE_METAKEYWORDS';
+        $this->configLoad($this->registry->sitelang . "/modules/shop/shop.conf");
+        $dataArray['payment_error_notify_mail_subject'] = $this->getConfigVars('_SHOP_MODULE_PAYMENT_ERROR_NOTIFY_MAIL_SUBJECT');
+        $dataArray['payment_error_notify_mail_content'] = $this->fetch("modules/shop/shop_payment_error_notify_email.html");
+        $dataArray['order_mail_subject'] = $this->getConfigVars('_SHOP_MODULE_ORDER_MAIL_SUBJECT');
+        $dataArray['order_mail_content'] = $this->fetch("modules/shop/shop_order_email.html");
 
         if ($this->model_shop->orderNotifyMail()) {
-            $this->configLoad($this->registry->sitelang . "/modules/shop/shop.conf");
-            $data_array['notify_order_mail_subject'] = $this->getConfigVars('_SHOP_MODULE_NOTIFY_ORDER_MAIL_SUBJECT');
-            $data_array['order_notify_mail_content'] = $this->fetch("modules/shop/shop_order_notify_email.html");
+            $dataArray['notify_order_mail_subject'] = $this->getConfigVars('_SHOP_MODULE_NOTIFY_ORDER_MAIL_SUBJECT');
+            $dataArray['notify_order_mail_content'] = $this->fetch("modules/shop/shop_order_notify_email.html");
         }
 
-        $this->model_shop->insert($data_array);
+        $this->model_shop->insert($dataArray);
         $error = $this->model_shop->get_property_value('error');
-        $error_array = $this->model_shop->get_property_value('error_array');
+        $errorArray = $this->model_shop->get_property_value('error_array');
         $result = $this->model_shop->get_property_value('result');
         $this->assign_array($result);
-        if ($error === 'shop_not_all_data2' || $error === 'check_code' || $error === 'post_limit' || $error === 'user_email2' || $error === 'post_length'
-            || $error === 'not_insert'
-        ) {
-            if ($error === 'not_insert') {
-                $this->assign("errortext", $error_array);
+
+        if (!empty($error)) {
+
+            if (!empty($errorArray)) {
+                $this->assign("errortext", $errorArray);
             }
-            $cache_category = false;
-            $cache = 'insert_' . $cache . '_' . $error;
-            $this->shop_view($error, $titles, $cache_category, $cache);
+
+            $cacheCategory = false;
+            $cache = __FUNCTION__ . '_' . $cache . '_' . $error;
+            $this->shop_view($error, $titles, $cacheCategory, $cache);
         }
+
         $type = false;
         $template = 'shop_cart.html';
+
         if (isset($result['shop_cart_display_items']) && $result['shop_cart_display_items'] === 'no') {
-            $cache_category = 'modules|shop|checkout|display';
+            $cacheCategory = 'modules|shop|checkout|display';
         } else {
-            $cache_category = 'modules|shop';
-            $cache = $cache . '_addok';
+            $cacheCategory = 'modules|shop';
+            $cache = $cache . '_' . __FUNCTION__ . '_ok';
         }
-        $this->shop_view($type, $titles, $cache_category, $cache, $template);
+
+        $this->shop_view($type, $titles, $cacheCategory, $cache, $template);
+    }
+
+
+    public function pay_online()
+    {
+        $this->paymentProcess('payOnline', __FUNCTION__);
+    }
+
+
+    public function pay_done()
+    {
+        $this->paymentProcess('payDone', __FUNCTION__);
+    }
+
+
+    public function pay_error()
+    {
+        $this->paymentProcess('payError', __FUNCTION__);
+    }
+
+
+    private function paymentProcess($method, $cache)
+    {
+        $dataArray = false;
+        $keys = [
+            'order_id' => 'integer',
+            'hash'     => 'string',
+        ];
+        foreach ($keys as $key => $valueType) {
+            if (isset($_GET[$key])) {
+                $dataArray[$key] = $valueType === 'string' ? trim($_GET[$key]) : intval($_GET[$key]);
+            }
+        }
+
+        $titles['title'] = '_SHOP_MODULE_PAY_ONLINE_TITLE';
+        $titles['description'] = '_SHOP_MODULE_METADESCRIPTION';
+        $titles['keywords'] = '_SHOP_MODULE_METAKEYWORDS';
+        $this->configLoad($this->registry->sitelang . "/modules/shop/shop.conf");
+        $dataArray['payment_error_notify_mail_subject'] = $this->getConfigVars('_SHOP_MODULE_PAYMENT_ERROR_NOTIFY_MAIL_SUBJECT');
+        $dataArray['payment_error_notify_mail_content'] = $this->fetch("modules/shop/shop_payment_error_notify_email.html");
+        $this->model_shop->$method($dataArray);
+        $error = $this->model_shop->get_property_value('error');
+        $errorArray = $this->model_shop->get_property_value('error_array');
+        $result = $this->model_shop->get_property_value('result');
+        $this->assign_array($result);
+
+        if (!empty($error)) {
+
+            if (!empty($errorArray)) {
+                $this->assign("errortext", $errorArray);
+            }
+
+            $cacheCategory = false;
+            $cache = $cache . '_' . $error;
+            $this->shop_view($error, $titles, $cacheCategory, $cache);
+        }
+
+        $type = !empty($result['shop_message']) ? $result['shop_message'] : false;
+        $cacheCategory = 'modules|shop';
+        $template = !empty($result['payment_template']) ? $result['payment_template'] : false;
+        $this->shop_view($type, $titles, $cacheCategory, $cache, $template);
     }
 }

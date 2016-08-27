@@ -1065,41 +1065,57 @@ class controller_admin_shop extends controller_base
 
     public function shop_orderproc()
     {
-        $data_array['order_id'] = 0;
-        if (isset($_GET['order_id'])) {
-            $data_array['order_id'] = intval($_GET['order_id']);
+        $dataArray['order_id'] = 0;
+        $dataArray['edit'] = 0;
+        $keys = [
+            'order_id' => 'integer',
+            'edit'     => 'integer',
+        ];
+        foreach ($keys as $key => $valueType) {
+
+            if (isset($_GET[$key])) {
+                $dataArray[$key] = $valueType === 'string' ? trim($_GET[$key]) : intval($_GET[$key]);
+            }
+
         }
-        $data_array['edit'] = 0;
-        if (isset($_GET['edit'])) {
-            $data_array['edit'] = intval($_GET['edit']);
-        }
-        if ($data_array['edit'] > 0) {
+
+        $edit = false;
+        $title = '_SHOPSHOWORDER';
+
+        if ($dataArray['edit'] > 0) {
             $edit = 'edit';
             $title = '_SHOPEDITORDER';
-        } else {
-            $edit = false;
-            $title = '_SHOPSHOWORDER';
         }
-        $cache_category = 'modules|shop|order';
+
+        $cacheCategory = 'modules|shop|order';
+
         if (!$this->isCached(
             "systemadmin/main.html",
-            $this->registry->sitelang . "|systemadmin|" . $cache_category . "|" . $edit . $data_array['order_id'] . "|" . $this->registry->language
+            $this->registry->sitelang . "|systemadmin|" . $cacheCategory . "|" . $edit . $dataArray['order_id'] . "|" . $this->registry->language
         )
         ) {
-            $this->model_admin_shop->shop_orderproc($data_array);
+            $this->configLoad($this->registry->language . "/systemadmin/modules/shop/shop.conf");
+            $dataArray['payment_error_notify_mail_subject'] = $this->getConfigVars('_SHOP_MODULE_PAYMENT_ERROR_NOTIFY_MAIL_SUBJECT');
+            $dataArray['payment_error_notify_mail_content'] = $this->fetch("modules/shop/shop_payment_error_notify_email.html");
+            $this->model_admin_shop->shop_orderproc($dataArray);
             $error = $this->model_admin_shop->get_property_value('error');
-            $error_array = $this->model_admin_shop->get_property_value('error_array');
+            $errorArray = $this->model_admin_shop->get_property_value('error_array');
             $result = $this->model_admin_shop->get_property_value('result');
-            if ($error === 'order_proc_no_order' || $error === 'order_proc_sql_error' || $error === 'order_proc_not_found') {
-                if (!empty($error_array)) {
-                    $this->assign("error", $error_array);
+
+            if (!empty($error)) {
+
+                if (!empty($errorArray)) {
+                    $this->assign("error", $errorArray);
                 }
+
                 $this->shop_view($edit . $error, $title);
             }
+
             $this->assign_array($result);
         }
+
         $template = 'shop_order.html';
-        $this->shop_view($edit . $data_array['order_id'], $title, $cache_category, $template);
+        $this->shop_view($edit . $dataArray['order_id'], $title, $cacheCategory, $template);
     }
 
 
@@ -1374,6 +1390,7 @@ class controller_admin_shop extends controller_base
     {
         $data_array['item_id'] = 0;
         $data_array['pay'] = 0;
+
         if (!empty($_GET)) {
             $keys = [
                 'item_id',
@@ -1385,30 +1402,39 @@ class controller_admin_shop extends controller_base
                 }
             }
         }
+
         $type = 'pay';
         $title = '_SHOPEDITPAY';
+
         if ($data_array['pay'] == 0) {
             $type = 'deliv';
             $title = '_SHOPEDITDELIVERY';
         }
+
         $cache_category = 'modules|shop|' . $type;
         $cache = 'edit' . $data_array['item_id'];
+
         if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cache_category . "|" . $cache . "|" . $this->registry->language)) {
             $this->model_admin_shop->shop_edit_method($data_array);
             $error = $this->model_admin_shop->get_property_value('error');
             $error_array = $this->model_admin_shop->get_property_value('error_array');
             $result = $this->model_admin_shop->get_property_value('result');
-            if ($error === 'no_item_' . $type || $error === 'sql_error' || $error === 'not_found_' . $type) {
+
+            if (!empty($error)) {
+
                 if (!empty($error_array)) {
                     $this->assign("error", $error_array);
                 }
+
                 $cache_category = false;
                 $template = false;
                 $cache = 'edit_method_' . $type . '_' . $error;
                 $this->shop_view($error, $title, $cache_category, $template, $cache);
             }
+
             $this->assign_array($result);
         }
+
         $type = false;
         $template = 'shop_method_edit.html';
         $this->shop_view($type, $title, $cache_category, $template, $cache);
@@ -1418,6 +1444,7 @@ class controller_admin_shop extends controller_base
     public function shop_method_save()
     {
         $data_array['pay'] = 0;
+
         if (!empty($_POST)) {
             $keys = [
                 'item_name',
@@ -1427,35 +1454,45 @@ class controller_admin_shop extends controller_base
                 'item_id',
                 'item_status',
                 'pay',
+                'payment_system_id',
             ];
             foreach ($_POST as $key => $value) {
+
                 if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
+
                 if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
                 }
             }
         }
+
         $type = "pay";
         $title = '_SHOPEDITPAY';
+
         if ($data_array['pay'] == 0) {
             $type = "deliv";
             $title = '_SHOPEDITDELIVERY';
         }
+
         $template = false;
         $this->model_admin_shop->shop_method_save($data_array);
         $error = $this->model_admin_shop->get_property_value('error');
         $error_array = $this->model_admin_shop->get_property_value('error_array');
         $result = $this->model_admin_shop->get_property_value('result');
-        if ($error === 'not_all_data' || $error === 'sql_error' || $error === 'not_save') {
+
+        if (!empty($error)) {
+
             if (!empty($error_array)) {
                 $this->assign("error", $error_array);
             }
+
             $cache_category = false;
             $cache = 'method_save_' . $type . '_' . $error;
             $this->shop_view($error, $title, $cache_category, $template, $cache);
         }
+
         $cache_category = 'modules|shop|edit_' . $type;
         $this->shop_view($result, $title, $cache_category, $template);
     }
@@ -1477,7 +1514,22 @@ class controller_admin_shop extends controller_base
         $cache = 'add';
         if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cache_category . "|" . $cache . "|" . $this->registry->language)) {
             $this->model_admin_shop->shop_method_add($pay);
+            $error = $this->model_admin_shop->get_property_value('error');
+            $error_array = $this->model_admin_shop->get_property_value('error_array');
             $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if (!empty($error_array)) {
+                    $this->assign("error", $error_array);
+                }
+
+                $cache_category = false;
+                $template = false;
+                $cache = 'add_method_' . $type . '_' . $error;
+                $this->shop_view($error, $title, $cache_category, $template, $cache);
+            }
+
             $this->assign_array($result);
         }
         $type = false;
@@ -1489,6 +1541,7 @@ class controller_admin_shop extends controller_base
     public function shop_method_save2()
     {
         $data_array['pay'] = 0;
+
         if (!empty($_POST)) {
             $keys = [
                 'item_name',
@@ -1497,35 +1550,45 @@ class controller_admin_shop extends controller_base
             $keys2 = [
                 'item_status',
                 'pay',
+                'payment_system_id',
             ];
             foreach ($_POST as $key => $value) {
+
                 if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
+
                 if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
                 }
             }
         }
+
         $type = "pay";
         $title = '_SHOPADDPAY';
+
         if ($data_array['pay'] == 0) {
             $type = "deliv";
             $title = '_SHOPADDDELIVERY';
         }
+
         $template = false;
         $this->model_admin_shop->shop_method_save2($data_array);
         $error = $this->model_admin_shop->get_property_value('error');
         $error_array = $this->model_admin_shop->get_property_value('error_array');
         $result = $this->model_admin_shop->get_property_value('result');
-        if ($error === 'not_all_data' || $error === 'sql_error') {
+
+        if (!empty($error)) {
+
             if (!empty($error_array)) {
                 $this->assign("error", $error_array);
             }
+
             $cache_category = false;
             $cache = 'method_save2_' . $type . '_' . $error;
             $this->shop_view($error, $title, $cache_category, $template, $cache);
         }
+
         $cache_category = 'modules|shop|add_' . $type;
         $this->shop_view($result, $title, $cache_category, $template);
     }
@@ -1536,11 +1599,27 @@ class controller_admin_shop extends controller_base
         $title = '_SHOPCONFIGPAGETITLE';
         $cache_category = 'modules|shop';
         $cache = 'config';
+
         if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cache_category . "|" . $cache . "|" . $this->registry->language)) {
             $this->model_admin_shop->shop_config();
+            $error = $this->model_admin_shop->get_property_value('error');
+            $errorArray = $this->model_admin_shop->get_property_value('error_array');
             $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if (!empty($errorArray)) {
+                    $this->assign("error", $errorArray);
+                }
+
+                $cacheCategory = false;
+                $template = false;
+                $this->shop_view($error, $title, $cacheCategory, $template, $cache . '_' . $error);
+            }
+
             $this->assign_array($result);
         }
+
         $template = 'shop_config.html';
         $type = false;
         $this->shop_view($type, $title, $cache_category, $template, $cache);
@@ -2064,5 +2143,432 @@ class controller_admin_shop extends controller_base
 
         $this->assign_array($result);
         $this->shop_view($result['shop_message'], $title, $cache_category);
+    }
+
+
+    public function payment_systems()
+    {
+        $type = 'payment_systems';
+        $title = '_SHOP_PAYMENT_SYSTEMS';
+        $cacheCategory = 'modules|shop|' . $type;
+        $dataArray = false;
+        $keys = ['num_page' => 'integer'];
+
+        foreach ($keys as $key => $valueType) {
+            if (!empty($_GET[$key])) {
+                $dataArray[$key] = $valueType === 'string' ? trim($_GET[$key]) : intval($_GET[$key]);
+            }
+        }
+
+        if (!isset($dataArray['num_page']) || $dataArray['num_page'] < 1) {
+            $dataArray['num_page'] = 1;
+        }
+
+        $cache = $dataArray['num_page'];
+
+        if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cacheCategory . "|" . $cache . "|" . $this->registry->language)) {
+            $this->model_admin_shop->paymentSystems($dataArray);
+            $error = $this->model_admin_shop->get_property_value('error');
+            $errorArray = $this->model_admin_shop->get_property_value('error_array');
+            $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if ($error === 'unknown_page') {
+                    header("Location: index.php?path=admin_shop&func=" . __FUNCTION__ . "&lang=" . $this->registry->sitelang);
+                    exit();
+                }
+
+                if (!empty($errorArray)) {
+                    $this->assign("error", $errorArray);
+                }
+
+                $cacheCategory = false;
+                $template = false;
+                $cache = $type . '_' . $error;
+                $this->shop_view($error, $title, $cacheCategory, $template, $cache);
+            }
+            $this->assign_array($result);
+        }
+
+        $type = false;
+        $template = 'shop_payment_systems.html';
+        $this->shop_view($type, $title, $cacheCategory, $template, $cache);
+    }
+
+
+    public function portmone_acquiring_config()
+    {
+        $type = 'portmone_acquiring_config';
+        $title = '_SHOP_PORTMONE_ACQUIRING_CONFIG';
+        $cacheCategory = 'modules|shop';
+        $cache = $type;
+
+        if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cacheCategory . "|" . $cache . "|" . $this->registry->language)) {
+            $this->model_admin_shop->portmoneAcquiringConfig();
+            $error = $this->model_admin_shop->get_property_value('error');
+            $errorArray = $this->model_admin_shop->get_property_value('error_array');
+            $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if (!empty($errorArray)) {
+                    $this->assign("error", $errorArray);
+                }
+
+                $cacheCategory = false;
+                $template = false;
+                $cache = $type . '_' . $error;
+                $this->shop_view($error, $title, $cacheCategory, $template, $cache);
+            }
+            $this->assign_array($result);
+        }
+
+        $type = false;
+        $template = 'shop_portmone_acquiring_config.html';
+        $this->shop_view($type, $title, $cacheCategory, $template, $cache);
+    }
+
+
+    public function portmone_acq_conf_save()
+    {
+        $type = 'portmone_acq_conf_save';
+        $title = '_SHOP_PORTMONE_ACQUIRING_CONFIG';
+        $dataArray = false;
+        $keys = [
+            'portmone_payee_id'            => 'string',
+            'portmone_login'               => 'string',
+            'portmone_password'            => 'string',
+            'portmone_payment_description' => 'string',
+            'portmone_log_mode'            => 'string',
+            'portmone_log_life_days'       => 'integer',
+            'portmone_error_notify'        => 'integer',
+            'portmone_error_notify_type'   => 'string',
+            'portmone_display_error_mode'  => 'string',
+        ];
+        foreach ($keys as $key => $value) {
+            if (isset($_POST[$key])) {
+                $dataArray[$key] = $value === 'string' ? trim($_POST[$key]) : intval($_POST[$key]);
+            }
+        }
+        $this->model_admin_shop->portmoneAcqConfSave($dataArray);
+        $error = $this->model_admin_shop->get_property_value('error');
+        $errorArray = $this->model_admin_shop->get_property_value('error_array');
+        $result = $this->model_admin_shop->get_property_value('result');
+
+        if (!empty($error)) {
+
+            if (!empty($errorArray)) {
+                $this->assign("error", $errorArray);
+            }
+
+            $cacheCategory = false;
+            $template = false;
+            $this->shop_view($error, $title, $cacheCategory, $template, $type . '_' . $error);
+        }
+
+        $cacheCategory = 'modules|shop';
+        $this->shop_view($result, $title, $cacheCategory);
+    }
+
+
+    public function exchange_rates()
+    {
+        $type = 'exchange_rates';
+        $title = '_SHOP_EXCHANGE_RATES';
+        $cacheCategory = 'modules|shop|' . $type;
+        $dataArray = false;
+        $keys = ['num_page' => 'integer'];
+
+        foreach ($keys as $key => $valueType) {
+            if (!empty($_GET[$key])) {
+                $dataArray[$key] = $valueType === 'string' ? trim($_GET[$key]) : intval($_GET[$key]);
+            }
+        }
+
+        if (!isset($dataArray['num_page']) || $dataArray['num_page'] < 1) {
+            $dataArray['num_page'] = 1;
+        }
+
+        $cache = $dataArray['num_page'];
+
+        if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cacheCategory . "|" . $cache . "|" . $this->registry->language)) {
+            $this->model_admin_shop->exchangeRates($dataArray);
+            $error = $this->model_admin_shop->get_property_value('error');
+            $errorArray = $this->model_admin_shop->get_property_value('error_array');
+            $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if ($error === 'unknown_page') {
+                    header("Location: index.php?path=admin_shop&func=" . __FUNCTION__ . "&lang=" . $this->registry->sitelang);
+                    exit();
+                }
+
+                if (!empty($errorArray)) {
+                    $this->assign("error", $errorArray);
+                }
+
+                $cacheCategory = false;
+                $template = false;
+                $cache = $type . '_' . $error;
+                $this->shop_view($error, $title, $cacheCategory, $template, $cache);
+            }
+            $this->assign_array($result);
+        }
+
+        $type = false;
+        $template = 'shop_exchange_rates.html';
+        $this->shop_view($type, $title, $cacheCategory, $template, $cache);
+    }
+
+
+    public function exchange_rate_add()
+    {
+        $type = 'exchange_rate_add';
+        $title = '_SHOP_EXCHANGE_RATE_ADD_TITLE';
+        $cacheCategory = 'modules|shop';
+        $cache = $type;
+
+        if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cacheCategory . "|" . $cache . "|" . $this->registry->language)) {
+            $this->model_admin_shop->exchangeRateAdd();
+            $error = $this->model_admin_shop->get_property_value('error');
+            $errorArray = $this->model_admin_shop->get_property_value('error_array');
+            $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if (!empty($errorArray)) {
+                    $this->assign("error", $errorArray);
+                }
+
+                $cacheCategory = false;
+                $template = false;
+                $cache = $type . '_' . $error;
+                $this->shop_view($error, $title, $cacheCategory, $template, $cache);
+            }
+
+            $this->assign_array($result);
+        }
+
+        $type = false;
+        $template = 'shop_exchange_rate_form.html';
+        $this->shop_view($type, $title, $cacheCategory, $template, $cache);
+    }
+
+
+    public function exchange_rate_edit()
+    {
+        $type = 'exchange_rate_edit';
+        $title = '_SHOP_EXCHANGE_RATE_EDIT_TITLE';
+        $dataArray['rate_id'] = 0;
+        $keys = ['rate_id' => 'integer'];
+        foreach ($keys as $key => $valueType) {
+            if (!empty($_GET[$key])) {
+                $dataArray[$key] = $valueType === 'string' ? trim($_GET[$key]) : intval($_GET[$key]);
+            }
+        }
+        $cacheCategory = 'modules|shop|' . $type;
+        $cache = $dataArray['rate_id'];
+
+        if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cacheCategory . "|" . $cache . "|" . $this->registry->language)) {
+            $this->model_admin_shop->exchangeRateEdit($dataArray);
+            $error = $this->model_admin_shop->get_property_value('error');
+            $errorArray = $this->model_admin_shop->get_property_value('error_array');
+            $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if ($error === 'empty_data') {
+                    header("Location: index.php?path=admin_shop&func=exchange_rates&lang=" . $this->registry->sitelang);
+                    exit();
+                }
+
+                if (!empty($errorArray)) {
+                    $this->assign("error", $errorArray);
+                }
+
+                $cacheCategory = false;
+                $template = false;
+                $cache = $type . '_' . $error;
+                $this->shop_view($error, $title, $cacheCategory, $template, $cache);
+            }
+
+            $this->assign_array($result);
+        }
+
+        $type = false;
+        $template = 'shop_exchange_rate_form.html';
+        $this->shop_view($type, $title, $cacheCategory, $template, $cache);
+    }
+
+
+    public function exchange_rate_add_in_db()
+    {
+        $title = '_SHOP_EXCHANGE_RATE_ADD_TITLE';
+        $entity = 'exchange_rate_add';
+        $keys = [
+            'from_currency_code' => 'string',
+            'to_currency_code'   => 'string',
+            'exchange_rate'      => 'string',
+            'date_from'          => 'string',
+            'date_till'          => 'string',
+        ];
+        $this->exchangeRateSaveInDb($title, $entity, $keys);
+    }
+
+
+    public function exchange_rate_edit_in_db()
+    {
+        $title = '_SHOP_EXCHANGE_RATE_ADD_TITLE';
+        $entity = 'exchange_rate_edit';
+        $keys = [
+            'rate_id'            => 'integer',
+            'from_currency_code' => 'string',
+            'to_currency_code'   => 'string',
+            'exchange_rate'      => 'string',
+            'date_from'          => 'string',
+            'date_till'          => 'string',
+        ];
+        $this->exchangeRateSaveInDb($title, $entity, $keys, true);
+    }
+
+
+    private function exchangeRateSaveInDb($title, $entity, $keys, $edit = false)
+    {
+        $dataArray = false;
+        foreach ($keys as $key => $valueType) {
+            if (isset($_POST[$key])) {
+                $dataArray[$key] = $valueType === 'string' ? trim($_POST[$key]) : intval($_POST[$key]);
+            }
+        }
+        $cacheCategory = 'modules|shop';
+
+        if ($edit) {
+            $this->model_admin_shop->exchangeRateEditInDb($dataArray);
+        } else {
+            $this->model_admin_shop->exchangeRateAddInDb($dataArray);
+        }
+
+        $error = $this->model_admin_shop->get_property_value('error');
+        $errorArray = $this->model_admin_shop->get_property_value('error_array');
+        $result = $this->model_admin_shop->get_property_value('result');
+
+        if (!empty($error)) {
+
+            if (!empty($errorArray)) {
+                $this->assign("error", $errorArray);
+            }
+
+            $cacheCategory = false;
+            $template = false;
+            $this->shop_view($error, $title, $cacheCategory, $template, $entity . '_' . $error);
+        }
+
+        $this->shop_view($result, $title, $cacheCategory);
+    }
+
+
+    public function exchange_rates_status()
+    {
+        $title = '_SHOP_EXCHANGE_RATES';
+        $cache = 'exchange_rates_status';
+        $key = 'rate_id';
+        $dataArray = false;
+        $entity = $cache;
+
+        if (isset($_GET['action'])) {
+            $dataArray['get_action'] = trim($_GET['action']);
+        }
+
+        if (isset($_POST['action'])) {
+            $dataArray['post_action'] = trim($_POST['action']);
+        }
+
+        if (isset($_GET[$key])) {
+            $dataArray['get_' . $key] = intval($_GET[$key]);
+        }
+
+        if (isset($_POST[$key])) {
+            $dataArray['post_' . $key] = $_POST[$key];
+        }
+
+        $cacheCategory = 'modules|shop|' . $cache;
+        $this->model_admin_shop->exchangeRatesStatus($dataArray);
+
+        $error = $this->model_admin_shop->get_property_value('error');
+        $errorArray = $this->model_admin_shop->get_property_value('error_array');
+        $result = $this->model_admin_shop->get_property_value('result');
+
+        if (!empty($error)) {
+
+            if (in_array($error, ['empty_data', 'unknown_action'])) {
+                header("Location: index.php?path=admin_shop&func=exchange_rates&lang=" . $this->registry->sitelang);
+                exit();
+            }
+
+            if (!empty($errorArray)) {
+                $this->assign("error", $errorArray);
+            }
+
+            $cacheCategory = false;
+            $template = false;
+            $this->shop_view($error, $title, $cacheCategory, $template, $entity . '_' . $error);
+        }
+
+        $this->assign_array($result);
+        $this->shop_view($result['shop_message'], $title, $cacheCategory);
+
+    }
+
+
+    public function payment_logs()
+    {
+        $type = 'payment_logs';
+        $title = '_SHOP_PAYMENT_LOGS';
+        $cacheCategory = 'modules|shop|' . $type;
+        $dataArray = false;
+        $keys = ['num_page' => 'integer'];
+
+        foreach ($keys as $key => $valueType) {
+            if (!empty($_GET[$key])) {
+                $dataArray[$key] = $valueType === 'string' ? trim($_GET[$key]) : intval($_GET[$key]);
+            }
+        }
+
+        if (!isset($dataArray['num_page']) || $dataArray['num_page'] < 1) {
+            $dataArray['num_page'] = 1;
+        }
+
+        $cache = $dataArray['num_page'];
+
+        if (!$this->isCached("systemadmin/main.html", $this->registry->sitelang . "|systemadmin|" . $cacheCategory . "|" . $cache . "|" . $this->registry->language)) {
+            $this->model_admin_shop->paymentLogs($dataArray);
+            $error = $this->model_admin_shop->get_property_value('error');
+            $errorArray = $this->model_admin_shop->get_property_value('error_array');
+            $result = $this->model_admin_shop->get_property_value('result');
+
+            if (!empty($error)) {
+
+                if ($error === 'unknown_page') {
+                    header("Location: index.php?path=admin_shop&func=" . __FUNCTION__ . "&lang=" . $this->registry->sitelang);
+                    exit();
+                }
+
+                if (!empty($errorArray)) {
+                    $this->assign("error", $errorArray);
+                }
+
+                $cacheCategory = false;
+                $template = false;
+                $cache = $type . '_' . $error;
+                $this->shop_view($error, $title, $cacheCategory, $template, $cache);
+            }
+            $this->assign_array($result);
+        }
+
+        $type = false;
+        $template = 'shop_payment_logs.html';
+        $this->shop_view($type, $title, $cacheCategory, $template, $cache);
     }
 }

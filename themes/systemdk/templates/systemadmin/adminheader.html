@@ -16,13 +16,22 @@
     var jQuery_1_4_2 = $.noConflict(true);
 </script>
 {/if}
+{if isset($addon_multiselect) || isset($jquery_ui)}
+    <LINK REL="StyleSheet" HREF="../themes/systemdk/multiselect/css/jquery-ui.css" TYPE="text/css">
+{/if}
 {if isset($addon_multiselect)}
-    <LINK REL="StyleSheet" HREF="../themes/ostel/multiselect/css/jquery-ui.css" TYPE="text/css">
-    <link REL="StyleSheet" href="../themes/ostel/multiselect/css/jquery.uix.multiselect.css" TYPE="text/css">
+    <link REL="StyleSheet" href="../themes/systemdk/multiselect/css/jquery.uix.multiselect.css" TYPE="text/css">
+{/if}
+{if isset($addon_multiselect) || isset($jquery_ui)}
     <script type="text/javascript" src="../flowplayer/jquery.min.js"></script>
-    <script type="text/javascript" src="../themes/ostel/multiselect/js/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="../themes/ostel/multiselect/js/jquery.uix.multiselect.js"></script>
-    <script type="text/javascript" src="../themes/ostel/multiselect/js/locales/jquery.uix.multiselect_{$language}.js"></script>
+    <script type="text/javascript" src="../themes/systemdk/multiselect/js/jquery-ui.min.js"></script>
+{/if}
+{if isset($addon_multiselect)}
+    <script type="text/javascript" src="../themes/systemdk/multiselect/js/jquery.uix.multiselect.js"></script>
+    <script type="text/javascript" src="../themes/systemdk/multiselect/js/locales/jquery.uix.multiselect_{$language}.js"></script>
+{/if}
+{if isset($jquery_calendar)}
+    <script type="text/javascript" src="../themes/systemdk/js/datepicker/lang/datepicker-{$language}.js"></script>
 {/if}
 <script type="text/javascript" src="../ckeditor/ckeditor.js"></script>
 <script type="text/javascript" src="../ckeditor/Djenx.Explorer/djenx-explorer.js"></script>

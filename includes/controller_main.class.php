@@ -234,6 +234,12 @@ class controller_main extends controller_base
     {
         return $this->model->check_db_need_from_clause();
     }
+    
+    
+    public function generate_code($length)
+    {
+        return $this->model->generate_code($length);
+    }
 
 
     public function salt($cost = 13)
@@ -287,6 +293,18 @@ class controller_main extends controller_base
     public function get_site_url()
     {
         return $this->model->getSiteUrl();
+    }
+
+
+    public function get_mode_rewrite()
+    {
+        return $this->model->getModeRewrite();
+    }
+
+
+    public function get_site_name()
+    {
+        return $this->model->getSiteName();
     }
 
 
@@ -394,6 +412,33 @@ class controller_main extends controller_base
     public function set_locale()
     {
         $this->model->set_locale();
+    }
+
+
+    /**
+     * @param float $value
+     * @param int   $precision
+     * @param int   $mode
+     *
+     * @return float
+     */
+    public function round($value, $precision = 2, $mode = PHP_ROUND_HALF_UP)
+    {
+        return $this->model->round($value, $precision, $mode);
+    }
+
+
+    /**
+     * @param float  $number
+     * @param int    $decimals
+     * @param string $decPoint
+     * @param string $thousandsSep
+     *
+     * @return number
+     */
+    public function number_format($number, $decimals = 2, $decPoint = '.', $thousandsSep = ' ')
+    {
+        return $this->model->number_format($number, $decimals, $decPoint, $thousandsSep);
     }
 
 

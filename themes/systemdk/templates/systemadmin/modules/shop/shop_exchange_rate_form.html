@@ -1,0 +1,100 @@
+{#_SHOP#}</span></center>
+</div>
+<br>
+<script type="text/javascript">
+  $( function() {
+    var dateFormat = "dd.mm.yy",
+        datePickerLang = "{$language}",
+      from = $( "#date_from" )
+        .datepicker({
+          defaultDate: "+1w",
+          changeMonth: true,
+          changeYear: true,
+          dateFormat: dateFormat,
+          regional: datePickerLang
+        })
+        .on( "change", function() {
+          to.datepicker( "option", "minDate", getDate( this ) );
+        }),
+      to = $( "#date_till" ).datepicker({
+        defaultDate: "+1w",
+        changeMonth: true,
+        changeYear: true,
+        dateFormat: dateFormat,
+        regional: datePickerLang
+      })
+      .on( "change", function() {
+        from.datepicker( "option", "maxDate", getDate( this ) );
+      });
+ 
+    function getDate( element ) {
+      var date;
+      try {
+        date = $.datepicker.parseDate( dateFormat, element.value );
+      } catch( error ) {
+        date = null;
+      }
+ 
+      return date;
+    }
+  } );
+</script>
+<center>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a>
+<span class="tablecenterblocktext2">|</span>
+<a href="index.php?path=admin_shop&amp;func=payment_systems&amp;lang={$site_language}" class="link">{#_SHOP_PAYMENT_SYSTEMS#}</a>
+<span class="tablecenterblocktext2">|</span>
+<a href="index.php?path=admin_shop&amp;func=exchange_rates&amp;lang={$site_language}" class="link">{#_SHOP_EXCHANGE_RATES#}</a>
+<br><br><br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{if isset($exchange_rate_data)}{#_SHOP_EXCHANGE_RATE_EDIT_TITLE#}{else}{#_SHOP_EXCHANGE_RATE_ADD_TITLE#}{/if}</span><br><br>
+<form action="index.php?path=admin_shop&amp;func={if isset($exchange_rate_data)}exchange_rate_edit_in_db{else}exchange_rate_add_in_db{/if}&amp;lang={$site_language}" method="POST">
+{if isset($exchange_rate_data)}
+<input type="hidden" name="rate_id" value="{$exchange_rate_data.id}">
+{/if}
+<table border="0" cellspacing="2"  cellpadding="0">
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt=""> <span class="formentername">{#_SHOP_FROM_CURRENCY_CODE#}:</span> <span class="errorsmall">*</span></td>
+    <td bgcolor="{#color7#}" class="td2">
+        <select name="from_currency_code" class="formenter">
+        <option value="">{#_SELECT#}</option>
+        {foreach $currencies as $currency}
+            <option value="{$currency.currency_code}" {if isset($exchange_rate_data.from_currency_code) && $exchange_rate_data.from_currency_code eq $currency.currency_code}selected{/if}>{$currency.currency_name} ({$currency.currency_code})</option>
+        {/foreach}
+        </select>
+    </td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt=""> <span class="formentername">{#_SHOP_TO_CURRENCY_CODE#}:</span> <span class="errorsmall">*</span></td>
+    <td bgcolor="{#color7#}" class="td2">
+        <select name="to_currency_code" class="formenter">
+        <option value="">{#_SELECT#}</option>
+        {foreach $currencies as $currency}
+            <option value="{$currency.currency_code}" {if isset($exchange_rate_data.to_currency_code) && $exchange_rate_data.to_currency_code eq $currency.currency_code}selected{/if}>{$currency.currency_name} ({$currency.currency_code})</option>
+        {/foreach}
+        </select>
+    </td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt=""> <span class="formentername">{#_SHOP_EXCHANGE_RATE2#}:</span> <span class="errorsmall">*</span></td>
+    <td bgcolor="{#color7#}" class="td2"><input type="text" name="exchange_rate" {if isset($exchange_rate_data.rate)}value="{$exchange_rate_data.rate}"{/if} size="20" maxlength="13" class="formenter"></td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt=""> <span class="formentername">{#_SHOP_DATE_FROM#}:</span> <span class="errorsmall">*</span></td>
+    <td bgcolor="{#color7#}" class="td2"><input type="text" id="date_from" name="date_from" {if isset($exchange_rate_data.date_from)}value="{$exchange_rate_data.date_from}"{/if} size="10" maxlength="10" class="formenter"></td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt=""> <span class="formentername">{#_SHOP_DATE_TILL#}:</span> </td>
+    <td bgcolor="{#color7#}" class="td2"><input type="text" id="date_till" name="date_till" {if isset($exchange_rate_data.date_till)}value="{$exchange_rate_data.date_till}"{/if} size="10" maxlength="10" class="formenter"></td>
+</tr>
+<tr>
+    <td colspan="2" align="center"><br><input type="submit" value="{#_SHOPBUTTONSAVE#}" class="button"></td>
+</tr>
+</table>
+</form>
+<br>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0">
+<tr>
+    <td align="left"><img src="../{#bgimage16#}" border="0" alt=""><span class="text"> {#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td>
+</tr>
+</table>
+</center><br><br>

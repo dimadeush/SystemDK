@@ -1,0 +1,88 @@
+{#_SHOP#}</span></center>
+</div>
+<br>
+<center>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a>
+<span class="tablecenterblocktext2">|</span>
+<a href="index.php?path=admin_shop&amp;func=payment_systems&amp;lang={$site_language}" class="link">{#_SHOP_PAYMENT_SYSTEMS#}</a>
+<span class="tablecenterblocktext2">|</span>
+<a href="index.php?path=admin_shop&amp;func=exchange_rate_add&amp;lang={$site_language}" class="link">{#_SHOP_EXCHANGE_RATE_ADD#}</a>
+<br><br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_SHOP_EXCHANGE_RATES#}</span>
+<br><br>
+<form action="index.php?path=admin_shop&amp;func=exchange_rates_status&amp;lang={$site_language}" method="POST">
+<table border="0" width="99%" cellspacing="2"  cellpadding="0">
+<tr align="center">
+<td width="1%" bgcolor="{#color7#}" class="td2"></td>
+<td width="1%" bgcolor="{#color7#}" class="td2"></td>
+<td width="10%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOP_FROM_CURRENCY_CODE#}</span></td>
+<td width="10%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOP_TO_CURRENCY_CODE#}</span></td>
+<td width="10%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOP_RATE#}</span></td>
+<td width="20%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOP_DATE_FROM#}</span></td>
+<td width="20%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOP_DATE_TILL#}</span></td>
+<td width="28%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPFUNCTIONTITLE#}</span></td>
+</tr>
+{if $exchange_rates_data ne "no_data"}
+    {foreach $exchange_rates_data as $exchange_rate_data}
+    <tr>
+    <td width="1%" bgcolor="{#color7#}" class="td2" nowrap><img src="../{#bgimage15#}" border="0" alt=""></td>
+    <td width="1%" bgcolor="{#color7#}" class="td2"><center><input type="checkbox" name="rate_id[]" value="{$exchange_rate_data.id}" class="formenter"></center></td>
+    <td width="10%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$exchange_rate_data.from_currency_code}</span></td>
+    <td width="10%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$exchange_rate_data.to_currency_code}</span></td>
+    <td width="10%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$exchange_rate_data.rate}</span></td>
+    <td width="20%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$exchange_rate_data.date_from}</span></td>
+    <td width="20%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{if empty($exchange_rate_data.date_till)}{#_SHOPITEMUNLIMQUANTITY#}{else}{$exchange_rate_data.date_till}{/if}</span></td>
+    <td width="28%" bgcolor="{#color7#}" class="td2" nowrap>
+        <a href="index.php?path=admin_shop&amp;func=exchange_rate_edit&amp;rate_id={$exchange_rate_data.id}&amp;lang={$site_language}" class="link">{#_SHOPFUNCTIONEDIT#}</a><span class="tablecenterblocktext2">|</span><a href="index.php?path=admin_shop&amp;func=exchange_rates_status&amp;action=confirm_delete&amp;rate_id={$exchange_rate_data.id}&amp;lang={$site_language}" class="link">{#_SHOPFUNCTIONDELETE#}</a>
+    </td>
+    </tr>
+    {/foreach}
+{else}
+    <tr>
+    <td width="100%" colspan="8" align="center" bgcolor="{#color7#}"><span class="tablecenterblocktext2">{#_SHOP_EXCHANGE_RATES_NOT_FOUND#}</span></td>
+    </tr>
+{/if}
+</table>
+{if $exchange_rates_data ne "no_data"}
+ <table border="0" width="99%" cellspacing="2"  cellpadding="0">
+ <tr align="right">
+ <td><span class="tablecenterblocktext2">{#_SHOPACTIONWITHSELECTED#}:</span> 
+    <select name="action" class="formenter"> 
+        <option value="confirm_delete">{#_SHOPFUNCTIONDELETE#}</option>
+    </select> 
+    <input type="submit" value="{#_SHOPBUTTONDONE#}" class="button">
+ </td>
+ </tr>
+ </table>
+{/if}
+</form>
+</center>
+<br>
+{if $html ne "no"}
+    <table width="100%" cellpadding="0" cellspacing="2" border="0">
+     <tr>
+      <td><center><span class="tablecenterblocktext2">{#_SHOPITEMSCOUNTTOTAL#}:{$total_exchange_rates} ({#_SHOPPAGESTOTAL#}:{$num_pages})</span></center></td>
+     </tr>
+    </table>
+    <center>
+    {if $prevpage ne "no"}<a href="index.php?path=admin_shop&amp;func=exchange_rates&amp;num_page={$prevpage}&amp;lang={$site_language}" title="{#_SHOPPREVPAGE#}" class="link"><img src="../{#bgimage19#}" border="0" alt="{#_SHOPPREVPAGE#}"></a> {/if}
+        {foreach $html as $html_tpl}
+            {if $html_tpl.param1 eq "1"} <span class="tablecenterblocktext2">[{$html_tpl.number}]</span> {elseif $html_tpl.param1 eq "2"} <a href="index.php?path=admin_shop&amp;func=exchange_rates&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "3"} ...<a href="index.php?path=admin_shop&amp;func=exchange_rates&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a> {elseif $html_tpl.param1 eq "4"} <a href="index.php?path=admin_shop&amp;func=exchange_rates&amp;num_page={$html_tpl.number}&amp;lang={$site_language}" class="link">[{$html_tpl.number}]</a>... {/if}
+        {/foreach}
+    {if $nextpage ne "no"}
+        <a href="index.php?path=admin_shop&amp;func=exchange_rates&amp;num_page={$nextpage}&amp;lang={$site_language}" title="{#_SHOPNEXTPAGE#}" class="link"><img src="../{#bgimage20#}" border="0" alt="{#_SHOPNEXTPAGE#}"></a>
+    {/if}
+    </center>
+{/if}
+{if $site_language eq 'ru' || $site_language eq 'ua' || $language eq 'ru' || $language eq 'ua'}
+    <table border="0" width="99%" cellspacing="2" cellpadding="0">
+    <tr align="center">
+        <td>
+            <!-- Minfin.com.ua converter informer 240x120 grey-->
+                <div id="minfin-informer-m1Fn-converter"><a href="http://minfin.com.ua/currency/" target="_blank">exchange rates</a></div><script type="text/javascript">var iframe = '<iframe width="240" height="120" frameborder="0" src="http://informer.minfin.com.ua/gen/converter/?color=grey" vspace="0" scrolling="no" hspace="0" allowtransparency="true" style="width:240px;height:120px;overflow:hidden;"></iframe>';var cl = 'minfin-informer-m1Fn-converter';document.getElementById(cl).innerHTML = iframe; </script>
+            <!-- Minfin.com.ua converter informer 240x120 grey-->
+        </td>
+    </tr>
+    </table>
+{/if}
+<br>

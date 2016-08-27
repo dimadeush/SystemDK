@@ -14,10 +14,20 @@ class admin_shop extends model_base
 {
 
 
-    private $img_array;
     private $error;
     private $error_array;
     private $result;
+    private $img_array;
+    /**
+     * @var shop_payment_log
+     */
+    private $log;
+
+    public function __construct($registry)
+    {
+        parent::__construct($registry);
+        $this->log = singleton::getinstance('shop_payment_log', $registry);
+    }
 
 
     public function get_property_value($property)
@@ -1198,16 +1208,16 @@ class admin_shop extends model_base
                     . $this->registry->sitelang . " where cat_catalog_id IN (" . $item_id . "))) or item_category_id IN (SELECT category_id FROM " . PREFIX
                     . "_categories_"
                     . $this->registry->sitelang . " WHERE cat_catalog_id IN (" . $item_id . ")) or item_catalog_id IN (" . $item_id . ")";
-                    
+
             $sql = "DELETE FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " WHERE item_id IN (SELECT item_id FROM " . $from . ")";
             $resultAdditionalParams = $this->db->Execute($sql);
-            
+
             if ($resultAdditionalParams === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $this->error_array[] = ["code" => $error_code, "message" => $error_message];
             }
-            
+
             $sql0 = "DELETE FROM " . $from;
             $result0 = $this->db->Execute($sql0);
             if ($result0 === false) {
@@ -1273,7 +1283,9 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $this->error_array[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($resultAdditionalParams === false || $result0 === false || $result1 === false || $result2 === false || $result3 === false || (isset($result4) && $result4 === false)
+            if ($resultAdditionalParams === false || $result0 === false || $result1 === false || $result2 === false || $result3 === false
+                || (isset($result4)
+                    && $result4 === false)
                 || (isset($result5)
                     && $result5 === false)
                 || !empty($this->error_array)
@@ -1365,7 +1377,8 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $this->error_array[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($resultAdditionalParams === false || $result0 === false || $result1 === false || $result2 === false || (isset($result3) && $result3 === false) || (isset($result4) && $result4 === false)
+            if ($resultAdditionalParams === false || $result0 === false || $result1 === false || $result2 === false || (isset($result3) && $result3 === false)
+                || (isset($result4) && $result4 === false)
                 || !empty($this->error_array)
             ) {
                 $result = false;
@@ -1638,7 +1651,9 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $this->error_array[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($resultAdditionalParams === false || $result1 === false || (isset($result2) && $result2 === false) || (isset($result3) && $result3 === false) || !empty($this->error_array)) {
+            if ($resultAdditionalParams === false || $result1 === false || (isset($result2) && $result2 === false) || (isset($result3) && $result3 === false)
+                || !empty($this->error_array)
+            ) {
                 $result = false;
             } else {
                 $this->shop_delete_img_process();
@@ -2296,7 +2311,7 @@ class admin_shop extends model_base
         $this->result['item_all'] = $item_all;
         $additionalParams = $this->getAdditionalParams($item_id);
 
-        if($additionalParams === false && !empty($this->error)) {
+        if ($additionalParams === false && !empty($this->error)) {
             return;
         }
 
@@ -2352,7 +2367,7 @@ class admin_shop extends model_base
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
             $error[] = ["code" => $error_code, "message" => $error_message];
-            $this->error = ($itemId > 0 ) ? 'edit_item_sql_error' : 'add_item_sql_error';
+            $this->error = ($itemId > 0) ? 'edit_item_sql_error' : 'add_item_sql_error';
             $this->error_array = $error;
 
             return false;
@@ -2399,8 +2414,8 @@ class admin_shop extends model_base
 
         return $additionalParams;
     }
-    
-    
+
+
     private function setItemAdditionalParams($itemId, $additionalParams, $type = 'add')
     {
         $sql = "DELETE FROM " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " WHERE item_id='" . $itemId . "'";
@@ -2415,12 +2430,13 @@ class admin_shop extends model_base
 
             return false;
         }
-        
+
         if (!empty($additionalParams) && is_array($additionalParams)) {
-            foreach($additionalParams as $key => $value) {
-                $sql = "INSERT INTO " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " (item_id,item_param_id) VALUES ('" . $itemId . "','" . $value . "')";
+            foreach ($additionalParams as $key => $value) {
+                $sql =
+                    "INSERT INTO " . PREFIX . "_s_item_add_params_" . $this->registry->sitelang . " (item_id,item_param_id) VALUES ('" . $itemId . "','" . $value . "')";
                 $result = $this->db->Execute($sql);
-                
+
                 if (!$result) {
                     $error_message = $this->db->ErrorMsg();
                     $error_code = $this->db->ErrorNo();
@@ -2432,7 +2448,7 @@ class admin_shop extends model_base
                 }
             }
         }
-        
+
         return true;
     }
 
@@ -2505,7 +2521,7 @@ class admin_shop extends model_base
         if (!isset($data_array['item_minute'])) {
             $data_array['item_minute'] = 0;
         }
-        if(!isset($data_array['item_additional_params'])) {
+        if (!isset($data_array['item_additional_params'])) {
             $data_array['item_additional_params'] = false;
         }
         if (isset($data_array['depth']) && $data_array['depth'] == 1) {
@@ -2891,15 +2907,15 @@ class admin_shop extends model_base
                 $result = false;
             }
         }
-        
+
         if ($result && isset($data_array['item_additional_params'])) {
             $result = $this->setItemAdditionalParams($data_array['item_id'], $data_array['item_additional_params'], 'edit');
-            
+
             if ($result) {
                 $num_result = 1;
             }
         }
-        
+
         $this->db->CompleteTrans();
         if ($result === false) {
             $this->error = 'edit_item_sql_error';
@@ -3413,7 +3429,7 @@ class admin_shop extends model_base
         }
         $additionalParams = $this->getAdditionalParams();
 
-        if($additionalParams === false && !empty($this->error)) {
+        if ($additionalParams === false && !empty($this->error)) {
             return;
         }
 
@@ -3487,7 +3503,7 @@ class admin_shop extends model_base
         if (!isset($array['item_minute'])) {
             $data_array['item_minute'] = 0;
         }
-        if(!isset($data_array['item_additional_params'])) {
+        if (!isset($data_array['item_additional_params'])) {
             $data_array['item_additional_params'] = false;
         }
         if (isset($data_array['depth']) && $data_array['depth'] == 1) {
@@ -3729,13 +3745,13 @@ class admin_shop extends model_base
                 }
             }
         }
-        
+
         if ($result && isset($data_array['item_additional_params'])) {
             $result = $this->setItemAdditionalParams($itemId, $data_array['item_additional_params'], 'add');
         }
-        
+
         $this->db->CompleteTrans();
-        
+
         if ($result === false) {
             $this->error = 'add_item_sql_error';
             $this->error_array = $error;
@@ -4430,75 +4446,138 @@ class admin_shop extends model_base
         $this->result = false;
         $this->error = false;
         $this->error_array = false;
-        $order_id = 0;
-        if (isset($array['order_id'])) {
-            $order_id = intval($array['order_id']);
-        }
-        $edit = '';
-        if (isset($array['edit'])) {
-            if (intval($array['edit']) > 0) {
-                $edit = 'edit';
+        $keys = [
+            'order_id'                          => 'integer',
+            'edit'                              => 'integer',
+            'payment_error_notify_mail_subject' => 'string',
+            'payment_error_notify_mail_content' => 'html',
+        ];
+        foreach ($keys as $key => $valueType) {
+
+            if (isset($array[$key])) {
+
+                if ($valueType === 'integer') {
+                    $dataArray[$key] = intval($array[$key]);
+                } elseif ($valueType === 'html') {
+                    $dataArray[$key] = $array[$key];
+                } else {
+                    $dataArray[$key] = trim($this->registry->main_class->format_striptags($array[$key]));
+                }
+
             }
+
         }
-        if ($order_id == 0) {
+
+        if (empty($dataArray['order_id']) || $dataArray['order_id'] < 1) {
             $this->error = 'order_proc_no_order';
 
             return;
         }
+
+        $edit = '';
+
+        if (isset($dataArray['edit']) && intval($dataArray['edit']) > 0) {
+            $edit = 'edit';
+        }
+
         $sql =
-            "SELECT a.order_id,a.order_customer_id,a.order_amount,a.order_date,a.ship_date,a.order_status,a.ship_name,a.ship_street,a.ship_house,a.ship_flat,a.ship_city,a.ship_state,a.ship_postal_code,a.ship_country,a.ship_telephone,a.ship_email,a.ship_add_info,a.order_delivery,a.order_pay,a.order_comments,a.order_ip,b.order_item_id,b.item_id,b.order_item_name,b.order_item_price,b.order_item_quantity,null,null,null,null,null,null,e.user_login,e.user_name,e.user_surname,e.user_rights,f.delivery_price,g.pay_price FROM "
+            "SELECT a.order_id,a.order_customer_id,a.order_amount,a.order_date,a.ship_date,a.order_status,a.ship_name,a.ship_street,a.ship_house,a.ship_flat,a.ship_city,a.ship_state,a.ship_postal_code,a.ship_country,a.ship_telephone,a.ship_email,a.ship_add_info,a.order_delivery,a.order_pay,a.order_comments,a.order_ip,a.order_hash,a.invoice_date,a.invoice_amount,a.invoice_currency_code,a.invoice_exch_rate,a.invoice_paid,a.invoice_paid_date,b.order_item_id,b.item_id,b.order_item_name,b.order_item_price,b.order_item_quantity,null,null,null,null as payment_id,null,null,h.id as payment_system_id, h.system_class as payment_system_class,h.system_integ_type as payment_system_integ_type,e.user_login,e.user_name,e.user_surname,e.user_rights,f.delivery_price,g.payment_commission FROM "
             . PREFIX . "_orders_" . $this->registry->sitelang . " a LEFT OUTER JOIN " . PREFIX . "_order_items_" . $this->registry->sitelang
             . " b ON a.order_id=b.order_id LEFT OUTER JOIN " . PREFIX . "_users e ON a.order_customer_id=e.user_id LEFT OUTER JOIN " . PREFIX . "_delivery_"
-            . $this->registry->sitelang . " f ON a.order_delivery=f.delivery_id LEFT OUTER JOIN " . PREFIX . "_pay_" . $this->registry->sitelang
-            . " g ON a.order_pay=g.pay_id WHERE a.order_id = " . $order_id
-            . " UNION ALL SELECT null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,c.delivery_id,c.delivery_name,c.delivery_price,null,null,null,null,null,null,null,null,null FROM "
+            . $this->registry->sitelang . " f ON a.order_delivery=f.delivery_id LEFT OUTER JOIN " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang
+            . " g ON a.order_pay=g.id LEFT OUTER JOIN " . PREFIX
+            . "_s_payment_systems h ON g.payment_system_id=h.id and g.payment_system_id IS NOT NULL and h.system_status = '1' WHERE a.order_id = "
+            . $dataArray['order_id']
+            . " UNION ALL SELECT null,null,0.00,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.00,null,0.00,null,null,null,null,null,null,null,c.delivery_id,c.delivery_name,c.delivery_price,null as payment_id,null,null,null as payment_system_id,null as payment_system_class,null as payment_system_integ_type,null,null,null,null,null,null FROM "
             . PREFIX . "_delivery_" . $this->registry->sitelang
-            . " c UNION ALL SELECT null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,d.pay_id,d.pay_name,d.pay_price,null,null,null,null,null,null FROM "
-            . PREFIX . "_pay_" . $this->registry->sitelang . " d";
+            . " c UNION ALL SELECT null,null,0.00,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.00,null,0.00,null,null,null,null,null,null,null,null,null,null,d.id as payment_id,d.payment_name,d.payment_commission,null as payment_system_id,null as payment_system_class,null as payment_system_integ_type,null,null,null,null,null,null FROM "
+            . PREFIX . "_s_payment_methods_" . $this->registry->sitelang . " d";
         $result = $this->db->Execute($sql);
+
         if (!$result) {
-            $error_message = $this->db->ErrorMsg();
-            $error_code = $this->db->ErrorNo();
-            $error[] = ["code" => $error_code, "message" => $error_message];
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
             $this->error = 'order_proc_sql_error';
             $this->error_array = $error;
 
             return;
         }
+
+        $rowExist = 0;
+
         if (isset($result->fields['0'])) {
-            $row_exist = intval($result->fields['0']);
-        } else {
-            $row_exist = 0;
+            $rowExist = intval($result->fields['0']);
         }
-        if ($row_exist < 1) {
+
+        if ($rowExist < 1) {
             $this->error = 'order_proc_not_found';
 
             return;
         }
+
+        require_once('../modules/shop/shop_config.inc');
+        $this->result['shop_currency'] = SYSTEMDK_SHOP_VALUTA;
+        $this->registry->shopPaymentErrorNotifyMailData = [
+            'shop_payment_error_notify_mail_subject' => $dataArray['payment_error_notify_mail_subject'],
+            'shop_payment_error_notify_mail_content' => $dataArray['payment_error_notify_mail_content'],
+        ];
         while (!$result->EOF) {
+
             if (!isset($order_all) && intval($result->fields['0']) > 0) {
                 $order_id = intval($result->fields['0']);
                 $order_customer_id = intval($result->fields['1']);
-                $order_customer_login = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['32']));
-                $order_customer_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['33']));
-                $order_customer_surname = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['34']));
-                $order_customer_rights = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['35']));
+                $order_customer_login = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['42']));
+                $order_customer_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['43']));
+                $order_customer_surname = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['44']));
+                $order_customer_rights = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['45']));
                 $user_type = false;
+
                 if ($order_customer_id > 0) {
                     $user_type = 'user';
                     $model_account = singleton::getinstance('account', $this->registry);
-                    if (is_object($model_account)) {
-                        if ($model_account->check_admin_rights($order_customer_rights)) {
-                            $user_type = 'admin';
-                        }
+
+                    if (is_object($model_account) && $model_account->check_admin_rights($order_customer_rights)) {
+                        $user_type = 'admin';
                     }
+
                 }
+
                 $order_amount = floatval($result->fields['2']);
-                $order_amount2 = $order_amount + floatval($result->fields['36']) + (($order_amount * floatval($result->fields['37'])) / 100);
+                $calculateData['order_amount'] = $order_amount;
+                $orderDeliveryMethodPrice = floatval($result->fields['46']);
+                $calculateData['selected_delivery_method_price'] = $orderDeliveryMethodPrice;
+                $orderPaymentMethodCommission = floatval($result->fields['47']);
+                $calculateData['selected_payment_method_commission'] = $orderPaymentMethodCommission;
+
+                if (intval($result->fields['39']) > 0) {
+                    $paymentSystemId = intval($result->fields['39']);
+                    $paymentSystemClass = $this->registry->main_class->extracting_data($result->fields['40']);
+                    $paymentSystemIntegType = $this->registry->main_class->extracting_data($result->fields['41']);
+                    $calculateData['payment_system_data'] = [
+                        'system_class'            => $paymentSystemClass,
+                        'system_id'               => $paymentSystemId,
+                        'system_integration_type' => $paymentSystemIntegType,
+                    ];
+                    $this->result['payment_system_data'] = "yes";
+                }
+
+                /**
+                 * @var shop $modelShop
+                 */
+                $modelShop = singleton::getinstance('shop', $this->registry);
+                $order_amount2 = $modelShop->calculatePayableAmount($calculateData);
+
+                if (!$order_amount2) {
+                    $this->error = 'order_proc_sql_error';
+                    $this->error_array = $modelShop->get_property_value('error_array');
+
+                    return false;
+                }
+
                 $order_date = intval($result->fields['3']);
                 $order_date2 = date("d.m.Y", $order_date);
                 $order_hour = date("H", $order_date);
                 $order_minute = date("i", $order_date);
+
                 if (intval($result->fields['4']) == 0) {
                     $ship_date2 = "no";
                     $ship_hour = "no";
@@ -4509,6 +4588,7 @@ class admin_shop extends model_base
                     $ship_hour = date("H", $ship_date);
                     $ship_minute = date("i", $ship_date);
                 }
+
                 $order_status = intval($result->fields['5']);
                 $ship_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']));
                 $ship_street = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['7']));
@@ -4525,11 +4605,28 @@ class admin_shop extends model_base
                 $order_pay = intval($result->fields['18']);
                 $order_comments = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['19']));
                 $order_ip = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['20']));
+                $orderHash = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['21']));
+                $invoiceDate = intval($result->fields['22']);
+
+                if ($invoiceDate > 0) {
+                    $invoiceDate = date("d.m.Y H:i:s", $invoiceDate);
+                }
+
+                $invoiceAmount = $this->registry->main_class->number_format(floatval($result->fields['23']));
+                $invoiceCurrencyCode = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['24']));
+                $invoiceExchangeRate = $this->registry->main_class->number_format(floatval($result->fields['25']));
+                $invoicePaid = intval($result->fields['26']);
+                $invoicePaidDate = intval($result->fields['27']);
+
+                if ($invoicePaidDate > 0) {
+                    $invoicePaidDate = date("d.m.Y H:i:s", $invoicePaidDate);
+                }
+
                 $order_all[] = [
                     "order_id"                      => $order_id,
                     "order_customer_id"             => $order_customer_id,
-                    "order_amount"                  => number_format($order_amount, 2, '.', ' '),
-                    "order_amount2"                 => number_format($order_amount2, 2, '.', ' '),
+                    "order_amount"                  => $this->registry->main_class->number_format($order_amount),
+                    "order_amount2"                 => $order_amount2,
                     "order_date"                    => $order_date2,
                     "order_hour"                    => $order_hour,
                     "order_minute"                  => $order_minute,
@@ -4556,15 +4653,23 @@ class admin_shop extends model_base
                     "order_customer_surname"        => $order_customer_surname,
                     "order_customer_type"           => $user_type,
                     "order_ip"                      => $order_ip,
+                    "order_hash"                    => $orderHash,
+                    "invoice_date"                  => $invoiceDate,
+                    "invoice_amount"                => $invoiceAmount,
+                    "invoice_currency_code"         => $invoiceCurrencyCode,
+                    "invoice_exch_rate"             => $invoiceExchangeRate,
+                    "invoice_paid"                  => $invoicePaid,
+                    "invoice_paid_date"             => $invoicePaidDate,
                     "order_items_additional_params" => $this->getOrderItemsAdditionalParams($order_id),
                 ];
             }
-            if (isset($result->fields['21']) && intval($result->fields['21']) > 0) {
-                $order_item_id = intval($result->fields['21']);
-                $item_id = intval($result->fields['22']);
-                $order_item_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['23']));
-                $order_item_price = number_format(floatval($result->fields['24']), 2, '.', ' ');
-                $order_item_quantity = intval($result->fields['25']);
+
+            if (isset($result->fields['28']) && intval($result->fields['28']) > 0) {
+                $order_item_id = intval($result->fields['28']);
+                $item_id = intval($result->fields['29']);
+                $order_item_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['30']));
+                $order_item_price = $this->registry->main_class->number_format(floatval($result->fields['31']));
+                $order_item_quantity = intval($result->fields['32']);
                 $order_items_all_now = [
                     "order_item_id"       => $order_item_id,
                     "item_id"             => $item_id,
@@ -4572,6 +4677,7 @@ class admin_shop extends model_base
                     "order_item_price"    => $order_item_price,
                     "order_item_quantity" => $order_item_quantity,
                 ];
+
                 if (!isset($order_items_all) || (isset($order_items_all) && !in_array($order_items_all_now, $order_items_all))) {
                     $order_items_all[] = [
                         "order_item_id"       => $order_item_id,
@@ -4582,58 +4688,65 @@ class admin_shop extends model_base
                     ];
                 }
             }
-            if (isset($result->fields['26']) && intval($result->fields['26']) > 0) {
-                $delivery_id = intval($result->fields['26']);
-                $delivery_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['27']));
-                $delivery_price = number_format(floatval($result->fields['28']), 2, '.', ' ');
+
+            if (isset($result->fields['33']) && intval($result->fields['33']) > 0) {
+                $delivery_id = intval($result->fields['33']);
+                $delivery_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['34']));
+                $delivery_price = $this->registry->main_class->number_format(floatval($result->fields['35']));
                 $delivery_all[] = [
                     "delivery_id"    => $delivery_id,
                     "delivery_name"  => $delivery_name,
                     "delivery_price" => $delivery_price,
                 ];
             }
-            if (isset($result->fields['29']) && intval($result->fields['29']) > 0) {
-                $pay_id = intval($result->fields['29']);
-                $pay_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['30']));
-                $pay_price = floatval($result->fields['31']);
-                $pay_all[] = ["pay_id" => $pay_id, "pay_name" => $pay_name, "pay_price" => $pay_price];
+
+            if (isset($result->fields['36']) && intval($result->fields['36']) > 0) {
+                $payment_id = intval($result->fields['36']);
+                $payment_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['37']));
+                $payment_commission = $this->registry->main_class->number_format(floatval($result->fields['38']));
+                $pay_all[] = ["pay_id" => $payment_id, "pay_name" => $payment_name, "pay_price" => $payment_commission];
             }
+
             $result->MoveNext();
         }
+
+        $this->result['order_items_all'] = "no";
+
         if (isset($order_items_all)) {
             $this->result['order_items_all'] = $order_items_all;
-        } else {
-            $this->result['order_items_all'] = "no";
         }
+
+        $this->result['delivery_all'] = "no";
+
         if (isset($delivery_all)) {
             $this->result['delivery_all'] = $delivery_all;
-        } else {
-            $this->result['delivery_all'] = "no";
         }
+
+        $this->result['pay_all'] = "no";
+
         if (isset($pay_all)) {
             $this->result['pay_all'] = $pay_all;
-        } else {
-            $this->result['pay_all'] = "no";
         }
+
         $this->result['order_all'] = $order_all;
         $this->result['adminmodules_shop_orderedit'] = $edit;
-        $this->result['adminmodules_shop_orderid'] = $order_id;
+        $this->result['adminmodules_shop_orderid'] = $dataArray['order_id'];
         $this->result['include_jquery'] = "yes";
         $this->result['include_jquery_data'] = "dateinput";
     }
-    
-    
+
+
     private function getOrderItemsAdditionalParams($orderId)
     {
         $data = false;
         $sql = "SELECT a.id,a.order_item_id,a.order_suborder_id,a.order_item_param_group_id,b.group_name,a.order_item_param_id,c.param_value "
-                . "FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " a "
-                . "LEFT OUTER JOIN " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " b ON a.order_item_param_group_id=b.id "
-                . "LEFT OUTER JOIN " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " c ON a.order_item_param_id=c.id "
-                . "WHERE a.order_id='" . $orderId . "' "
-                . "ORDER BY a.order_suborder_id,b.id,c.param_value ASC";
+               . "FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " a "
+               . "LEFT OUTER JOIN " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " b ON a.order_item_param_group_id=b.id "
+               . "LEFT OUTER JOIN " . PREFIX . "_s_add_params_" . $this->registry->sitelang . " c ON a.order_item_param_id=c.id "
+               . "WHERE a.order_id='" . $orderId . "' "
+               . "ORDER BY a.order_suborder_id,b.id,c.param_value ASC";
         $result = $this->db->Execute($sql);
-        
+
         if (!$result) {
             $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
             $this->error = 'order_proc_sql_error';
@@ -4641,18 +4754,18 @@ class admin_shop extends model_base
 
             return $data;
         }
-        
+
         if (isset($result->fields['0'])) {
             $row_exist = intval($result->fields['0']);
         } else {
             $row_exist = 0;
         }
-        
+
         if ($row_exist < 1) {
 
             return $data;
         }
-        
+
         while (!$result->EOF) {
             $orderItemId = intval($result->fields['1']);
             $orderSuborderId = intval($result->fields['2']);
@@ -4661,16 +4774,16 @@ class admin_shop extends model_base
             $orderItemParamId = intval($result->fields['5']);
             $orderItemParamValue = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']));
             $data[$orderItemId][$orderSuborderId]['groups'][$orderItemParamGroupId] = [
-                'group_id' => $orderItemParamGroupId,
+                'group_id'   => $orderItemParamGroupId,
                 'group_name' => $orderItemParamGroupName,
             ];
             $data[$orderItemId][$orderSuborderId]['groups_data'][$orderItemParamGroupId][$orderItemParamId] = [
-                'param_id' => $orderItemParamId,
+                'param_id'    => $orderItemParamId,
                 'param_value' => $orderItemParamValue,
             ];
             $result->MoveNext();
         }
-        
+
         return $data;
     }
 
@@ -4983,7 +5096,7 @@ class admin_shop extends model_base
             } else {
                 $pay_status = 0;
                 $this->result['shop_message'] = "order_status_pay_status_off";
-                $sql1 = "SELECT count(pay_id) as count_rows FROM " . PREFIX . "_pay_" . $this->registry->sitelang . " WHERE pay_status = '1'";
+                $sql1 = "SELECT count(id) as count_rows FROM " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang . " WHERE payment_status = '1'";
                 $result1 = $this->db->Execute($sql1);
                 if ($result1) {
                     if (isset($result1->fields['0'])) {
@@ -5006,7 +5119,7 @@ class admin_shop extends model_base
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
             }
-            $sql = "UPDATE " . PREFIX . "_pay_" . $this->registry->sitelang . " SET pay_status = '" . $pay_status . "' WHERE pay_id IN (" . $item_id . ")";
+            $sql = "UPDATE " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang . " SET payment_status = '" . $pay_status . "' WHERE id IN (" . $item_id . ")";
             $result = $this->db->Execute($sql);
             if ($result) {
                 $num_result = $this->db->Affected_Rows();
@@ -5030,13 +5143,13 @@ class admin_shop extends model_base
             }
             $sql = "DELETE FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " WHERE order_id IN (" . $item_id . ")";
             $resultAdditionalParams = $this->db->Execute($sql);
-            
+
             if ($resultAdditionalParams === false) {
                 $error_message = $this->db->ErrorMsg();
                 $error_code = $this->db->ErrorNo();
                 $error[] = ["code" => $error_code, "message" => $error_message];
             }
-            
+
             $sql = "DELETE FROM " . PREFIX . "_orders_" . $this->registry->sitelang . " WHERE order_id IN (" . $item_id . ")";
             $result = $this->db->Execute($sql);
             if ($result) {
@@ -5073,17 +5186,17 @@ class admin_shop extends model_base
 
                     return;
                 }
-                
+
                 $from = PREFIX . "_order_items_" . $this->registry->sitelang . " WHERE order_item_id IN (" . $item_id . ")";
                 $sql = "DELETE FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . " WHERE order_item_id IN (SELECT item_id FROM " . $from . ")";
                 $resultAdditionalParams = $this->db->Execute($sql);
-                
+
                 if ($resultAdditionalParams === false) {
                     $error_message = $this->db->ErrorMsg();
                     $error_code = $this->db->ErrorNo();
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
-                
+
                 $sql = "DELETE FROM " . $from;
                 $result = $this->db->Execute($sql);
                 if ($result) {
@@ -5130,8 +5243,20 @@ class admin_shop extends model_base
 
                     return;
                 }
-                $sql2 = "DELETE FROM " . PREFIX . "_order_items_" . $this->registry->sitelang . " WHERE order_id IN (SELECT order_id FROM " . PREFIX . "_orders_"
-                        . $this->registry->sitelang . " WHERE order_delivery IN (" . $item_id . "))";
+
+                // TODO:check start
+                $from = " WHERE order_id IN (SELECT order_id FROM " . PREFIX . "_orders_" . $this->registry->sitelang . " WHERE order_delivery IN (" . $item_id . "))";
+                $sql = "DELETE FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . $from;
+                $resultAdditionalParams = $this->db->Execute($sql);
+
+                if ($resultAdditionalParams === false) {
+                    $error_message = $this->db->ErrorMsg();
+                    $error_code = $this->db->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+                // TODO: check end
+
+                $sql2 = "DELETE FROM " . PREFIX . "_order_items_" . $this->registry->sitelang . $from;
                 $result2 = $this->db->Execute($sql2);
                 if ($result2 === false) {
                     $error_message = $this->db->ErrorMsg();
@@ -5159,14 +5284,17 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $error[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($result1 === false || (isset($result2) && $result2 === false) || (isset($result3) && $result3 === false)) {
+            if ($result1 === false || (isset($resultAdditionalParams) && $resultAdditionalParams === false) || (isset($result2) && $result2 === false)
+                || (isset($result3)
+                    && $result3 === false)
+            ) {
                 $result = false;
             }
             $this->db->CompleteTrans();
             $this->result['shop_message'] = "order_status_deliv_delete";
         } elseif ($action == "delete4") {
             $this->db->StartTrans();
-            $sql1 = "SELECT count(pay_id) as count_rows FROM " . PREFIX . "_pay_" . $this->registry->sitelang;
+            $sql1 = "SELECT count(id) as count_rows FROM " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang;
             $result1 = $this->db->Execute($sql1);
             if ($result1) {
                 if (isset($result1->fields['0'])) {
@@ -5183,8 +5311,20 @@ class admin_shop extends model_base
 
                     return;
                 }
-                $sql2 = "DELETE FROM " . PREFIX . "_order_items_" . $this->registry->sitelang . " WHERE order_id IN (SELECT order_id FROM " . PREFIX . "_orders_"
-                        . $this->registry->sitelang . " WHERE order_pay IN (" . $item_id . "))";
+
+                // TODO:check start
+                $from = " WHERE order_id IN (SELECT order_id FROM " . PREFIX . "_orders_" . $this->registry->sitelang . " WHERE order_pay IN (" . $item_id . "))";
+                $sql = "DELETE FROM " . PREFIX . "_s_order_i_params_" . $this->registry->sitelang . $from;
+                $resultAdditionalParams = $this->db->Execute($sql);
+
+                if ($resultAdditionalParams === false) {
+                    $error_message = $this->db->ErrorMsg();
+                    $error_code = $this->db->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+                // TODO: check end
+
+                $sql2 = "DELETE FROM " . PREFIX . "_order_items_" . $this->registry->sitelang . $from;
                 $result2 = $this->db->Execute($sql2);
                 if ($result2 === false) {
                     $error_message = $this->db->ErrorMsg();
@@ -5198,7 +5338,7 @@ class admin_shop extends model_base
                     $error_code = $this->db->ErrorNo();
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
-                $sql = "DELETE FROM " . PREFIX . "_pay_" . $this->registry->sitelang . " WHERE pay_id IN (" . $item_id . ")";
+                $sql = "DELETE FROM " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang . " WHERE id IN (" . $item_id . ")";
                 $result = $this->db->Execute($sql);
                 if ($result) {
                     $num_result = $this->db->Affected_Rows();
@@ -5212,7 +5352,10 @@ class admin_shop extends model_base
                 $error_code = $this->db->ErrorNo();
                 $error[] = ["code" => $error_code, "message" => $error_message];
             }
-            if ($result1 === false || (isset($result2) && $result2 === false) || (isset($result3) && $result3 === false)) {
+            if ($result1 === false || (isset($resultAdditionalParams) && $resultAdditionalParams === false) || (isset($result2) && $result2 === false)
+                || (isset($result3)
+                    && $result3 === false)
+            ) {
                 $result = false;
             }
             $this->db->CompleteTrans();
@@ -5493,8 +5636,8 @@ class admin_shop extends model_base
             $sql0 = "SELECT count(*) FROM " . PREFIX . "_delivery_" . $this->registry->sitelang;
             $sql = "SELECT a.delivery_id,a.delivery_name,a.delivery_price,a.delivery_status FROM " . PREFIX . "_delivery_" . $this->registry->sitelang . " a";
         } else {
-            $sql0 = "SELECT count(*) FROM " . PREFIX . "_pay_" . $this->registry->sitelang;
-            $sql = "SELECT a.pay_id,a.pay_name,a.pay_price,a.pay_status FROM " . PREFIX . "_pay_" . $this->registry->sitelang . " a";
+            $sql0 = "SELECT count(*) FROM " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang;
+            $sql = "SELECT a.id,a.payment_name,a.payment_commission,a.payment_status FROM " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang . " a";
         }
         $result = $this->db->Execute($sql0);
         if ($result) {
@@ -5590,6 +5733,7 @@ class admin_shop extends model_base
         $this->error_array = false;
         $data_array['item_id'] = 0;
         $data_array['pay'] = 0;
+
         if (!empty($array)) {
             $keys = [
                 'item_id',
@@ -5601,56 +5745,120 @@ class admin_shop extends model_base
                 }
             }
         }
+
         $type = 'pay';
+
         if ($data_array['pay'] == 0) {
             $type = 'deliv';
         }
+
         if ($data_array['item_id'] == 0) {
             $this->error = 'no_item_' . $type;
 
             return;
         }
+
         if ($type == 'deliv') {
             $sql = "SELECT delivery_id,delivery_name,delivery_price,delivery_status FROM " . PREFIX . "_delivery_" . $this->registry->sitelang . " WHERE delivery_id = "
                    . $data_array['item_id'];
         } else {
-            $sql = "SELECT pay_id,pay_name,pay_price,pay_status FROM " . PREFIX . "_pay_" . $this->registry->sitelang . " WHERE pay_id = " . $data_array['item_id'];
+            $sql = "SELECT id,payment_name,payment_commission,payment_status,payment_system_id FROM " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang
+                   . " WHERE id = " . $data_array['item_id'];
         }
+
         $result = $this->db->Execute($sql);
+
         if (!$result) {
-            $error_message = $this->db->ErrorMsg();
-            $error_code = $this->db->ErrorNo();
-            $error[] = ["code" => $error_code, "message" => $error_message];
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
             $this->error = 'sql_error';
             $this->error_array = $error;
 
             return;
         }
+
         if (isset($result->fields['0'])) {
             $row_exist = intval($result->fields['0']);
         } else {
             $row_exist = 0;
         }
+
         if ($row_exist < 1) {
             $this->error = 'not_found_' . $type;
 
             return;
         }
+
         while (!$result->EOF) {
             $item_id = intval($result->fields['0']);
             $item_name = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
             $item_price = floatval($result->fields['2']);
             $item_status = intval($result->fields['3']);
-            $item_all[] = [
+            $data = [
                 "item_id"     => $item_id,
                 "item_name"   => $item_name,
                 "item_price"  => $item_price,
                 "item_status" => $item_status,
             ];
+
+            if ($type == 'pay') {
+                $data = array_merge($data, ['payment_system_id' => intval($result->fields['4'])]);
+            }
+
+            $item_all[] = $data;
+
             $result->MoveNext();
         }
+
+        if ($type == 'pay') {
+            $this->result['payment_systems'] = $this->getPaymentSystems();
+        }
+
         $this->result['item_all'] = $item_all;
         $this->result['adminmodules_shop_method'] = $type;
+    }
+
+
+    /**
+     * Get payment systems list
+     *
+     * @return array|string|void
+     */
+    private function getPaymentSystems()
+    {
+        $sql = "SELECT id,system_name FROM " . PREFIX . "_s_payment_systems WHERE system_status = '1'";
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $rowExist = 0;
+
+        if (isset($result->fields['0'])) {
+            $rowExist = intval($result->fields['0']);
+        }
+
+        if ($rowExist < 1) {
+
+            return 'no_data';
+        }
+
+        while (!$result->EOF) {
+            $id = intval($result->fields['0']);
+            $systemName = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+            $systemsData[] = [
+                "id"          => $id,
+                "system_name" => $systemName,
+            ];
+
+            $result->MoveNext();
+        }
+
+        return $systemsData;
     }
 
 
@@ -5660,6 +5868,7 @@ class admin_shop extends model_base
         $this->error = false;
         $this->error_array = false;
         $data_array['pay'] = 0;
+
         if (!empty($array)) {
             $keys = [
                 'item_name',
@@ -5669,23 +5878,30 @@ class admin_shop extends model_base
                 'item_id',
                 'item_status',
                 'pay',
+                'payment_system_id',
             ];
             foreach ($array as $key => $value) {
+
                 if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
+
                 if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
                 }
             }
         }
+
         if (isset($data_array['item_price'])) {
             $data_array['item_price'] = $this->registry->main_class->float_to_db($data_array['item_price']);
         }
+
         $type = "pay";
+
         if ($data_array['pay'] == 0) {
             $type = "deliv";
         }
+
         if ((!isset($array['item_id']) || !isset($array['item_name']) || !isset($array['item_price']) || !isset($array['item_status']))
             || ($data_array['item_id'] == 0
                 || $data_array['item_name'] == "")
@@ -5694,16 +5910,29 @@ class admin_shop extends model_base
 
             return;
         }
+
         $data_array['item_name'] = $this->registry->main_class->format_striptags($data_array['item_name']);
         $data_array['item_name'] = $this->registry->main_class->processing_data($data_array['item_name']);
+
         if ($type == "deliv") {
             $sql = "UPDATE " . PREFIX . "_delivery_" . $this->registry->sitelang . " SET delivery_name = " . $data_array['item_name'] . ",delivery_price = '"
                    . $data_array['item_price'] . "',delivery_status = '" . $data_array['item_status'] . "' WHERE delivery_id = " . $data_array['item_id'];
         } else {
-            $sql = "UPDATE " . PREFIX . "_pay_" . $this->registry->sitelang . " SET pay_name = " . $data_array['item_name'] . ",pay_price = '" . $data_array['item_price']
-                   . "',pay_status = '" . $data_array['item_status'] . "' WHERE pay_id = " . $data_array['item_id'];
+
+            if ($data_array['payment_system_id'] == 0) {
+                $data_array['payment_system_id'] = 'NULL';
+            } else {
+                $data_array['payment_system_id'] = "'" . $data_array['payment_system_id'] . "'";
+            }
+
+            $sql = "UPDATE " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang . " SET payment_name = " . $data_array['item_name'] . ",payment_commission = '"
+                   . $data_array['item_price']
+                   . "',payment_system_id = " . $data_array['payment_system_id'] . ",payment_status = '" . $data_array['item_status'] . "' WHERE id = "
+                   . $data_array['item_id'];
         }
+
         $result = $this->db->Execute($sql);
+
         if ($result) {
             $num_result = $this->db->Affected_Rows();
         } else {
@@ -5711,6 +5940,7 @@ class admin_shop extends model_base
             $error_code = $this->db->ErrorNo();
             $error[] = ["code" => $error_code, "message" => $error_message];
         }
+
         if ($result === false) {
             $this->error = 'sql_error';
             $this->error_array = $error;
@@ -5721,6 +5951,7 @@ class admin_shop extends model_base
 
             return;
         }
+
         if ($type == "deliv") {
             $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|delivs");
             $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|deliv|edit" . $data_array['item_id']);
@@ -5728,6 +5959,7 @@ class admin_shop extends model_base
             $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|pays");
             $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|pay|edit" . $data_array['item_id']);
         }
+
         $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|order");
         $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|modules|shop|checkout|display|admin");
         $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|modules|shop|checkout|display|other");
@@ -5744,9 +5976,13 @@ class admin_shop extends model_base
         $this->error_array = false;
         $pay = intval($pay);
         $type = "pay";
+
         if ($pay == 0) {
             $type = "deliv";
+        } else {
+            $this->result['payment_systems'] = $this->getPaymentSystems();
         }
+
         $this->result['adminmodules_shop_method'] = $type;
     }
 
@@ -5757,6 +5993,7 @@ class admin_shop extends model_base
         $this->error = false;
         $this->error_array = false;
         $data_array['pay'] = 0;
+
         if (!empty($array)) {
             $keys = [
                 'item_name',
@@ -5765,43 +6002,63 @@ class admin_shop extends model_base
             $keys2 = [
                 'item_status',
                 'pay',
+                'payment_system_id',
             ];
             foreach ($array as $key => $value) {
+
                 if (in_array($key, $keys)) {
                     $data_array[$key] = trim($value);
                 }
+
                 if (in_array($key, $keys2)) {
                     $data_array[$key] = intval($value);
                 }
             }
         }
+
         if (isset($data_array['item_price'])) {
             $data_array['item_price'] = $this->registry->main_class->float_to_db($data_array['item_price']);
         }
+
         $type = "pay";
+
         if ($data_array['pay'] == 0) {
             $type = "deliv";
         }
+
         if ((!isset($array['item_name']) || !isset($array['item_price']) || !isset($array['item_status'])) || $data_array['item_name'] == "") {
             $this->error = 'not_all_data';
 
             return;
         }
+
         $data_array['item_name'] = $this->registry->main_class->format_striptags($data_array['item_name']);
         $data_array['item_name'] = $this->registry->main_class->processing_data($data_array['item_name']);
+
         if ($type == "deliv") {
             $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_delivery_id_" . $this->registry->sitelang, 'delivery_id');
             $sql = "INSERT INTO " . PREFIX . "_delivery_" . $this->registry->sitelang . " (" . $sequence_array['field_name_string']
                    . "delivery_name,delivery_price,delivery_status) VALUES (" . $sequence_array['sequence_value_string'] . "" . $data_array['item_name'] . ",'"
                    . $data_array['item_price'] . "','" . $data_array['item_status'] . "')";
         } else {
-            $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_pay_id_" . $this->registry->sitelang, 'pay_id');
-            $sql = "INSERT INTO " . PREFIX . "_pay_" . $this->registry->sitelang . " (" . $sequence_array['field_name_string']
-                   . "pay_name,pay_price,pay_status) VALUES (" . $sequence_array['sequence_value_string'] . "" . $data_array['item_name'] . ",'"
-                   . $data_array['item_price']
-                   . "','" . $data_array['item_status'] . "')";
+
+            if ($data_array['payment_system_id'] == 0) {
+                $data_array['payment_system_id'] = 'NULL';
+            } else {
+                $data_array['payment_system_id'] = "'" . $data_array['payment_system_id'] . "'";
+            }
+
+            /**
+             * we use ..._s_payment_method_... because in oracle sequence name should be no more then 30 symbols and differ from table name
+             */
+            $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_s_payment_method_" . $this->registry->sitelang, 'id');
+            $sql = "INSERT INTO " . PREFIX . "_s_payment_methods_" . $this->registry->sitelang . " (" . $sequence_array['field_name_string']
+                   . "payment_name,payment_commission,payment_system_id,payment_status) VALUES (" . $sequence_array['sequence_value_string'] . ""
+                   . $data_array['item_name'] . ",'" . $data_array['item_price'] . "'," . $data_array['payment_system_id'] . ",'" . $data_array['item_status'] . "')";
         }
+
         $result = $this->db->Execute($sql);
+
         if ($result === false) {
             $error_message = $this->db->ErrorMsg();
             $error_code = $this->db->ErrorNo();
@@ -5811,11 +6068,13 @@ class admin_shop extends model_base
 
             return;
         }
+
         if ($type == "deliv") {
             $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|delivs");
         } else {
             $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|pays");
         }
+
         $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|order");
         $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|modules|shop|checkout|display|admin");
         $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|modules|shop|checkout|display|other");
@@ -5831,40 +6090,43 @@ class admin_shop extends model_base
         $this->error = false;
         $this->error_array = false;
         require_once('../modules/shop/shop_config.inc');
-        $this->result['systemdk_shop_catalogs_order'] = trim(SYSTEMDK_SHOP_CATALOGS_ORDER);
-        $this->result['systemdk_shop_homeitems_perpage'] = intval(SYSTEMDK_SHOP_HOMEITEMS_PERPAGE);
-        $this->result['systemdk_shop_homeitems_order'] = trim(SYSTEMDK_SHOP_HOMEITEMS_ORDER);
-        $this->result['systemdk_shop_categories_order'] = trim(SYSTEMDK_SHOP_CATEGORIES_ORDER);
-        $this->result['systemdk_shop_catitems_perpage'] = intval(SYSTEMDK_SHOP_CATITEMS_PERPAGE);
-        $this->result['systemdk_shop_catitems_order'] = trim(SYSTEMDK_SHOP_CATITEMS_ORDER);
-        $this->result['systemdk_shop_subcategories_order'] = trim(SYSTEMDK_SHOP_SUBCATEGORIES_ORDER);
-        $this->result['systemdk_shop_categitems_perpage'] = intval(SYSTEMDK_SHOP_CATEGITEMS_PERPAGE);
-        $this->result['systemdk_shop_categitems_order'] = trim(SYSTEMDK_SHOP_CATEGITEMS_ORDER);
-        $this->result['systemdk_shop_subcategitems_perpage'] = intval(SYSTEMDK_SHOP_SUBCATEGITEMS_PERPAGE);
-        $this->result['systemdk_shop_subcategitems_order'] = trim(SYSTEMDK_SHOP_SUBCATEGITEMS_ORDER);
-        $this->result['systemdk_shop_itemimage_path'] = trim(SYSTEMDK_SHOP_ITEMIMAGE_PATH);
-        $this->result['systemdk_shop_itemimage_position'] = trim(SYSTEMDK_SHOP_ITEMIMAGE_POSITION);
-        $this->result['systemdk_shop_itemimage_maxsize'] = intval(SYSTEMDK_SHOP_ITEMIMAGE_MAXSIZE);
-        $this->result['systemdk_shop_itemimage_maxwidth'] = intval(SYSTEMDK_SHOP_ITEMIMAGE_MAXWIDTH);
-        $this->result['systemdk_shop_itemimage_maxheight'] = intval(SYSTEMDK_SHOP_ITEMIMAGE_MAXHEIGHT);
-        $this->result['systemdk_shop_itemimage_width'] = intval(SYSTEMDK_SHOP_ITEMIMAGE_WIDTH);
-        $this->result['systemdk_shop_itemimage_width2'] = intval(SYSTEMDK_SHOP_ITEMIMAGE_WIDTH2);
-        $this->result['systemdk_shop_itemimage_width3'] = intval(SYSTEMDK_SHOP_ITEMIMAGE_WIDTH3);
-        $this->result['systemdk_shop_itemimage_height3'] = intval(SYSTEMDK_SHOP_ITEMIMAGE_HEIGHT3);
-        $this->result['systemdk_shop_image_path'] = trim(SYSTEMDK_SHOP_IMAGE_PATH);
-        $this->result['systemdk_shop_image_position'] = trim(SYSTEMDK_SHOP_IMAGE_POSITION);
-        $this->result['systemdk_shop_image_maxsize'] = intval(SYSTEMDK_SHOP_IMAGE_MAXSIZE);
-        $this->result['systemdk_shop_image_maxwidth'] = intval(SYSTEMDK_SHOP_IMAGE_MAXWIDTH);
-        $this->result['systemdk_shop_image_maxheight'] = intval(SYSTEMDK_SHOP_IMAGE_MAXHEIGHT);
-        $this->result['systemdk_shop_image_width'] = intval(SYSTEMDK_SHOP_IMAGE_WIDTH);
-        $this->result['systemdk_shop_items_columns'] = intval(SYSTEMDK_SHOP_ITEMS_COLUMNS);
-        $this->result['systemdk_shop_items_underparent'] = intval(SYSTEMDK_SHOP_ITEMS_UNDERPARENT);
-        $this->result['systemdk_shop_valuta'] = trim(SYSTEMDK_SHOP_VALUTA);
-        $this->result['systemdk_shop_antispam_ipaddr'] = intval(SYSTEMDK_SHOP_ANTISPAM_IPADDR);
-        $this->result['systemdk_shop_antispam_num'] = intval(SYSTEMDK_SHOP_ANTISPAM_NUM);
-        $this->result['systemdk_shop_order_notify_email'] = intval(SYSTEMDK_SHOP_ORDER_NOTIFY_EMAIL);
-        $this->result['systemdk_shop_order_notify_type'] = trim(SYSTEMDK_SHOP_ORDER_NOTIFY_TYPE);
-        $this->result['systemdk_shop_order_notify_custom_mailbox'] = trim(SYSTEMDK_SHOP_ORDER_NOTIFY_CUSTOM_MAILBOX);
+        $this->result = [
+            'systemdk_shop_catalogs_order'              => trim(SYSTEMDK_SHOP_CATALOGS_ORDER),
+            'systemdk_shop_homeitems_perpage'           => intval(SYSTEMDK_SHOP_HOMEITEMS_PERPAGE),
+            'systemdk_shop_homeitems_order'             => trim(SYSTEMDK_SHOP_HOMEITEMS_ORDER),
+            'systemdk_shop_categories_order'            => trim(SYSTEMDK_SHOP_CATEGORIES_ORDER),
+            'systemdk_shop_catitems_perpage'            => intval(SYSTEMDK_SHOP_CATITEMS_PERPAGE),
+            'systemdk_shop_catitems_order'              => trim(SYSTEMDK_SHOP_CATITEMS_ORDER),
+            'systemdk_shop_subcategories_order'         => trim(SYSTEMDK_SHOP_SUBCATEGORIES_ORDER),
+            'systemdk_shop_categitems_perpage'          => intval(SYSTEMDK_SHOP_CATEGITEMS_PERPAGE),
+            'systemdk_shop_categitems_order'            => trim(SYSTEMDK_SHOP_CATEGITEMS_ORDER),
+            'systemdk_shop_subcategitems_perpage'       => intval(SYSTEMDK_SHOP_SUBCATEGITEMS_PERPAGE),
+            'systemdk_shop_subcategitems_order'         => trim(SYSTEMDK_SHOP_SUBCATEGITEMS_ORDER),
+            'systemdk_shop_itemimage_path'              => trim(SYSTEMDK_SHOP_ITEMIMAGE_PATH),
+            'systemdk_shop_itemimage_position'          => trim(SYSTEMDK_SHOP_ITEMIMAGE_POSITION),
+            'systemdk_shop_itemimage_maxsize'           => intval(SYSTEMDK_SHOP_ITEMIMAGE_MAXSIZE),
+            'systemdk_shop_itemimage_maxwidth'          => intval(SYSTEMDK_SHOP_ITEMIMAGE_MAXWIDTH),
+            'systemdk_shop_itemimage_maxheight'         => intval(SYSTEMDK_SHOP_ITEMIMAGE_MAXHEIGHT),
+            'systemdk_shop_itemimage_width'             => intval(SYSTEMDK_SHOP_ITEMIMAGE_WIDTH),
+            'systemdk_shop_itemimage_width2'            => intval(SYSTEMDK_SHOP_ITEMIMAGE_WIDTH2),
+            'systemdk_shop_itemimage_width3'            => intval(SYSTEMDK_SHOP_ITEMIMAGE_WIDTH3),
+            'systemdk_shop_itemimage_height3'           => intval(SYSTEMDK_SHOP_ITEMIMAGE_HEIGHT3),
+            'systemdk_shop_image_path'                  => trim(SYSTEMDK_SHOP_IMAGE_PATH),
+            'systemdk_shop_image_position'              => trim(SYSTEMDK_SHOP_IMAGE_POSITION),
+            'systemdk_shop_image_maxsize'               => intval(SYSTEMDK_SHOP_IMAGE_MAXSIZE),
+            'systemdk_shop_image_maxwidth'              => intval(SYSTEMDK_SHOP_IMAGE_MAXWIDTH),
+            'systemdk_shop_image_maxheight'             => intval(SYSTEMDK_SHOP_IMAGE_MAXHEIGHT),
+            'systemdk_shop_image_width'                 => intval(SYSTEMDK_SHOP_IMAGE_WIDTH),
+            'systemdk_shop_items_columns'               => intval(SYSTEMDK_SHOP_ITEMS_COLUMNS),
+            'systemdk_shop_items_underparent'           => intval(SYSTEMDK_SHOP_ITEMS_UNDERPARENT),
+            'systemdk_shop_valuta'                      => trim(SYSTEMDK_SHOP_VALUTA),
+            'systemdk_shop_antispam_ipaddr'             => intval(SYSTEMDK_SHOP_ANTISPAM_IPADDR),
+            'systemdk_shop_antispam_num'                => intval(SYSTEMDK_SHOP_ANTISPAM_NUM),
+            'systemdk_shop_order_notify_email'          => intval(SYSTEMDK_SHOP_ORDER_NOTIFY_EMAIL),
+            'systemdk_shop_order_notify_type'           => trim(SYSTEMDK_SHOP_ORDER_NOTIFY_TYPE),
+            'systemdk_shop_order_notify_custom_mailbox' => trim(SYSTEMDK_SHOP_ORDER_NOTIFY_CUSTOM_MAILBOX),
+            'currencies_list'                           => $this->getCurrencies(),
+        ];
     }
 
 
@@ -6091,7 +6353,7 @@ class admin_shop extends model_base
                        . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " a,"
                        . PREFIX . "_s_add_par_g_types b WHERE a.group_type_id=b.id ORDER BY a.id ASC";
             } else {
-                $sql = "SELECT a.id,a.group_name,b.id,b.param_value,b.param_status FROM "
+                $sql = "SELECT a.id as group_id,a.group_name,b.id as param_id,b.param_value,b.param_status FROM "
                        . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . " a LEFT OUTER JOIN "
                        . PREFIX . "_s_add_params_" . $this->registry->sitelang . " b ON a.id=b.param_group_id WHERE a.id='" . $groupId
                        . "' ORDER BY b.id ASC";
@@ -6343,7 +6605,7 @@ class admin_shop extends model_base
         }
 
         $data_array['item_additional_param_group_name'] = $this->registry->main_class->processing_data($data_array['item_additional_param_group_name']);
-        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_s_add_par_groups_id_" . $this->registry->sitelang, 'id');
+        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_s_add_par_group_id_" . $this->registry->sitelang, 'id');
         $sql = "INSERT INTO " . PREFIX . "_s_add_par_groups_" . $this->registry->sitelang . "(" . $sequence_array['field_name_string']
                . "group_name,group_type_id,group_status) VALUES (" . $sequence_array['sequence_value_string'] . $data_array['item_additional_param_group_name'] . ",'"
                . $data_array['item_additional_param_group_type_id'] . "','" . $data_array['item_additional_param_group_status'] . "')";
@@ -7061,5 +7323,1042 @@ class admin_shop extends model_base
             'shop_message'                    => 'param_' . $action,
             'item_additional_params_group_id' => $groupId,
         ];
+    }
+
+
+    public function paymentSystems($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if (!empty($array)) {
+            $keys = [
+                'num_page',
+            ];
+            foreach ($array as $key => $value) {
+                if (in_array($key, $keys)) {
+                    $dataArray[$key] = intval($value);
+                }
+            }
+        }
+
+        if (isset($dataArray['num_page']) && $dataArray['num_page'] > 0) {
+            $numPage = $dataArray['num_page'];
+        } else {
+            $numPage = 1;
+        }
+
+        $numStringRows = SYSTEMDK_ADMINROWS_PERPAGE;
+        $offset = ($numPage - 1) * $numStringRows;
+        $sqlCount = "SELECT count(*) FROM " . PREFIX . "_s_payment_systems";
+        $sql = "SELECT id,system_name,system_class,system_integ_type,system_integ_description,system_version,system_status FROM " . PREFIX . "_s_payment_systems";
+        $result = $this->db->Execute($sqlCount);
+
+        if ($result) {
+            $numRows = intval($result->fields['0']);
+            $result = $this->db->SelectLimit($sql, $numStringRows, $offset);
+        }
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $rowExist = 0;
+
+        if (isset($result->fields['0'])) {
+            $rowExist = intval($result->fields['0']);
+        }
+
+        if ($rowExist == 0 && $numPage > 1) {
+            $this->error = 'unknown_page';
+
+            return;
+        }
+
+        if ($rowExist < 1) {
+            $this->result['payment_systems_all'] = "no";
+            $this->result['html'] = "no";
+
+            return;
+        }
+
+        while (!$result->EOF) {
+            $id = intval($result->fields['0']);
+            $systemName = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+            $systemClass = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
+            $systemIntegType = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
+            $systemIntegDescription = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4']));
+            $systemVersion = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5']));
+            $systemStatus = intval($result->fields['6']);
+            $paymentSystemsAll[] = [
+                "system_id"                => $id,
+                "system_name"              => $systemName,
+                "system_class"             => $systemClass,
+                "system_integ_type"        => $systemIntegType,
+                "system_integ_description" => $systemIntegDescription,
+                "system_version"           => $systemVersion,
+                "system_status"            => $systemStatus,
+            ];
+            $result->MoveNext();
+        }
+        $this->result['payment_systems_all'] = $paymentSystemsAll;
+
+        if (isset($numRows)) {
+            $numPages = @ceil($numRows / $numStringRows);
+        } else {
+            $numPages = 0;
+        }
+
+        if ($numPages > 1) {
+
+            if ($numPage > 1) {
+                $prevpage = $numPage - 1;
+                $this->result['prevpage'] = $prevpage;
+            } else {
+                $this->result['prevpage'] = "no";
+            }
+
+            for ($i = 1; $i < $numPages + 1; $i++) {
+
+                if ($i == $numPage) {
+                    $html[] = ["number" => $i, "param1" => "1"];
+                } else {
+                    $pagelink = 5;
+
+                    if (($i > $numPage) && ($i < $numPage + $pagelink) || ($i < $numPage) && ($i > $numPage - $pagelink)) {
+                        $html[] = ["number" => $i, "param1" => "2"];
+                    }
+
+                    if (($i == $numPages) && ($numPage < $numPages - $pagelink)) {
+                        $html[] = ["number" => $i, "param1" => "3"];
+                    }
+
+                    if (($i == 1) && ($numPage > $pagelink + 1)) {
+                        $html[] = ["number" => $i, "param1" => "4"];
+                    }
+                }
+            }
+
+            if ($numPage < $numPages) {
+                $nextpage = $numPage + 1;
+                $this->result['nextpage'] = $nextpage;
+            } else {
+                $this->result['nextpage'] = "no";
+            }
+
+            $this->result['html'] = $html;
+            $this->result['total_payment_systems'] = $numRows;
+            $this->result['num_pages'] = $numPages;
+        } else {
+            $this->result['html'] = "no";
+        }
+    }
+
+
+    public function portmoneAcquiringConfig()
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $sql = "SELECT id,payee_id,login,password,payment_description,log_mode,log_life_days,error_notify,error_notify_type,display_error_mode FROM " . PREFIX
+               . "_s_portmone_ac_conf ORDER BY id DESC";
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $rowExist = 0;
+
+        if (isset($result->fields['0'])) {
+            $rowExist = intval($result->fields['0']);
+        }
+
+        if ($rowExist < 1) {
+            $this->result = [
+                'portmone_payee_id'            => false,
+                'portmone_login'               => false,
+                'portmone_password'            => false,
+                'portmone_payment_description' => shop::SYSTEMDK_SHOP_DEFAULT_PAYMENT_DESCRIPTION,
+                'portmone_log_mode'            => false,
+                'portmone_log_life_days'       => false,
+                'portmone_error_notify'        => 1,
+                'portmone_error_notify_type'   => false,
+                'portmone_display_error_mode'  => false,
+            ];
+
+            return;
+        }
+
+        $this->result = [
+            'portmone_payee_id'            => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
+            'portmone_login'               => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
+            'portmone_password'            => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3'])),
+            'portmone_payment_description' => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['4'])),
+            'portmone_log_mode'            => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5'])),
+            'portmone_log_life_days'       => intval($result->fields['6']) > 0 ? intval($result->fields['6']) : false,
+            'portmone_error_notify'        => intval($result->fields['7']),
+            'portmone_error_notify_type'   => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['8'])),
+            'portmone_display_error_mode'  => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['9'])),
+        ];
+    }
+
+
+    public function portmoneAcqConfSave($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $keys = [
+            'portmone_payee_id'            => 'string',
+            'portmone_login'               => 'string',
+            'portmone_password'            => 'string',
+            'portmone_payment_description' => 'string',
+            'portmone_log_mode'            => 'string',
+            'portmone_log_life_days'       => 'integer',
+            'portmone_error_notify'        => 'integer',
+            'portmone_error_notify_type'   => 'string',
+            'portmone_display_error_mode'  => 'string',
+        ];
+        foreach ($keys as $key => $value) {
+            $dataArray[$key] = false;
+
+            if (isset($array[$key])) {
+                $dataArray[$key] = $value === 'string'
+                    ? trim($this->registry->main_class->format_striptags($array[$key]))
+                    : intval($array[$key]);
+            }
+
+        }
+
+        if (empty($dataArray['portmone_payee_id'])
+            || empty($dataArray['portmone_login'])
+            || empty($dataArray['portmone_password'])
+            || empty($dataArray['portmone_payment_description'])
+            || empty($dataArray['portmone_log_mode'])
+            || !isset($dataArray['portmone_log_life_days'])
+            || !isset($dataArray['portmone_error_notify'])
+            || empty($dataArray['portmone_error_notify_type'])
+            || empty($dataArray['portmone_display_error_mode'])
+        ) {
+            $this->error = 'not_all_data';
+
+            return;
+        }
+
+        $sql = "SELECT id FROM " . PREFIX . "_s_portmone_ac_conf ORDER BY id DESC";
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $portmoneConfigId = 0;
+
+        if (isset($result->fields['0'])) {
+            $portmoneConfigId = intval($result->fields['0']);
+        }
+
+        foreach ($keys as $key => $valueType) {
+            if ($valueType === 'string') {
+                $dataArray[$key] = $this->registry->main_class->processing_data($dataArray[$key]);
+            }
+        }
+
+        if ($dataArray['portmone_log_life_days'] < 1) {
+            $dataArray['portmone_log_life_days'] = 'NULL';
+        } else {
+            $dataArray['portmone_log_life_days'] = "'" . $dataArray['portmone_log_life_days'] . "'";
+        }
+
+        $this->db->StartTrans();
+
+        if ($portmoneConfigId < 1) {
+            $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_s_portmone_ac_conf_id", 'id');
+            $sql = "INSERT INTO " . PREFIX . "_s_portmone_ac_conf (" . $sequence_array['field_name_string']
+                   . "payee_id,login,password,payment_description,log_mode,log_life_days,error_notify,error_notify_type,display_error_mode) VALUES ("
+                   . $sequence_array['sequence_value_string'] . $dataArray['portmone_payee_id'] . ","
+                   . $dataArray['portmone_login'] . "," . $dataArray['portmone_password'] . "," . $dataArray['portmone_payment_description'] . ","
+                   . $dataArray['portmone_log_mode'] . "," . $dataArray['portmone_log_life_days'] . ",'" . $dataArray['portmone_error_notify'] . "',"
+                   . $dataArray['portmone_error_notify_type'] . "," . $dataArray['portmone_display_error_mode'] . ")";
+            $result = $this->db->Execute($sql);
+
+            if ($result === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            }
+        } else {
+            $sql = "UPDATE " . PREFIX . "_s_portmone_ac_conf SET payee_id = " . $dataArray['portmone_payee_id']
+                   . ",login = " . $dataArray['portmone_login'] . ", password = " . $dataArray['portmone_password'] . ", payment_description = "
+                   . $dataArray['portmone_payment_description'] . ", log_mode = " . $dataArray['portmone_log_mode'] . ", log_life_days = "
+                   . $dataArray['portmone_log_life_days'] . ", error_notify = '" . $dataArray['portmone_error_notify'] . "', error_notify_type = "
+                   . $dataArray['portmone_error_notify_type'] . ", display_error_mode = " . $dataArray['portmone_display_error_mode'] . " "
+                   . "WHERE id = '" . $portmoneConfigId . "'";
+            $result = $this->db->Execute($sql);
+            $numResult = $this->db->Affected_Rows();
+
+            if ($result === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            }
+        }
+
+        if ($result || ($result && $portmoneConfigId > 0 && $numResult > 0)) {
+            $sql = "UPDATE " . PREFIX . "_s_payment_systems SET system_status='1' WHERE system_class='shop_portmone' and system_integ_type='acquiring_agreement'";
+            $result = $this->db->Execute($sql);
+
+            if ($result === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            }
+
+            if (isset($numResult) && $numResult < 1) {
+                $numResult = $this->db->Affected_Rows();
+            }
+        }
+
+        $this->db->CompleteTrans();
+
+        if ($result === false) {
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        } elseif ($portmoneConfigId > 0 && $result !== false && $numResult == 0) {
+            $this->error = 'not_save';
+
+            return;
+        }
+
+        $this->registry->main_class->systemdk_clearcache("systemadmin|modules|shop|portmone_acquiring_config");
+        $this->registry->main_class->systemdk_clearcache("systemadmin|modules|shop|payment_systems");
+        $this->registry->main_class->systemdk_clearcache("systemadmin|modules|shop|pay");
+        $this->result = 'portmone_acq_config_done';
+    }
+
+
+    public function exchangeRates($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if (!empty($array)) {
+            $keys = [
+                'num_page',
+            ];
+            foreach ($array as $key => $value) {
+                if (in_array($key, $keys)) {
+                    $dataArray[$key] = intval($value);
+                }
+            }
+        }
+
+        if (isset($dataArray['num_page']) && $dataArray['num_page'] > 0) {
+            $numPage = $dataArray['num_page'];
+        } else {
+            $numPage = 1;
+        }
+
+        $numStringRows = SYSTEMDK_ADMINROWS_PERPAGE;
+        $offset = ($numPage - 1) * $numStringRows;
+        $sqlCount = "SELECT count(*) FROM " . PREFIX . "_s_currency_exch";
+        $sql = "SELECT id,from_currency_code,to_currency_code,rate,date_from,date_till FROM " . PREFIX . "_s_currency_exch ORDER BY date_from DESC";
+        $result = $this->db->Execute($sqlCount);
+
+        if ($result) {
+            $numRows = intval($result->fields['0']);
+            $result = $this->db->SelectLimit($sql, $numStringRows, $offset);
+        }
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $rowExist = 0;
+
+        if (isset($result->fields['0'])) {
+            $rowExist = intval($result->fields['0']);
+        }
+
+        if ($rowExist == 0 && $numPage > 1) {
+            $this->error = 'unknown_page';
+
+            return;
+        }
+
+        if ($rowExist < 1) {
+            $this->result['exchange_rates_data'] = "no_data";
+            $this->result['html'] = "no";
+
+            return;
+        }
+
+        while (!$result->EOF) {
+            $id = intval($result->fields['0']);
+            $fromCurrencyCode = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+            $toCurrencyCode = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
+            $rate = number_format(floatval($result->fields['3']), 2, '.', ' ');
+            $dateFrom = intval($result->fields['4']);
+            $dateFrom = date("d.m.y H:i", $dateFrom);
+            $dateTill = intval($result->fields['5']);
+
+            if ($dateTill > 0) {
+                $dateTill = date("d.m.y H:i", $dateTill);
+            } else {
+                $dateTill = '';
+            }
+
+            $currencyExchangeData[] = [
+                "id"                 => $id,
+                "from_currency_code" => $fromCurrencyCode,
+                "to_currency_code"   => $toCurrencyCode,
+                "rate"               => $rate,
+                "date_from"          => $dateFrom,
+                "date_till"          => $dateTill,
+            ];
+            $result->MoveNext();
+        }
+        $this->result['exchange_rates_data'] = $currencyExchangeData;
+
+        if (isset($numRows)) {
+            $numPages = @ceil($numRows / $numStringRows);
+        } else {
+            $numPages = 0;
+        }
+
+        if ($numPages > 1) {
+
+            if ($numPage > 1) {
+                $prevpage = $numPage - 1;
+                $this->result['prevpage'] = $prevpage;
+            } else {
+                $this->result['prevpage'] = "no";
+            }
+
+            for ($i = 1; $i < $numPages + 1; $i++) {
+
+                if ($i == $numPage) {
+                    $html[] = ["number" => $i, "param1" => "1"];
+                } else {
+                    $pagelink = 5;
+
+                    if (($i > $numPage) && ($i < $numPage + $pagelink) || ($i < $numPage) && ($i > $numPage - $pagelink)) {
+                        $html[] = ["number" => $i, "param1" => "2"];
+                    }
+
+                    if (($i == $numPages) && ($numPage < $numPages - $pagelink)) {
+                        $html[] = ["number" => $i, "param1" => "3"];
+                    }
+
+                    if (($i == 1) && ($numPage > $pagelink + 1)) {
+                        $html[] = ["number" => $i, "param1" => "4"];
+                    }
+                }
+            }
+
+            if ($numPage < $numPages) {
+                $nextpage = $numPage + 1;
+                $this->result['nextpage'] = $nextpage;
+            } else {
+                $this->result['nextpage'] = "no";
+            }
+
+            $this->result['html'] = $html;
+            $this->result['total_exchange_rates'] = $numRows;
+            $this->result['num_pages'] = $numPages;
+        } else {
+            $this->result['html'] = "no";
+        }
+    }
+
+
+    public function exchangeRateAdd()
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $this->result['currencies'] = $this->getCurrencies();
+        $this->result['jquery_calendar'] = 'yes';
+        $this->result['jquery_ui'] = 'yes';
+    }
+
+
+    private function getCurrencies()
+    {
+        $sql = "SELECT id,currency_code,currency_name FROM " . PREFIX . "_s_currencies ORDER BY currency_order ASC";
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return false;
+        }
+
+        $rowExist = 0;
+
+        if (isset($result->fields['0'])) {
+            $rowExist = intval($result->fields['0']);
+        }
+
+        if ($rowExist < 1) {
+            $this->error = 'currencies_not_found';
+
+            return false;
+        }
+
+        while (!$result->EOF) {
+            $data[] = [
+                'currency_code' => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
+                'currency_name' => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
+            ];
+            $result->MoveNext();
+        }
+
+        return $data;
+    }
+
+
+    public function exchangeRateEdit($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+
+        if (isset($array['rate_id'])) {
+            $array['rate_id'] = intval($array['rate_id']);
+        }
+
+        if (empty($array['rate_id']) || $array['rate_id'] < 1) {
+            $this->error = 'empty_data';
+
+            return;
+        }
+
+        $sql = "SELECT id,from_currency_code,to_currency_code,rate,date_from,date_till FROM " . PREFIX . "_s_currency_exch WHERE  id = '" . $array['rate_id'] . "'";
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $rowExist = 0;
+
+        if (isset($result->fields['0'])) {
+            $rowExist = intval($result->fields['0']);
+        }
+
+        if ($rowExist < 1) {
+            $this->error = 'rate_not_found';
+
+            return;
+        }
+
+        $this->result['exchange_rate_data'] = [
+            'id'                 => intval($result->fields['0']),
+            'from_currency_code' => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1'])),
+            'to_currency_code'   => $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2'])),
+            'rate'               => number_format(floatval($result->fields['3']), 2, '.', ' '),
+            'date_from'          => date("d.m.Y", intval($result->fields['4'])),
+            'date_till'          => intval($result->fields['5']) > 0 ? date("d.m.Y", intval($result->fields['5'])) : '',
+        ];
+        $this->result['currencies'] = $this->getCurrencies();
+        $this->result['jquery_calendar'] = 'yes';
+        $this->result['jquery_ui'] = 'yes';
+    }
+
+
+    public function exchangeRateAddInDb($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $keys = [
+            'from_currency_code' => 'string',
+            'to_currency_code'   => 'string',
+            'exchange_rate'      => 'string',
+            'date_from'          => 'string',
+            'date_till'          => 'string',
+        ];
+        foreach ($keys as $key => $value) {
+
+            if (isset($array[$key])) {
+                $dataArray[$key] = $value === 'string'
+                    ? trim($this->registry->main_class->format_striptags($array[$key]))
+                    : intval($array[$key]);
+            }
+
+        }
+
+        if (empty($dataArray['from_currency_code'])
+            || empty($dataArray['to_currency_code'])
+            || empty($dataArray['exchange_rate'])
+            || empty($dataArray['date_from'])
+            || !isset($dataArray['date_till'])
+        ) {
+            $this->error = 'not_all_data';
+
+            return;
+        }
+
+        $dataArray['exchange_rate'] = $this->registry->main_class->float_to_db($dataArray['exchange_rate']);
+        $dataArray['date_from'] = $this->registry->main_class->time_to_unix($dataArray['date_from'] . ' 00:00');
+
+        if (!empty($dataArray['date_till'])) {
+            $dataArray['date_till'] = $this->registry->main_class->time_to_unix($dataArray['date_till'] . ' 23:59');
+        }
+
+        if (!$this->checkExchangeRateDates($dataArray['from_currency_code'], $dataArray['to_currency_code'], $dataArray['date_from'], $dataArray['date_till'])) {
+            return;
+        }
+
+        if (!empty($dataArray['date_till'])) {
+            $dataArray['date_till'] = "'" . $dataArray['date_till'] . "'";
+        } else {
+            $dataArray['date_till'] = 'NULL';
+        }
+
+        $dataArray['from_currency_code'] = $this->registry->main_class->processing_data($dataArray['from_currency_code']);
+        $dataArray['to_currency_code'] = $this->registry->main_class->processing_data($dataArray['to_currency_code']);
+        $sequence_array = $this->registry->main_class->db_process_sequence(PREFIX . "_s_currency_exch_id", 'id');
+        $sql = "INSERT INTO " . PREFIX . "_s_currency_exch (" . $sequence_array['field_name_string']
+               . "from_currency_code,to_currency_code,rate,date_from,date_till,updated_at) VALUES (" . $sequence_array['sequence_value_string']
+               . $dataArray['from_currency_code'] . ","
+               . $dataArray['to_currency_code'] . ",'" . $dataArray['exchange_rate'] . "','" . $dataArray['date_from'] . "'," . $dataArray['date_till'] . ",'"
+               . $this->registry->main_class->get_time() . "')";
+        $result = $this->db->Execute($sql);
+
+        if ($result === false) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|exchange_rates");
+        $this->result = 'exchange_rate_added';
+    }
+
+
+    public function exchangeRateEditInDb($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $keys = [
+            'rate_id'            => 'integer',
+            'from_currency_code' => 'string',
+            'to_currency_code'   => 'string',
+            'exchange_rate'      => 'string',
+            'date_from'          => 'string',
+            'date_till'          => 'string',
+        ];
+        foreach ($keys as $key => $value) {
+
+            if (isset($array[$key])) {
+                $dataArray[$key] = $value === 'string'
+                    ? trim($this->registry->main_class->format_striptags($array[$key]))
+                    : intval($array[$key]);
+            }
+
+        }
+
+        if (empty($dataArray['rate_id'])
+            || empty($dataArray['from_currency_code'])
+            || empty($dataArray['to_currency_code'])
+            || empty($dataArray['exchange_rate'])
+            || empty($dataArray['date_from'])
+            || !isset($dataArray['date_till'])
+        ) {
+            $this->error = 'not_all_data';
+
+            return;
+        }
+
+        $dataArray['exchange_rate'] = $this->registry->main_class->float_to_db($dataArray['exchange_rate']);
+        $dataArray['date_from'] = $this->registry->main_class->time_to_unix($dataArray['date_from'] . ' 00:00');
+
+        if (!empty($dataArray['date_till'])) {
+            $dataArray['date_till'] = $this->registry->main_class->time_to_unix($dataArray['date_till'] . ' 23:59');
+        }
+
+        if (!$this->checkExchangeRateDates(
+            $dataArray['from_currency_code'], $dataArray['to_currency_code'], $dataArray['date_from'], $dataArray['date_till'], $dataArray['rate_id']
+        )
+        ) {
+            return;
+        }
+
+        if (!empty($dataArray['date_till'])) {
+            $dataArray['date_till'] = "'" . $dataArray['date_till'] . "'";
+        } else {
+            $dataArray['date_till'] = 'NULL';
+        }
+
+        $dataArray['from_currency_code'] = $this->registry->main_class->processing_data($dataArray['from_currency_code']);
+        $dataArray['to_currency_code'] = $this->registry->main_class->processing_data($dataArray['to_currency_code']);
+        $sql = "UPDATE " . PREFIX . "_s_currency_exch SET from_currency_code = " . $dataArray['from_currency_code'] . ","
+               . "to_currency_code = " . $dataArray['to_currency_code'] . ", rate = '" . $dataArray['exchange_rate'] . "',"
+               . "date_from = '" . $dataArray['date_from'] . "', date_till = " . $dataArray['date_till'] . ","
+               . "updated_at = '" . $this->registry->main_class->get_time() . "' "
+               . "WHERE id = '" . $dataArray['rate_id'] . "'";
+        $result = $this->db->Execute($sql);
+        $numResult = $this->db->Affected_Rows();
+
+        if ($result === false) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        } elseif ($result !== false && $numResult == 0) {
+            $this->error = 'not_save';
+
+            return;
+        }
+
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|exchange_rates");
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|exchange_rate_edit|" . $dataArray['rate_id']);
+        $this->result = 'exchange_rate_edited';
+    }
+
+
+    private function checkExchangeRateDates($fromCurrencyCode, $toCurrencyCode, $dateFrom, $dateTill, $exceptId = false)
+    {
+        if (empty($dateFrom) || (!empty($dateTill) && $dateFrom > $dateTill)) {
+            $this->error = 'incorrect_dates';
+
+            return false;
+        }
+
+        $fromCurrencyCode = $this->registry->main_class->processing_data($fromCurrencyCode);
+        $toCurrencyCode = $this->registry->main_class->processing_data($toCurrencyCode);
+
+        $sqlAdd1 = false;
+        $sqlAdd2 = false;
+        $sqlAdd3 = false;
+        $sqlAdd4 = false;
+
+        if (!empty($dateTill)) {
+            $sqlAdd1 = "and date_from <= " . $dateTill . "";
+            $sqlAdd2 = "and date_till <= " . $dateTill . "";
+            $sqlAdd3 = "and date_from <= " . $dateTill . "";
+            $sqlAdd4 = "and " . $dateTill . " <= date_till";
+        }
+
+        $sql = "SELECT count(*) FROM " . PREFIX . "_s_currency_exch WHERE from_currency_code = " . $fromCurrencyCode . " and to_currency_code = " . $toCurrencyCode
+               . " and ("
+               . "(date_till is NULL " . $sqlAdd1 . ") or "
+               . "(date_till is NOT NULL and date_till >= " . $dateFrom . " " . $sqlAdd2 . ") or "
+               . "(date_from >= " . $dateFrom . " " . $sqlAdd3 . ") or "
+               . "(date_till is NOT NULL and " . $dateFrom . " >= date_from " . $sqlAdd4 . ")"
+               . ")";
+
+        if ($exceptId) {
+            $sql .= " and id <> '" . $exceptId . "'";
+        }
+
+        $result = $this->db->Execute($sql);
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return false;
+        }
+
+        $rowExist = 0;
+
+        if (isset($result->fields['0'])) {
+            $rowExist = intval($result->fields['0']);
+        }
+
+        if ($rowExist > 0) {
+            $this->error = 'rate_exist';
+
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function exchangeRatesStatus($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $action = "";
+
+        if (isset($array['get_action'])) {
+            $action = trim($array['get_action']);
+        }
+
+        if (!isset($array['get_action']) && isset($array['post_action'])) {
+            $action = trim($array['post_action']);
+        }
+
+        $rateId = 0;
+
+        if (isset($array['get_rate_id'])) {
+            $rateId = intval($array['get_rate_id']);
+        }
+
+        if ($rateId == 0 && isset($array['post_rate_id']) && is_array($array['post_rate_id']) && count($array['post_rate_id']) > 0) {
+            for ($i = 0, $size = count($array['post_rate_id']); $i < $size; ++$i) {
+                $ratesIds[$i] = intval($array['post_rate_id'][$i]);
+
+                if ($i == 0) {
+                    $rateId = "'" . intval($array['post_rate_id'][$i]) . "'";
+                } else {
+                    $rateId .= ",'" . intval($array['post_rate_id'][$i]) . "'";
+                }
+
+            }
+        } else {
+            $ratesIds[0] = $rateId;
+            $rateId = "'" . $rateId . "'";
+        }
+
+        $action = $this->registry->main_class->format_striptags($action);
+
+        if (!isset($rateId) || $action == "" || $rateId == "'0'") {
+            $this->error = 'empty_data';
+
+            return;
+        }
+
+        if ($action == "confirm_delete") {
+            $sql = "SELECT count(*) as total_rates FROM " . PREFIX . "_s_currency_exch WHERE id IN (" . $rateId . ")";
+            $result = $this->db->Execute($sql);
+
+            if (!$result) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+                $this->error = 'sql_error';
+                $this->error_array = $error;
+
+                return;
+            }
+
+            $totalRates = 0;
+
+            if (isset($result->fields['0'])) {
+                $totalRates = intval($result->fields['0']);
+            }
+
+            $this->result = [
+                'shop_message'     => 'rate_confirm_delete',
+                'total_rates'      => $totalRates,
+                'delete_rates_ids' => $ratesIds,
+            ];
+
+            return;
+        } elseif ($action == "delete") {
+            $sql = "DELETE FROM " . PREFIX . "_s_currency_exch WHERE id IN (" . $rateId . ")";
+            $result = $this->db->Execute($sql);
+
+            if ($result === false) {
+                $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            } else {
+                $numResult = $this->db->Affected_Rows();
+            }
+
+        } else {
+            $this->error = 'unknown_action';
+
+            return;
+        }
+
+        if ($result === false) {
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        } elseif ($result !== false && $numResult == 0) {
+            $this->error = 'not_save';
+
+            return;
+        }
+
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|exchange_rates");
+        $this->registry->main_class->clearCache(null, $this->registry->sitelang . "|systemadmin|modules|shop|exchange_rate_edit");
+        $this->result['shop_message'] = 'exchange_rates_deleted';
+    }
+
+
+    public function paymentLogs($array)
+    {
+        $this->result = false;
+        $this->error = false;
+        $this->error_array = false;
+        $this->log->clear();
+        $error = $this->log->get_property_value('error');
+        $errorArray = $this->log->get_property_value('error_array');
+
+        if (!empty($error)) {
+            $this->error = $error;
+
+            if (!empty($errorArray)) {
+                $this->error_array = $this->log->get_property_value('error_array');
+            }
+
+            return;
+        }
+
+        if (!empty($array)) {
+            $keys = [
+                'num_page',
+            ];
+            foreach ($array as $key => $value) {
+                if (in_array($key, $keys)) {
+                    $dataArray[$key] = intval($value);
+                }
+            }
+        }
+
+        if (isset($dataArray['num_page']) && $dataArray['num_page'] > 0) {
+            $numPage = $dataArray['num_page'];
+        } else {
+            $numPage = 1;
+        }
+
+        $numStringRows = SYSTEMDK_ADMINROWS_PERPAGE;
+        $offset = ($numPage - 1) * $numStringRows;
+        $sqlCount = "SELECT count(*) FROM " . PREFIX . "_s_payment_logs_" . $this->registry->sitelang;
+        $sql = "SELECT a.system_id,b.system_name,a.request_url,a.method,a.order_number,a.request_data,a.response_data,a.process_status,a.error_data,a.log_date "
+               . "FROM " . PREFIX . "_s_payment_logs_" . $this->registry->sitelang . " a, " . PREFIX
+               . "_s_payment_systems b WHERE a.system_id=b.id ORDER BY a.log_date DESC";
+        $result = $this->db->Execute($sqlCount);
+
+        if ($result) {
+            $numRows = intval($result->fields['0']);
+            $result = $this->db->SelectLimit($sql, $numStringRows, $offset);
+        }
+
+        if (!$result) {
+            $error[] = ["code" => $this->db->ErrorNo(), "message" => $this->db->ErrorMsg()];
+            $this->error = 'sql_error';
+            $this->error_array = $error;
+
+            return;
+        }
+
+        $rowExist = 0;
+
+        if (isset($result->fields['0'])) {
+            $rowExist = intval($result->fields['0']);
+        }
+
+        if ($rowExist == 0 && $numPage > 1) {
+            $this->error = 'unknown_page';
+
+            return;
+        }
+
+        if ($rowExist < 1) {
+            $this->result['payment_log_data'] = "no";
+            $this->result['html'] = "no";
+
+            return;
+        }
+
+        while (!$result->EOF) {
+            $systemId = intval($result->fields['0']);
+            $systemName = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['1']));
+            $requestUrl = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['2']));
+            $method = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['3']));
+            $orderNumber = intval($result->fields['4']);
+            $requestData = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['5']));
+            $responseData = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['6']));
+            $processStatus = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['7']));
+            $errorData = $this->registry->main_class->format_htmlspecchars($this->registry->main_class->extracting_data($result->fields['8']));
+            $logDate = date("d.m.Y H:i:s", intval($result->fields['9']));
+            $paymentLogData[] = [
+                "system_id"      => $systemId,
+                "system_name"    => $systemName,
+                "system_url"     => $requestUrl,
+                "method"         => $method,
+                "order_number"   => $orderNumber,
+                "request_data"   => $requestData,
+                "response_data"  => $responseData,
+                "process_status" => $processStatus,
+                "error_data"     => $errorData,
+                "log_date"       => $logDate,
+            ];
+            $result->MoveNext();
+        }
+        $this->result['payment_log_data'] = $paymentLogData;
+
+        if (isset($numRows)) {
+            $numPages = @ceil($numRows / $numStringRows);
+        } else {
+            $numPages = 0;
+        }
+
+        if ($numPages > 1) {
+
+            if ($numPage > 1) {
+                $prevpage = $numPage - 1;
+                $this->result['prevpage'] = $prevpage;
+            } else {
+                $this->result['prevpage'] = "no";
+            }
+
+            for ($i = 1; $i < $numPages + 1; $i++) {
+
+                if ($i == $numPage) {
+                    $html[] = ["number" => $i, "param1" => "1"];
+                } else {
+                    $pagelink = 5;
+
+                    if (($i > $numPage) && ($i < $numPage + $pagelink) || ($i < $numPage) && ($i > $numPage - $pagelink)) {
+                        $html[] = ["number" => $i, "param1" => "2"];
+                    }
+
+                    if (($i == $numPages) && ($numPage < $numPages - $pagelink)) {
+                        $html[] = ["number" => $i, "param1" => "3"];
+                    }
+
+                    if (($i == 1) && ($numPage > $pagelink + 1)) {
+                        $html[] = ["number" => $i, "param1" => "4"];
+                    }
+                }
+            }
+
+            if ($numPage < $numPages) {
+                $nextpage = $numPage + 1;
+                $this->result['nextpage'] = $nextpage;
+            } else {
+                $this->result['nextpage'] = "no";
+            }
+
+            $this->result['html'] = $html;
+            $this->result['total_payment_logs_data'] = $numRows;
+            $this->result['num_pages'] = $numPages;
+        } else {
+            $this->result['html'] = "no";
+        }
     }
 }

@@ -30,6 +30,7 @@ class install
         $this->smarty->setTemplateDir('../themes/systemdk/templates/');
         $this->smarty->setCompileDir('../themes/systemdk/templates_c/');
         $this->smarty->setCacheDir('../themes/systemdk/cache/');
+        $this->smarty->configLoad('theme.conf');
         if (!isset($_POST['func']) || strip_tags(trim($_POST['func'])) == "") {
             $func = "step1";
         } else {
@@ -668,12 +669,13 @@ class install
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
                 $insert = $adodb->Execute(
-                    "CREATE TABLE " . $data_array['prefix'] . "_pay_" . $install_lang[$i] . " (
-                    pay_id int(11) not null auto_increment,
-                    pay_name varchar(255) not null,
-                    pay_price float(13,2) not null default '0.00',
-                    pay_status enum('0','1') not null default '1',
-                    PRIMARY KEY (pay_id)
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_payment_methods_" . $install_lang[$i] . " (
+                    id int(11) not null auto_increment,
+                    payment_name varchar(255) not null,
+                    payment_commission float(13,2) not null default '0.00',
+                    payment_system_id int(11),
+                    payment_status enum('0','1') not null default '1',
+                    PRIMARY KEY (id)
                   ) ENGINE=InnoDB"
                 );
                 if (!$insert) {
@@ -682,7 +684,8 @@ class install
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
                 $insert = $adodb->Execute(
-                    "INSERT INTO " . $data_array['prefix'] . "_pay_" . $install_lang[$i] . " (pay_name,pay_price,pay_status) VALUES ('cash', '0.00', '1');"
+                    "INSERT INTO " . $data_array['prefix'] . "_s_payment_methods_" . $install_lang[$i]
+                    . " (payment_name,payment_commission,payment_system_id,payment_status) VALUES ('cash', '0.00', NULL, '1');"
                 );
                 if (!$insert) {
                     $error_message = $adodb->ErrorMsg();
@@ -712,7 +715,15 @@ class install
                     order_pay int(11) not null,
                     order_comments varchar(255),
                     order_ip varchar(45) not null,
-                    PRIMARY KEY (order_id)
+                    order_hash varchar(150) not null,
+                    invoice_date bigint(19),
+                    invoice_amount float(13,2),
+                    invoice_currency_code varchar(3),
+                    invoice_exch_rate float(13,2),
+                    invoice_paid enum('0','1') default '0' not null,
+                    invoice_paid_date bigint(19),
+                    PRIMARY KEY (order_id),
+                    UNIQUE KEY order_hash (order_hash)
                   ) ENGINE=InnoDB"
                 );
                 if (!$insert) {
@@ -757,9 +768,9 @@ class install
 
                     $insert = $adodb->Execute(
                         "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types (id,type_name,type_description) VALUES
-                        (1,'check_more', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_MORE'),
-                        (2,'check_single', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_SINGLE'),
-                        (3,'select_list', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_SELECT_LIST');"
+                        (1,'check_more', '_SHOP_ITEM_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_MORE'),
+                        (2,'check_single', '_SHOP_ITEM_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_SINGLE'),
+                        (3,'select_list', '_SHOP_ITEM_ADDITIONAL_PARAMS_GROUP_TYPE_SELECT_LIST');"
                     );
 
                     if (!$insert) {
@@ -832,6 +843,134 @@ class install
                     $error_code = $adodb->ErrorNo();
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
+                
+                if ($i == 0) {
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_payment_systems (
+                        id int(11) not null,
+                        system_name varchar(255) not null,
+                        system_class varchar(255) not null,
+                        system_integ_type varchar(255) not null,
+                        system_integ_description varchar(255) not null,
+                        system_version varchar(10) not null,
+                        system_status enum('0','1') not null default '0',
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB"
+                    );
+                    
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_payment_systems"
+                        . " (id,system_name,system_class,system_integ_type,system_integ_description,system_version,system_status) "
+                        . "VALUES (1,'Portmone(acquiring)', 'shop_portmone', 'acquiring_agreement', 'Only when you have acquiring agreement with Portmone', '1.0', '0');"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_portmone_ac_conf (
+                        id int(11) not null auto_increment,
+                        payee_id varchar(255) not null,
+                        login varchar(255) not null,
+                        password varchar(255) not null,
+                        payment_description varchar(255) not null,
+                        log_mode varchar(10) not null,
+                        log_life_days int(5),
+                        error_notify enum('0','1') not null default '0',
+                        error_notify_type varchar(20) not null,
+                        display_error_mode varchar(20) not null,
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB"
+                    );
+                    
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+                    
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_currency_exch (
+                        id bigint(19) not null auto_increment,
+                        from_currency_code varchar(3) not null,
+                        to_currency_code varchar(3) not null,
+                        rate float(13,2) not null,
+                        date_from bigint(19) not null,
+                        date_till bigint(19),
+                        updated_at bigint(19) not null,
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB"
+                    );
+                    
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+                    
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_currencies (
+                        id int(11) not null auto_increment,
+                        currency_code varchar(3) not null,
+                        currency_name varchar(255) not null,
+                        currency_order int(11) not null,
+                        PRIMARY KEY (id)
+                        ) ENGINE=InnoDB"
+                    );
+                    
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_currencies (id,currency_code,currency_name,currency_order) VALUES
+                        (1,'rub', 'ruble', '4'),
+                        (2,'uah', 'hryvnia', '3'),
+                        (3,'usd', 'dollar', '2'),
+                        (4,'eur', 'euro', '1');"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+                }
+                
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_payment_logs_" . $install_lang[$i] . " (
+                    id bigint(19) not null auto_increment,
+                    system_id int(11),
+                    request_url varchar(255),
+                    method varchar(255),
+                    order_number int(11),
+                    request_data mediumtext,
+                    response_data mediumtext,
+                    process_status varchar(255) not null,
+                    error_data mediumtext,
+                    log_date bigint(19) not null,
+                    PRIMARY KEY (id),
+                    KEY log_date(log_date)
+                  ) ENGINE=InnoDB"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+                
                 //shop end
                 // questionnaire start
                 $insert = $adodb->Execute(
@@ -1643,11 +1782,12 @@ class install
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
                 $insert = $adodb->Execute(
-                    "CREATE TABLE " . $data_array['prefix'] . "_pay_" . $install_lang[$i] . " (
-                    pay_id NUMBER(11,0) NOT NULL,
-                    pay_name VARCHAR2(255) NOT NULL,
-                    pay_price NUMBER(15,2) DEFAULT 0.00 NOT NULL,
-                    pay_status NUMBER(1,0) DEFAULT 1 NOT NULL
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_payment_methods_" . $install_lang[$i] . " (
+                    id NUMBER(11,0) NOT NULL,
+                    payment_name VARCHAR2(255) NOT NULL,
+                    payment_commission NUMBER(15,2) DEFAULT 0.00 NOT NULL,
+                    payment_system_id NUMBER(11,0),
+                    payment_status NUMBER(1,0) DEFAULT 1 NOT NULL
                   )"
                 );
                 if (!$insert) {
@@ -1656,8 +1796,8 @@ class install
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
                 $insert = $adodb->Execute(
-                    "ALTER TABLE " . $data_array['prefix'] . "_pay_" . $install_lang[$i] . " ADD (
-                    PRIMARY KEY(pay_id)
+                    "ALTER TABLE " . $data_array['prefix'] . "_s_payment_methods_" . $install_lang[$i] . " ADD (
+                    PRIMARY KEY(id)
                   )"
                 );
                 if (!$insert) {
@@ -1665,8 +1805,11 @@ class install
                     $error_code = $adodb->ErrorNo();
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
+                /**
+                 * we use ..._s_payment_method_... because in oracle sequence name should be no more then 30 symbols and differ from table name
+                 */
                 $insert = $adodb->Execute(
-                    "CREATE SEQUENCE " . $data_array['prefix'] . "_pay_id_" . $install_lang[$i] . "
+                    "CREATE SEQUENCE " . $data_array['prefix'] . "_s_payment_method_" . $install_lang[$i] . "
                     START WITH 1
                     INCREMENT BY 1
                     MINVALUE 1
@@ -1681,9 +1824,9 @@ class install
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
                 $insert = $adodb->Execute(
-                    "INSERT INTO " . $data_array['prefix'] . "_pay_" . $install_lang[$i] . " VALUES (" . $adodb->GenID(
-                        $data_array['prefix'] . "_pay_id_" . $install_lang[$i]
-                    ) . ", 'cash', '0.00', '1')"
+                    "INSERT INTO " . $data_array['prefix'] . "_s_payment_methods_" . $install_lang[$i] . " VALUES (" . $adodb->GenID(
+                        $data_array['prefix'] . "_s_payment_method_" . $install_lang[$i]
+                    ) . ", 'cash', '0.00', NULL, '1')"
                 );
                 if (!$insert) {
                     $error_message = $adodb->ErrorMsg();
@@ -1712,7 +1855,14 @@ class install
                     order_delivery NUMBER(11,0) NOT NULL,
                     order_pay NUMBER(11,0) NOT NULL,
                     order_comments VARCHAR2(255),
-                    order_ip VARCHAR2(45) NOT NULL
+                    order_ip VARCHAR2(45) NOT NULL,
+                    order_hash VARCHAR2(150) NOT NULL,
+                    invoice_date NUMBER(19,0),
+                    invoice_amount NUMBER(15,2),
+                    invoice_currency_code VARCHAR2(3),
+                    invoice_exch_rate NUMBER(15,2),
+                    invoice_paid NUMBER(1,0) DEFAULT 0 NOT NULL,
+                    invoice_paid_date NUMBER(19,0)
                   )"
                 );
                 if (!$insert) {
@@ -1722,7 +1872,8 @@ class install
                 }
                 $insert = $adodb->Execute(
                     "ALTER TABLE " . $data_array['prefix'] . "_orders_" . $install_lang[$i] . " ADD (
-                    PRIMARY KEY(order_id)
+                    PRIMARY KEY(order_id),
+                    UNIQUE (order_hash)
                   )"
                 );
                 if (!$insert) {
@@ -1816,7 +1967,7 @@ class install
 
                     // do not need sequence because type_id using in code to determine question type
                     $insert = $adodb->Execute(
-                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types VALUES (1, 'check_more', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_MORE')"
+                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types VALUES (1, 'check_more', '_SHOP_ITEM_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_MORE')"
                     );
 
                     if (!$insert) {
@@ -1826,7 +1977,7 @@ class install
                     }
 
                     $insert = $adodb->Execute(
-                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types VALUES (2, 'check_single', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_SINGLE')"
+                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types VALUES (2, 'check_single', '_SHOP_ITEM_ADDITIONAL_PARAMS_GROUP_TYPE_CHECK_SINGLE')"
                     );
 
                     if (!$insert) {
@@ -1836,7 +1987,7 @@ class install
                     }
 
                     $insert = $adodb->Execute(
-                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types VALUES (3, 'select_list', '_SHOP_ADDITIONAL_PARAMS_GROUP_TYPE_SELECT_LIST')"
+                        "INSERT INTO " . $data_array['prefix'] . "_s_add_par_g_types VALUES (3, 'select_list', '_SHOP_ITEM_ADDITIONAL_PARAMS_GROUP_TYPE_SELECT_LIST')"
                     );
 
                     if (!$insert) {
@@ -1873,8 +2024,11 @@ class install
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
 
+                /**
+                 * we use ..._s_add_par_group_id_... because in oracle sequence name should be no more then 30 symbols and differ from table name
+                 */
                 $insert = $adodb->Execute(
-                    "CREATE SEQUENCE " . $data_array['prefix'] . "_s_add_par_groups_id_" . $install_lang[$i] . "
+                    "CREATE SEQUENCE " . $data_array['prefix'] . "_s_add_par_group_id_" . $install_lang[$i] . "
                     START WITH 1
                     INCREMENT BY 1
                     MINVALUE 1
@@ -1988,8 +2142,11 @@ class install
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
 
+                /**
+                 * we use .._s_order_i_param_id_.. and not {tablename}_id.. because in oracle sequence name should be no more then 30 symbols and differ from table name
+                 */
                 $insert = $adodb->Execute(
-                    "CREATE SEQUENCE " . $data_array['prefix'] . "_s_order_i_params_id_" . $install_lang[$i] . "
+                    "CREATE SEQUENCE " . $data_array['prefix'] . "_s_order_i_param_id_" . $install_lang[$i] . "
                     START WITH 1
                     INCREMENT BY 1
                     MINVALUE 1
@@ -2004,6 +2161,293 @@ class install
                     $error_code = $adodb->ErrorNo();
                     $error[] = ["code" => $error_code, "message" => $error_message];
                 }
+                
+                if ($i == 0) {
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_payment_systems (
+                        id NUMBER(11,0) NOT NULL,
+                        system_name VARCHAR2(255 CHAR) NOT NULL,
+                        system_class VARCHAR2(255 CHAR) NOT NULL,
+                        system_integ_type VARCHAR2(255 CHAR) NOT NULL,
+                        system_integ_description VARCHAR2(255 CHAR) NOT NULL,
+                        system_version VARCHAR2(10 CHAR) NOT NULL,
+                        system_status NUMBER(1,0) DEFAULT 0 NOT NULL
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "ALTER TABLE " . $data_array['prefix'] . "_s_payment_systems ADD (
+                        PRIMARY KEY(id)
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_payment_systems VALUES ('1',"
+                        . " 'Portmone(acquiring)', 'shop_portmone', 'acquiring_agreement', 'Only when you have acquiring agreement with Portmone', '1.0', '0')"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+                    
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_portmone_ac_conf (
+                        id NUMBER(11,0) NOT NULL,
+                        payee_id VARCHAR2(255 CHAR) NOT NULL,
+                        login VARCHAR2(255 CHAR) NOT NULL,
+                        password VARCHAR2(255 CHAR) NOT NULL,
+                        payment_description VARCHAR2(255 CHAR) NOT NULL,
+                        log_mode VARCHAR2(10 CHAR) NOT NULL,
+                        log_life_days NUMBER(5,0),
+                        error_notify NUMBER(1,0) DEFAULT 0 NOT NULL,
+                        error_notify_type VARCHAR2(20 CHAR) NOT NULL,
+                        display_error_mode VARCHAR2(20 CHAR) NOT NULL
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "ALTER TABLE " . $data_array['prefix'] . "_s_portmone_ac_conf ADD (
+                        PRIMARY KEY(id)
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+                    
+                    $insert = $adodb->Execute(
+                        "CREATE SEQUENCE " . $data_array['prefix'] . "_s_portmone_ac_conf_id
+                        START WITH 1
+                        INCREMENT BY 1
+                        MINVALUE 1
+                        NOCACHE
+                        NOCYCLE
+                        NOORDER
+                      "
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_currency_exch (
+                        id NUMBER(19,0) NOT NULL,
+                        from_currency_code VARCHAR2(3 CHAR) NOT NULL,
+                        to_currency_code VARCHAR2(3 CHAR) NOT NULL,
+                        rate NUMBER(15,2) NOT NULL,
+                        date_from NUMBER(19,0) NOT NULL,
+                        date_till NUMBER(19,0),
+                        updated_at NUMBER(19,0) NOT NULL
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "ALTER TABLE " . $data_array['prefix'] . "_s_currency_exch ADD (
+                        PRIMARY KEY(id)
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "CREATE SEQUENCE " . $data_array['prefix'] . "_s_currency_exch_id
+                        START WITH 1
+                        INCREMENT BY 1
+                        MINVALUE 1
+                        NOCACHE
+                        NOCYCLE
+                        NOORDER
+                      "
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "CREATE TABLE " . $data_array['prefix'] . "_s_currencies (
+                        id NUMBER(11,0) NOT NULL,
+                        currency_code VARCHAR2(3 CHAR) NOT NULL,
+                        currency_name VARCHAR2(255 CHAR) NOT NULL,
+                        currency_order NUMBER(11,0) NOT NULL
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "ALTER TABLE " . $data_array['prefix'] . "_s_currencies ADD (
+                        PRIMARY KEY(id)
+                        )"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "CREATE SEQUENCE " . $data_array['prefix'] . "_s_currencies_id
+                        START WITH 1
+                        INCREMENT BY 1
+                        MINVALUE 1
+                        NOCACHE
+                        NOCYCLE
+                        NOORDER
+                      "
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_currencies VALUES (" . $adodb->GenID($data_array['prefix'] . "_s_currencies_id") . ","
+                        . " 'rub', 'ruble', '4')"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_currencies VALUES (" . $adodb->GenID($data_array['prefix'] . "_s_currencies_id") . ","
+                        . " 'uah', 'hryvnia', '3')"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_currencies VALUES (" . $adodb->GenID($data_array['prefix'] . "_s_currencies_id") . ","
+                        . " 'usd', 'dollar', '2')"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+
+                    $insert = $adodb->Execute(
+                        "INSERT INTO " . $data_array['prefix'] . "_s_currencies VALUES (" . $adodb->GenID($data_array['prefix'] . "_s_currencies_id") . ","
+                        . " 'eur', 'euro', '1')"
+                    );
+
+                    if (!$insert) {
+                        $error_message = $adodb->ErrorMsg();
+                        $error_code = $adodb->ErrorNo();
+                        $error[] = ["code" => $error_code, "message" => $error_message];
+                    }
+                }
+                
+                $insert = $adodb->Execute(
+                    "CREATE TABLE " . $data_array['prefix'] . "_s_payment_logs_" . $install_lang[$i] . " (
+                    id NUMBER(19,0) NOT NULL,
+                    system_id NUMBER(11,0),
+                    request_url VARCHAR2(255 CHAR),
+                    method VARCHAR2(255 CHAR),
+                    order_number NUMBER(11,0),
+                    request_data CLOB,
+                    response_data CLOB,
+                    process_status VARCHAR2(255 CHAR) NOT NULL,
+                    error_data CLOB,
+                    log_date NUMBER(19,0) NOT NULL
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "ALTER TABLE " . $data_array['prefix'] . "_s_payment_logs_" . $install_lang[$i] . " ADD (
+                    PRIMARY KEY(id)
+                    )"
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+                
+                $insert = $adodb->Execute("CREATE INDEX " . $data_array['prefix'] . "_s_payment_logs_" . $install_lang[$i] . "_dt ON " . $data_array['prefix'] . "_s_payment_logs_" . $install_lang[$i] . " (log_date)");
+                
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+
+                $insert = $adodb->Execute(
+                    "CREATE SEQUENCE " . $data_array['prefix'] . "_s_payment_logs_id_" . $install_lang[$i] . "
+                    START WITH 1
+                    INCREMENT BY 1
+                    MINVALUE 1
+                    NOCACHE
+                    NOCYCLE
+                    NOORDER
+                  "
+                );
+
+                if (!$insert) {
+                    $error_message = $adodb->ErrorMsg();
+                    $error_code = $adodb->ErrorNo();
+                    $error[] = ["code" => $error_code, "message" => $error_message];
+                }
+                
                 //shop end
                 // questionnaire start
                 $insert = $adodb->Execute(

@@ -58,6 +58,8 @@ include_once(__SITE_PATH . '/includes/template.class.php');
 include_once(__SITE_PATH . '/includes/db.class.php');
 // Include the mail class
 include_once(__SITE_PATH . '/includes/mail.class.php');
+// Include the exception class
+include_once(__SITE_PATH . '/includes/system_exception.class.php');
 // Load model or controller classes
 function my_autoloader($class)
 {
@@ -76,6 +78,13 @@ function my_autoloader($class)
         // sometimes we need to include non-admin model when we are in admin part
         if (file_exists($filename) == false) {
             $filename = $path_user . '/modules/' . strtolower($class) . '/model_' . strtolower($class) . '.class.php';
+        }
+    }
+    if (file_exists($filename) == false) {
+        $classData = explode('_', strtolower($class), 2);
+        
+        if (!empty($classData[0])) {
+            $filename = $path_user . '/modules/' . $classData[0] . '/model_' . strtolower($class) . '.class.php';
         }
     }
     if (file_exists($filename) == false) {

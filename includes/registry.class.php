@@ -10,6 +10,12 @@
  * @package   SystemDK
  * @version   3.5
  */
+
+/**
+ * Class registry
+ *
+ * @property controller_main $main_class
+ */
 class registry
 {
 

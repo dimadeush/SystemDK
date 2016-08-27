@@ -1,0 +1,55 @@
+<br><br>
+{nocache}
+<center>
+    <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_SHOP_MODULE_INVOICE_CREATED#}</span> <span class="linkbig">{$order_additional_data.invoice_life_time}</span> <span class="textbig">{#_SHOP_MODULE_MINUTES#}.</span><br><br>
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="textbig">{#_SHOP_MODULE_INVOICE_ADDITIONAL_INFO#}</span><br><br>
+    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr bgcolor="{#color8#}">
+            <td height="17"> <img src="/{$system_dir}{#bgimage18#}" alt=""> <span class="tablecenterblocktext"><u>{#_SHOP_MODULE_INVOICE_INFORMATION#}</u></span></td>
+        </tr>
+    </table>
+    <br>
+    <table border="0" cellspacing="2"  cellpadding="0" width="50%">
+        <tr align="left">
+            <td bgcolor="{#color7#}" class="td1" width="10%" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_MODULE_ORDER_NUMBER#}:</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap><span class="formentername">{$payment_form_data.shop_order_number}</span></td>
+        </tr>
+        <tr align="left">
+            <td bgcolor="{#color7#}" class="td1" width="10%" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_MODULE_SHIPNAME#}:</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap><span class="formentername">{$order_additional_data.order_ship_name}</span></td>
+        </tr>
+        <tr align="left">
+            <td bgcolor="{#color7#}" class="td1" width="10%" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_MODULE_SHIPDELIVERYMETHOD#}:</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap><span class="formentername">{$order_additional_data.order_delivery_name} ({$order_additional_data.order_delivery_amount} {$order_additional_data.shop_currency_code})</span></td>
+        </tr>
+        <tr align="left">
+            <td bgcolor="{#color7#}" class="td1" width="10%" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_MODULE_SHIPPAYMETHOD#}:</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap><span class="formentername">{$order_additional_data.order_payment_name} ({$order_additional_data.order_payment_commission} %)</span></td>
+        </tr>
+        <tr align="left">
+            <td bgcolor="{#color7#}" class="td1" width="10%" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_MODULE_ORDER_AMOUNT#}:</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap><span class="formentername">{$order_additional_data.order_amount} {$order_additional_data.shop_currency_code}</span></td>
+        </tr>
+        {if $order_additional_data.invoice_currency_code ne $order_additional_data.shop_currency_code}
+        <tr align="left">
+            <td bgcolor="{#color7#}" class="td1" width="10%" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_MODULE_EXCHANGE_RATE#}:</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap><span class="formentername">{$order_additional_data.invoice_exchange_rate}</span></td>
+        </tr>
+        {/if}
+        <tr align="left">
+            <td bgcolor="{#color7#}" class="td1" width="10%" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_MODULE_PAYMENT_AMOUNT#}:</span></td><td bgcolor="{#color7#}" class="td2" width = "90%" nowrap><span class="formentername">{$order_additional_data.invoice_amount} {$order_additional_data.invoice_currency_code} {if $order_additional_data.invoice_currency_code ne $order_additional_data.shop_currency_code}(({$order_additional_data.order_amount} {$order_additional_data.shop_currency_code} + {$order_additional_data.order_delivery_amount} {$order_additional_data.shop_currency_code}) * {$order_additional_data.invoice_exchange_rate} + {$order_additional_data.order_payment_commission} %){/if}</span></td>
+        </tr>
+        <tr align="left">
+            <td bgcolor="{#color7#}" class="td1" width="10%" nowrap><img src="/{$system_dir}{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_MODULE_PAYMENT_DESCRIPTON#}:</span></td><td bgcolor="{#color7#}" class="td2" width = "90%"><span class="formentername">{$payment_form_data.description}</span></td>
+        </tr>
+    </table>
+    {include 'modules/shop/shop_terms_and_conditions.html' disable_pipe='yes'}
+    <br>
+    <br>
+    <form action="https://www.portmone.com.ua/gateway/" method="post">
+        <input type="hidden" name="payee_id" value="{$payment_form_data.payee_id}">
+        <input type="hidden" name="shop_order_number" value="{$payment_form_data.shop_order_number}">
+        <input type="hidden" name="bill_amount" value="{$payment_form_data.bill_amount}">
+        <input type="hidden" name="description" value="{$payment_form_data.description}">
+        <input type="hidden" name="success_url" value="{$payment_form_data.success_url}">
+        <input type="hidden" name="failure_url" value="{$payment_form_data.failure_url}">
+        <input type="hidden" name="lang" value="{$language}">
+        <input type="hidden" name="encoding" value="{$site_charset}">
+        <input type="submit" value="{#_SHOP_MODULE_PAY_BUTTON#}" class="button">
+    </form>
+</center>
+{/nocache}

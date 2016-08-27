@@ -502,7 +502,7 @@ class model_main extends model_base
     }
 
 
-    private function generate_code($length)
+    public function generate_code($length)
     {
         $chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPRQSTUVWXYZ0123456789";
         $code = "";
@@ -582,6 +582,22 @@ class model_main extends model_base
     public function getSiteUrl()
     {
         return SITE_URL . "/" . SITE_DIR;
+    }
+
+
+    public function getSiteName()
+    {
+        return SITE_NAME;
+    }
+
+
+    public function getModeRewrite()
+    {
+        if (SYSTEMDK_MODREWRITE == 'yes') {
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -752,6 +768,33 @@ class model_main extends model_base
     public function set_locale()
     {
         setlocale(LC_ALL, 'ru_RU.UTF-8');
+    }
+
+
+    /**
+     * @param float $value
+     * @param int   $precision
+     * @param int   $mode
+     *
+     * @return float
+     */
+    public function round($value, $precision = 2, $mode = PHP_ROUND_HALF_UP)
+    {
+        return round($value, $precision, $mode);
+    }
+
+
+    /**
+     * @param float  $number
+     * @param int    $decimals
+     * @param string $decPoint
+     * @param string $thousandsSep
+     *
+     * @return number
+     */
+    public function number_format($number, $decimals = 2, $decPoint = '.', $thousandsSep = ' ')
+    {
+        return number_format($number, $decimals, $decPoint, $thousandsSep);
     }
 
 

@@ -18,6 +18,21 @@
 <tr align="left">
 <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{if $adminmodules_shop_method eq "deliv"}{#_SHOPITEMPRICE#}{else}{#_SHOPCOMMISSION#} (%){/if}:</span></td><td bgcolor="{#color7#}" class="td2"><input type="text" name="item_price" value="{$item_all_tpl.item_price}" size="20" maxlength="13" class="formenter">&nbsp;</td>
 </tr>
+{if $adminmodules_shop_method eq "pay"}
+    <tr align="left">
+        <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_PAYMENT_SYSTEM#}:</span></td>
+        <td bgcolor="{#color7#}" class="td2">
+            <select name="payment_system_id" class="formenter">
+                <option value="0" {if $item_all_tpl.payment_system_id eq 0} selected {/if}>{#_SHOP_WITHOUT_PAYMENT_SYSTEM#}</option>
+                {if $payment_systems ne "no_data"}
+                    {foreach $payment_systems as $payment_systems_data}
+                        <option value="{$payment_systems_data.id}" {if $item_all_tpl.payment_system_id eq $payment_systems_data.id} selected {/if}>{$payment_systems_data.system_name}</option>
+                    {/foreach}
+                {/if}
+            </select>
+        </td>
+    </tr>
+{/if}
 <tr align="left">
 <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPSTATUSTITLE#}:</span></td><td bgcolor="{#color7#}" class="td2"><select name="item_status" class="formenter"> <option value="1" {if $item_all_tpl.item_status eq 1} selected {/if}>{#_SHOPITEMON#}</option><option value="0" {if $item_all_tpl.item_status eq 0} selected {/if}>{#_SHOPITEMOFF#}</option></select></td>
 </tr>

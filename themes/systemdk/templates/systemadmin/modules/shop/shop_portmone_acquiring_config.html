@@ -1,0 +1,84 @@
+{#_SHOP#}</span></center>
+</div>
+<br>
+<center>
+<a href="index.php?path=admin_shop&amp;func=index&amp;lang={$site_language}" class="link">{#_SHOP#}</a> 
+<span class="tablecenterblocktext2">|</span>
+<a href="index.php?path=admin_shop&amp;func=payment_systems&amp;lang={$site_language}" class="link">{#_SHOP_PAYMENT_SYSTEMS#}</a>
+<br><br><br>
+<img src="../{#bgimage18#}" border="0" alt=""> <span class="title">{#_SHOP_PORTMONE_ACQUIRING_CONFIG#}</span><br><br>
+<form action="index.php?path=admin_shop&amp;func=portmone_acq_conf_save&amp;lang={$site_language}" method="POST">
+<table border="0" cellspacing="2"  cellpadding="0">
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_PORTMONE_PAYEE_ID#}:</span> <span class="errorsmall">*</span></td>
+    <td bgcolor="{#color7#}" class="td2"><input type="text" name="portmone_payee_id" value="{$portmone_payee_id}" size="20" maxlength="11" class="formenter"></td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_PAYMENT_SYSTEM_LOGIN#}:</span> <span class="errorsmall">*</span></td>
+    <td bgcolor="{#color7#}" class="td2"><input type="text" name="portmone_login" value="{$portmone_login}" size="20" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_PAYMENT_SYSTEM_PASSWORD#}:</span> <span class="errorsmall">*</span></td>
+    <td bgcolor="{#color7#}" class="td2"><input type="text" name="portmone_password" value="{$portmone_password}" size="20" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_PAYMENT_DESCRIPTION#}:</span> <span class="errorsmall">*</span> <span class="errorsmall">**</span></td>
+    <td bgcolor="{#color7#}" class="td2"><input type="text" name="portmone_payment_description" value="{$portmone_payment_description}" size="50" maxlength="255" class="formenter"></td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_LOG_MODE#}:</span></td>
+    <td bgcolor="{#color7#}" class="td2">
+        <select name="portmone_log_mode" class="formenter">
+        <option value="all" {if $portmone_log_mode eq 'all'} selected {/if}>{#_SHOP_LOG_ALL#}</option>
+        <option value="errors" {if $portmone_log_mode eq 'errors'} selected {/if}>{#_SHOP_LOG_ERRORS#}</option>
+        <option value="off" {if $portmone_log_mode eq 'off'} selected {/if}>{#_SHOP_LOG_OFF#}</option>
+        </select>
+    </td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_LOG_LIFE_DAYS#}:</span> </td>
+    <td bgcolor="{#color7#}" class="td2"><input type="text" name="portmone_log_life_days" value="{$portmone_log_life_days}" size="10" maxlength="5" class="formenter"></td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_ERROR_NOTIFY#}:</span></td>
+    <td bgcolor="{#color7#}" class="td2">
+        <select name="portmone_error_notify" class="formenter">
+            <option value="1" {if $portmone_error_notify eq 1} selected {/if}>{#_SHOPITEMON#}</option>
+            <option value="0" {if $portmone_error_notify eq 0} selected {/if}>{#_SHOPITEMOFF#}</option>
+        </select>
+    </td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_ERROR_NOTIFY_TYPE#}:</span></td>
+    <td bgcolor="{#color7#}" class="td2">
+        <select name="portmone_error_notify_type" class="formenter">
+            <option value="admin" {if $portmone_error_notify_type eq 'admin'} selected {/if}>{#_SHOP_NOTIFY_ORDER_TYPE_ADMIN#}</option>
+            <option value="order_notify" {if $portmone_error_notify_type eq 'order_notify'} selected {/if}>{#_SHOP_ERROR_NOTIFY_TO_ORDER_NOTIFY_MAILBOX#}</option>
+        </select>
+    </td>
+</tr>
+<tr align="left">
+    <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_DISPLAY_ERROR_MODE#}:</span></td>
+    <td bgcolor="{#color7#}" class="td2">
+        <select name="portmone_display_error_mode" class="formenter">
+            <option value="minimum" {if $portmone_display_error_mode eq 'minimum'} selected {/if}>{#_SHOP_DISPLAY_ERROR_MINIMUM#}</option>
+            <option value="normal" {if $portmone_display_error_mode eq 'normal'} selected {/if}>{#_SHOP_DISPLAY_ERROR_NORMAL#}</option>
+            <option value="debug" {if $portmone_display_error_mode eq 'debug'} selected {/if}>{#_SHOP_DISPLAY_ERROR_DEBUG#}</option>
+        </select>
+    </td>
+</tr>
+<tr>
+    <td colspan="2" align="center"><br><input type="submit" value="{#_SHOPBUTTONSAVE#}" class="button"></td>
+</tr>
+</table>
+</form>
+<br>
+<table border="0" width="99%" cellspacing="0"  cellpadding="0">
+<tr>
+    <td align="left"><img src="../{#bgimage16#}" border="0" alt=""> <span class="text">{#_NOTES#}{#_NOTES1#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_NOTES2#}</span></td>
+</tr>
+<tr>
+    <td align="left"><img src="../{#bgimage16#}" border="0" alt=""> <span class="text">{#_NOTES#}</span><span class="errorsmall">**</span>&nbsp;<span class="text">{#_SHOP_PORTMONE_PAYMENT_DESCRIPTION#}</span></td>
+</tr>
+</table>
+</center><br><br>

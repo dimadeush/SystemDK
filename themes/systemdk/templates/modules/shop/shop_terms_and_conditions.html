@@ -1,0 +1,30 @@
+{if isset($shop_terms_and_conditions_data)}
+    <div id="shop_terms_and_conditions" style="background-color: #FFFFFF" title="{$shop_terms_and_conditions_data.title}">
+        {$shop_terms_and_conditions_data.content}
+    </div>
+
+    {if !isset($disable_pipe)}|{/if} <a href="#" id="shop_terms_and_conditions_opener" class="link">{$shop_terms_and_conditions_data.title}</a>
+
+    <script type="text/javascript">
+        $(function () {
+            $("#shop_terms_and_conditions").dialog({
+                autoOpen: false,
+                show: {
+                    effect: "blind",
+                    duration: 1000
+                },
+                hide: {
+                    effect: "fade",
+                    duration: 1000
+                },
+                height: "auto",
+                maxHeight: 500,
+                width: 500
+            });
+
+            $("#shop_terms_and_conditions_opener").on("click", function () {
+                $("#shop_terms_and_conditions").dialog("open");
+            });
+        });
+    </script>
+{/if}

@@ -55,6 +55,9 @@ RewriteRule ^([^/]+)/shop/subcategs/([0-9]+)/([0-9]+)/page/([0-9]+)(/?)+$ index.
 RewriteRule ^([^/]+)/shop/items/cat/([0-9]+)/categ/([0-9]+)/subcateg/([0-9]+)(/?)+$ index.php?path=shop&func=items&cat_id=$2&categ_id=$3&subcateg_id=$4&lang=$1 [L]
 RewriteRule ^([^/]+)/shop/items/cat/([0-9]+)/categ/([0-9]+)/subcateg/([0-9]+)/page/([0-9]+)(/?)+$ index.php?path=shop&func=items&cat_id=$2&categ_id=$3&subcateg_id=$4&num_page=$5&lang=$1 [L]
 RewriteRule ^([^/]+)/shop/page/([0-9]+)(/?)+$ index.php?path=shop&num_page=$2&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/pay_online/([0-9]+)/([^/]+)(/?)+$ index.php?path=shop&func=pay_online&order_id=$2&hash=$3&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/pay_done/([0-9]+)/([^/]+)(/?)+$ index.php?path=shop&func=pay_done&order_id=$2&hash=$3&lang=$1 [L]
+RewriteRule ^([^/]+)/shop/pay_error/([0-9]+)/([^/]+)(/?)+$ index.php?path=shop&func=pay_error&order_id=$2&hash=$3&lang=$1 [L]
 RewriteCond %{REQUEST_URI} !/modules/shop
 RewriteCond %{REQUEST_URI} !/userfiles/shop
 RewriteRule ^([^/]+)/shop/([^/]+)(/?)+$ index.php?path=shop&func=$2&lang=$1 [L]

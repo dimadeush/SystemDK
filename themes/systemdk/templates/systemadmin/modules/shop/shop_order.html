@@ -19,10 +19,10 @@
 <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPORDERENDDATE#}:</span> </td><td bgcolor="{#color7#}" class="td2">{if $adminmodules_shop_orderedit eq "edit"}<input type="date" name="ship_date" {if $order_all_tpl.ship_date ne "no"}value="{$order_all_tpl.ship_date}"{/if} maxlength="10" class="formenter">&nbsp;<input type="text" name="ship_hour" {if $order_all_tpl.ship_hour ne "no"}value="{$order_all_tpl.ship_hour}"{/if} maxlength="2" size="4" class="formenter"><span class="tablecenterblocktext2">{#_SHOPHOURS#}</span>&nbsp;<input type="text" name="ship_minute" {if $order_all_tpl.ship_minute ne "no"}value="{$order_all_tpl.ship_minute}"{/if} maxlength="2" size="4" class="formenter"><span class="tablecenterblocktext2">{#_SHOPMINUTES#}</span>{else}{if $order_all_tpl.ship_date ne "no" and $order_all_tpl.ship_hour ne "no" and $order_all_tpl.ship_minute ne "no"}<span class="tablecenterblocktext2">{$order_all_tpl.ship_date} {$order_all_tpl.ship_hour}:{$order_all_tpl.ship_minute}</span>{/if}{/if}</td>
 </tr>
 <tr align="left">
-<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPORDERAMOUNT#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{$order_all_tpl.order_amount}  ({#_SHOPORDERPRICEWITHOUTDELIVPAY#})</span> </td>
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPORDERAMOUNT#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{$order_all_tpl.order_amount} {$shop_currency} ({#_SHOPORDERPRICEWITHOUTDELIVPAY#})</span> </td>
 </tr>
 <tr align="left">
-<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPORDERTOTALPRICE#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{$order_all_tpl.order_amount2}</span> </td>
+<td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPORDERTOTALPRICE#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{$order_all_tpl.order_amount2} {$shop_currency}</span> </td>
 </tr>
 <tr align="left">
 <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPSTATUSTITLE#}:</span> </td>
@@ -82,7 +82,7 @@
 <td bgcolor="{#color7#}" class="td2">
 <select name="order_delivery" {if $adminmodules_shop_orderedit ne "edit"}disabled{/if} class="formenter">
 {foreach $delivery_all as $delivery_all_tpl}
-  <option value="{$delivery_all_tpl.delivery_id}" {if $order_all_tpl.order_delivery eq $delivery_all_tpl.delivery_id} selected {/if}>{$delivery_all_tpl.delivery_name} {if $delivery_all_tpl.delivery_price > 0}({#_SHOPITEMPRICE#} {$delivery_all_tpl.delivery_price}){/if}</option>
+  <option value="{$delivery_all_tpl.delivery_id}" {if $order_all_tpl.order_delivery eq $delivery_all_tpl.delivery_id} selected {/if}>{$delivery_all_tpl.delivery_name} {if $delivery_all_tpl.delivery_price > 0}({#_SHOPITEMPRICE#} {$delivery_all_tpl.delivery_price} {$shop_currency}){/if}</option>
 {/foreach}
 </select>
 </td>
@@ -103,6 +103,31 @@
 <tr align="left">
 <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOPORDERIPADDRESS#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{$order_all_tpl.order_ip}</span></td>
 </tr>
+{if isset($payment_system_data)}
+    <tr align="left">
+        <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_HASH#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{$order_all_tpl.order_hash}</span></td>
+    </tr>
+    <tr align="left">
+        <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_INVOICE_DATE#}:</span> </td><td bgcolor="{#color7#}" class="td2">{if $order_all_tpl.invoice_date ne 0}<span class="tablecenterblocktext2">{$order_all_tpl.invoice_date}</span>{/if}</td>
+    </tr>
+    <tr align="left">
+        <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_INVOICE_AMOUNT#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{if $order_all_tpl.invoice_amount gt 0}{$order_all_tpl.invoice_amount} {$order_all_tpl.invoice_currency_code}{/if} [</span> <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/pay_online/{$order_all_tpl.order_id}/{$order_all_tpl.order_hash}{else}{$system_dir}index.php?path=shop&amp;func=pay_online&amp;order_id={$order_all_tpl.order_id}&amp;hash={$order_all_tpl.order_hash}&amp;lang={$site_language}{/if}" target="_blank" class="link">{#_SHOP_ORDER_INVOICE_GENERATE#}</a> <span class="tablecenterblocktext2">]</span></td>
+    </tr>
+    <tr align="left">
+        <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_INVOICE_CURRENCY#}:</span> </td><td bgcolor="{#color7#}" class="td2">{if !empty($order_all_tpl.invoice_currency_code)}<span class="tablecenterblocktext2">{$order_all_tpl.invoice_currency_code}</span>{/if}</td>
+    </tr>
+    {if $shop_currency ne $order_all_tpl.invoice_currency_code}
+        <tr align="left">
+            <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_INVOICE_EXCHANGE_RATE#}:</span> </td><td bgcolor="{#color7#}" class="td2">{if $order_all_tpl.invoice_exch_rate gt 0}<span class="tablecenterblocktext2">{$order_all_tpl.invoice_exch_rate} ({$shop_currency} -> {$order_all_tpl.invoice_currency_code})</span>{/if}</td>
+        </tr>
+    {/if}
+    <tr align="left">
+        <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_INVOICE_PAID_STATUS#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{if $order_all_tpl.invoice_paid eq 1}{#_SHOP_ORDER_PAID#}{else}{#_SHOP_ORDER_NOT_PAID#}{/if}</span></td>
+    </tr>
+    <tr align="left">
+        <td bgcolor="{#color7#}" class="td1"><img src="../{#bgimage15#}" border="0" alt="">&nbsp;<span class="formentername">{#_SHOP_INVOICE_PAID_DATE#}:</span> </td><td bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{if $order_all_tpl.invoice_paid_date ne 0}{$order_all_tpl.invoice_paid_date}{else}{#_SHOP_ORDER_NOT_PAID#}{/if}</span></td>
+    </tr>
+{/if}
 </table>
 <br><br>
 <input type="submit" value="{#_SHOPBUTTONSAVE#}" class="button">
@@ -139,7 +164,7 @@
     {/if}
     </span>
 </td>
-<td width="15%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$order_items_all_tpl.order_item_price}</span></td>
+<td width="15%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$order_items_all_tpl.order_item_price} {$shop_currency}</span></td>
 <td width="15%" bgcolor="{#color7#}" class="td2" align="center" nowrap><span class="tablecenterblocktext2">{$order_items_all_tpl.order_item_quantity}</span></td>
 <td width="20%" bgcolor="{#color7#}" class="td2" nowrap><a href="index.php?path=admin_shop&amp;func=shop_orderi_edit&amp;order_id={$order_all_tpl.order_id}&amp;item_id={$order_items_all_tpl.order_item_id}&amp;lang={$site_language}" class="link">{#_SHOPFUNCTIONEDIT#}</a>{if $adminmodules_shop_orderedit eq "edit"}<span class="tablecenterblocktext2">|</span><a href="index.php?path=admin_shop&amp;func=shop_order_status&amp;action=delete2&amp;item_id={$order_items_all_tpl.order_item_id}&amp;lang={$site_language}" class="link">{#_SHOPFUNCTIONDELETE#}</a>{/if}</td>
 </tr>

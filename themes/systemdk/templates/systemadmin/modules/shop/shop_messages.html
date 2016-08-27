@@ -232,5 +232,46 @@
     {/if}
     </span><br><br>
     <a href="index.php?path=admin_shop&amp;func=additional_param_group_params&amp;group_id={nocache}{$item_additional_params_group_id}{/nocache}&amp;lang={$site_language}" class="link">{#_SHOP_ITEM_ADDITIONAL_PARAMS#}</a>
+{elseif $shop_message eq "portmone_acq_config_done"}
+    <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">{#_SHOPCONFIGWRITEOK#}</span><br><br>
+    <a href="index.php?path=admin_shop&amp;func=payment_systems&amp;lang={$site_language}" class="link">{#_SHOP_PAYMENT_SYSTEMS#}</a>
+{elseif $shop_message eq "currencies_not_found"}
+    <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOP_CURRENCIES_NOT_FOUND#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "rate_not_found"}
+    <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOP_EXCHANGE_RATE_NOT_FOUND#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "exchange_rate_added" || $shop_message eq "exchange_rate_edited" || $shop_message eq "exchange_rates_deleted"}
+    <img src="../{#bgimage29#}" border="0" alt="">&nbsp;<span class="textbig">
+    {if $shop_message eq "exchange_rate_added"}
+        {#_SHOP_EXCHANGE_RATE_ADDED#}
+    {elseif $shop_message eq "exchange_rate_edited"}
+        {#_SHOP_EXCHANGE_RATE_EDITED#}
+    {else}
+        {#_SHOP_EXCHANGE_RATE_DELETED#}
+    {/if}
+    </span><br><br>
+    <a href="index.php?path=admin_shop&amp;func=exchange_rates&amp;lang={$site_language}" class="link">{#_SHOP_EXCHANGE_RATES#}</a>
+{elseif $shop_message eq "incorrect_dates"}
+    <img src="../{#bgimage26#}" border="0" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br><span class="textbig">{#_SHOP_ERROR_DATES#}</span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "rate_exist"}
+    <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br><span class="textbig">{#_SHOP_EXCHANGE_RATE_EXIST#}</span><br><br>
+    <a href="javascript:history.go(-1)" class="link">{#_ADMINGOBACK#}</a>
+{elseif $shop_message eq "rate_confirm_delete"}
+    <img src="../{#bgimage28#}" border="0" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">
+        {#_SHOP_EXCHANGE_RATE_DELETE_CONFIRM#}?:</span> <span class="link">{nocache}{$total_rates}{/nocache}</span><br><br>
+        <form action="index.php?path=admin_shop&amp;func=exchange_rates_status&amp;lang={$site_language}" method="POST">
+            <input type="hidden" name="action" value="delete">
+            {nocache}
+                {foreach $delete_rates_ids as $rate_id}
+                    <input type="hidden" name="rate_id[]" value="{$rate_id}">
+                {/foreach}
+            {/nocache}
+            <input type="submit" value="{#_SHOPBUTTONDONE#}" class="button">
+        </form>
+    <br><br>
+    <a href="javascript:history.back(1)" class="link">{#_ADMINGOBACK#}</a>
 {/if}
 </center>

@@ -76,6 +76,78 @@
 {/nocache}
 <br><br>
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/{else}/{$system_dir}index.php?path=shop&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_MAINPAGETITLE#}</a>
+{elseif $shop_message eq "pay_empty_data" || $shop_message eq "pay_order_not_found" || $shop_message eq "order_can_not_be_paid" || $shop_message eq "payment_system_not_found"}
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">
+        {if $shop_message eq "pay_empty_data"}
+            {#_SHOP_MODULE_INCORRECT_ORDER_DATA#}
+        {elseif $shop_message eq "pay_order_not_found"}
+            {#_SHOP_MODULE_ORDER_NOT_FOUND#}
+        {elseif $shop_message eq "order_can_not_be_paid"}
+            {#_SHOP_MODULE_ORDER_CAN_NOT_BE_PAID#}
+        {elseif $shop_message eq "payment_system_not_found"}
+            {#_SHOP_MODULE_PAYMENT_SYSTEM_NOT_FOUND#}
+        {/if}
+    </span><br><br>
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $shop_message eq "system_error" || $shop_message eq "create_invoice_error"}
+    <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
+    <span class="textbig">{#_SYSTEMERROR#}</span><br><br>
+    {nocache}
+        {if isset($errortext) && $errortext ne "no"}
+            {foreach $errortext as $errortext_tpl}
+                {if $errortext_tpl.message ne ""}
+                    <span class="errorsmall">{$errortext_tpl.message}
+                        {if $errortext_tpl.code ne ""}
+                            <br>code:{$errortext_tpl.code}
+                        {/if}
+                    </span><br>
+                {/if}
+            {/foreach}
+            <br>
+        {/if}
+    {/nocache}
+    <a href="javascript:history.back(1)" class="link">{#_GOBACK#}</a>
+{elseif $shop_message eq "paid_empty_data" || $shop_message eq "paid_system_error" || $shop_message eq "paid_order_not_found" || $shop_message eq "invoice_not_actual" || $shop_message eq "order_not_payable" || $shop_message eq "paid_payment_system_not_found" || $shop_message eq "paid_check_payment_error" || $shop_message eq "not_paid_or_incorrect_amount"}
+    <img src="/{$system_dir}{#bgimage28#}" alt="">&nbsp;<span class="messagebig">{#_SYSTEM_MESSAGE#}</span><br><br>
+    <span class="textbig">
+        {if $shop_message eq "not_paid_or_incorrect_amount"}
+            {#_SHOP_MODULE_ORDER_PAID_BUT_NEED_CHECK#}
+        {else}
+            {#_SHOP_MODULE_ORDER_PAID_WITH_ERROR#}
+        {/if}
+    </span>
+    <br><br>
+    <span class="errorbig">
+    {if $shop_message eq "paid_empty_data"}
+        {#_SHOP_MODULE_EMPTY_ORDER_DATA#}
+    {elseif $shop_message eq "paid_system_error"}
+        {#_SHOP_MODULE_CAN_NOT_GET_ORDER_DATA#}
+    {elseif $shop_message eq "paid_order_not_found"}
+        {#_SHOP_MODULE_ORDER_NOT_FOUND#}
+    {elseif $shop_message eq "invoice_not_actual"}
+        {#_SHOP_MODULE_INVOICE_NOT_ACTUAL#}
+    {elseif $shop_message eq "order_not_payable"}
+        {#_SHOP_MODULE_ORDER_CAN_NOT_BE_PAID#}
+    {elseif $shop_message eq "paid_payment_system_not_found"}
+        {#_SHOP_MODULE_PAYMENT_SYSTEM_NOT_FOUND#}
+    {elseif $shop_message eq "paid_check_payment_error"}
+        {#_SHOP_MODULE_ORDER_CHECK_PAYMENT_ERROR#}
+    {elseif $shop_message eq "not_paid_or_incorrect_amount"}
+        {#_SHOP_MODULE_ORDER_NOT_PAID_OR_INCORRECT_AMOUNT#}
+    {/if}
+    </span>
+    <br><br>
+    <span class="textbig">{#_SHOP_MODULE_ORDER_PAID_ERROR_NOTES#}</span>
+    <br><br>
+    <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/{else}/{$system_dir}index.php?path=shop&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_MAINPAGETITLE#}</a>
+{elseif $shop_message eq "order_paid"}
+    <img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_SHOP_MODULE_ORDER_PAID#}</span><br><br>
+    <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/{else}/{$system_dir}index.php?path=shop&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_MAINPAGETITLE#}</a>
+{elseif $shop_message eq "external_payment_error"}
+    <img src="/{$system_dir}{#bgimage26#}" alt="">&nbsp;<span class="errorbig">{#_SYSTEM_ERROR#}</span><br><br>
+    <span class="textbig">{#_SHOP_MODULE_EXTERNAL_PAYMENT_ERROR#}</span><br><br>
+    <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/{else}/{$system_dir}index.php?path=shop&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_MAINPAGETITLE#}</a>
 {/if}
 </center>
 <br><br>

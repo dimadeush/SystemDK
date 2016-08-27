@@ -9,7 +9,7 @@
 <form action="index.php?path=admin_shop&amp;func=shop_order_status&amp;lang={$site_language}" method="POST">
 <table border="0" width="99%" cellspacing="2"  cellpadding="0">
 <tr align="center">
-<td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPNAMETITLE#}</span></td><td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{if $adminmodules_shop_method eq "delivs"}{#_SHOPITEMPRICE#}{else}{#_SHOPCOMMISSION#}{/if}</span></td><td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPSTATUSTITLE#}</span><td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPFUNCTIONTITLE#}</span></td>
+<td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="1%" bgcolor="{#color7#}" class="td2"></td><td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPNAMETITLE#}</span></td><td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{if $adminmodules_shop_method eq "delivs"}{#_SHOPITEMPRICE#}{else}{#_SHOPCOMMISSION#}{/if}</span></td><td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPSTATUSTITLE#}</span></td><td width="24%" bgcolor="{#color7#}" class="td2"><span class="tablecenterblocktext2">{#_SHOPFUNCTIONTITLE#}</span></td>
 </tr>
 {if $items_all ne "no"}
 {foreach $items_all as $items_all_tpl}

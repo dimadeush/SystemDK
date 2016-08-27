@@ -24,7 +24,7 @@ function image_reload()
     <td align="center" width = "45%"><span class="formentername">{#_SHOP_MODULE_ITEMTITLE#}</span></td>
     <td align="center" width = "5%"><span class="formentername">{#_SHOP_MODULE_ITEMAVAILABLE#}</span></td>
     <td align="center" width = "5%"><span class="formentername">{#_SHOP_MODULE_ITEMPRICE#}</span></td>
-    <td align="center" width = "20%"><span class="formentername">{#_SHOP_MODULE_ITEM_ADDITIONAL_PARAMS#}<span class="errorsmall">*</span></span></td>
+    <td align="center" width = "20%"><span class="formentername">{#_SHOP_MODULE_ITEM_ADDITIONAL_PARAMS#}</span>{if $shop_cart_allowchange eq 1}<span class="errorsmall">*</span>{/if}</td>
     <td align="center" width = "2%"><span class="formentername">{#_SHOP_MODULE_ITEMQTY#}</span></td>
     <td align="center" width = "23%"><span class="formentername">{#_SHOP_MODULE_ITEMTOTAL#}</span></td>
   </tr>
@@ -40,7 +40,7 @@ function image_reload()
         {if !empty($shop_cart_display_items_tpl.selected_additional_params)}
             <span class="text">(
             {foreach $shop_cart_display_items_tpl.selected_additional_params as $selected_additional_params_tpl}
-                №-{$selected_additional_params_tpl@iteration}[
+                №{$selected_additional_params_tpl@iteration}[
                     {foreach $selected_additional_params_tpl as $selected_additional_params_group}
                         {$selected_additional_params_group.group_name}:
                         {foreach $selected_additional_params_group.group_data as $item_param}
@@ -58,7 +58,7 @@ function image_reload()
         {if !empty($shop_cart_display_items_tpl.item_additional_params) }
             {include 'modules/shop/shop_additional_params.html' additional_params=$shop_cart_display_items_tpl.item_additional_params item_id=$shop_cart_display_items_tpl.item_id shop_cart_allowchange=$shop_cart_allowchange}
         {else}
-            {#_SHOP_MODULE_ITEMQUANTITYNO#}
+            {#_SHOP_MODULE_ITEM_ADDITIONAL_PARAMS_NOT_AVAILABLE#}
         {/if}
     </td>
     <td width = "2%" align="center" nowrap> {if $shop_cart_allowchange eq 1}<input type="text" name="{$shop_cart_display_items_tpl.item_id}" value="{$shop_cart_display_items_tpl.item_qty}" size="3">{else}<span class="textbig">{$shop_cart_display_items_tpl.item_qty}</span>{/if}</td>
@@ -78,9 +78,9 @@ function image_reload()
    <td height="17" colspan="6"> </td><td width = "25%" align="left"><span class="text">{#_SHOP_MODULE_SHIPPAYMETHOD#}: {$shop_final_pay_name} {if $shop_final_pay_price > 0}({#_SHOP_MODULE_COMISSION#}</span> <span class="textbig">{$shop_final_pay_price}</span> <span class="text">%){/if}</span></td>
   </tr>
   {/if}
-  {if isset($shop_final_delivery_name) and isset($shop_final_delivery_price)}
+  {if isset($shop_supposed_invoice_amount)}
   <tr bgcolor="{#color8#}">
-   <td height="17" colspan="6"> </td><td width = "25%" align="center" nowrap><span class="formentername"><b>{#_SHOP_MODULE_FINALPRICE#}: {(($shop_carttotal_price|replace:' ':''+$shop_final_delivery_price|replace:' ':''+(($shop_carttotal_price|replace:' ':''*$shop_final_pay_price|replace:' ':'')/100))|string_format:"%.2f")|number_format:2:".":" "}</b></span> <span class="tablecenterblocktext2">{$systemdk_shop_valuta}</span></td>
+   <td height="17" colspan="6"> </td><td width = "25%" align="center" nowrap><span class="formentername"><b>{#_SHOP_MODULE_FINALPRICE#}: {$shop_supposed_invoice_amount}</b></span> <span class="tablecenterblocktext2">{$systemdk_shop_valuta}</span></td>
   </tr>
   {/if}
  </table>
@@ -90,6 +90,7 @@ function image_reload()
    </form>
    <br>
    <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/checkout/{else}/{$system_dir}index.php?path=shop&amp;func=checkout&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_PROCESSORDER#}</a> | <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/{else}/{$system_dir}index.php?path=shop&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_CONTINUE#}</a>
+     {include 'modules/shop/shop_terms_and_conditions.html'}
     <table border="0" width="99%" cellspacing="0"  cellpadding="0"><tr><td align="left"><img src="/{$system_dir}{#bgimage16#}" border="0" alt=""><span class="text">{#_NOTES#}</span>&nbsp;<span class="errorsmall">*</span>&nbsp;<span class="text">{#_SHOP_MODULE_ITEM_ADDITIONAL_PARAMS_NOTES_IN_CART#}</span></td></tr></table>
  {/if}
  </center>
@@ -100,6 +101,12 @@ function image_reload()
 {if isset($shop_message) and $shop_message eq "add_ok"}
 <center><img src="/{$system_dir}{#bgimage29#}" alt="">&nbsp;<span class="textbig">{#_SHOP_MODULE_ADDOK#}</span><br><br>
 <span class="textbig">{#_SHOP_MODULE_ORDERSAVEMESSAGE#} №{$systemdk_shop_order_id}. {#_SHOP_MODULE_ORDERSAVEMESSAGE2#}</span><br><br>
+{if isset($shop_invoice_url)}
+    <span class="textbig">{#_SHOP_MODULE_ORDER_CREATED_DETAILS#}</span><br><br>
+    <form action="{$shop_invoice_url}" method="get">
+        <input type="submit" value="{#_SHOP_MODULE_PAY_BUTTON#}" class="button">
+    </form><br><br>
+{/if}
 <a href="{if $system_mod_rewrite == "yes"}/{$system_dir}{$site_language}/shop/{else}/{$system_dir}index.php?path=shop&amp;lang={$site_language}{/if}" class="link">{#_SHOP_MODULE_MAINPAGETITLE#}</a></center><br><br>
 {else}
  {if $shop_cart_display_items ne "no" and $shop_cart_allowchange eq 0}
@@ -168,7 +175,10 @@ function image_reload()
    </tr>
    {/if}
    <tr align="center">
-    <td colspan="2"><br><a href="javascript:history.back(1)" class="link">{#_SHOP_MODULE_GOBACKLINK#}</a><br><br><input type="submit" value="{if isset($shop_cart_checkout_confirm) and $shop_cart_checkout_confirm eq 1}{#_SHOP_MODULE_PROCESSORDERDONE#}{else}{#_SHOP_MODULE_NEXTBUTTON#}{/if}" class="button"></td>
+    <td colspan="2"><br><a href="javascript:history.back(1)" class="link">{#_SHOP_MODULE_GOBACKLINK#}</a>
+        {include 'modules/shop/shop_terms_and_conditions.html'}
+        <br><br><input type="submit" value="{if isset($shop_cart_checkout_confirm) and $shop_cart_checkout_confirm eq 1}{#_SHOP_MODULE_PROCESSORDERDONE#}{else}{#_SHOP_MODULE_NEXTBUTTON#}{/if}" class="button">
+    </td>
    </tr>
   </table>
   </form>
