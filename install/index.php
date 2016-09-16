@@ -1052,7 +1052,7 @@ class install
                     (2,'check_single', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_SINGLE'),
                     (3,'select_list', '_QUESTIONNAIRES_QUESTION_TYPE_SELECT_LIST'),
                     (4,'check_more_with_text', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_MORE_WITH_TEXT'),
-                    (5,'check_single_with_tex', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_SINGLE_WITH_TEXT'),
+                    (5,'check_single_with_text', '_QUESTIONNAIRES_QUESTION_TYPE_CHECK_SINGLE_WITH_TEXT'),
                     (6,'select_list_with_text', '_QUESTIONNAIRES_QUESTION_TYPE_SELECT_LIST_WITH_TEXT'),
                     (7,'only_text', '_QUESTIONNAIRES_QUESTION_TYPE_ONLY_TEXT');
                     "
