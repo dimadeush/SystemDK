@@ -62,7 +62,8 @@
             splitRatio: 0.55,              // % of the left list's width of the widget total width (default 0.55)
             sortable: false,               // if the selected list should be user sortable or not
             sortMethod: null,              // null, 'standard', 'natural'; a sort function name (see ItemComparators), or a custom function (default: null)
-            selectAll: 'both'              // 'available', 'selected', 'both', 'none' - Whether or not to display a select or deselect all icon (default: 'both')
+            selectAll: 'both',             // 'available', 'selected', 'both', 'none' - Whether or not to display a select or deselect all icon (default: 'both')
+            appendToEndOfSelected: false   // if elements should be appended to the end of the selected list
         },
 
         _create: function() {
@@ -933,9 +934,17 @@
             }
 
             var insertIndex = eData.index - 1;
-            while ((insertIndex >= gData.startIndex) &&
-                   (this._elements[insertIndex].selected != eData.selected)) {
-                insertIndex--;
+            // Using jQuery to find the last selected element to append to
+            var lastOption = $(".option-selected:last",gDataDst.listContainer);
+
+            if (that._widget.options.appendToEndOfSelected && lastOption.length > 0) {
+                insertIndex = lastOption.data("element-index");
+            }
+            else {
+                while ((insertIndex >= gData.startIndex) &&
+                (this._elements[insertIndex].selected != eData.selected)) {
+                    insertIndex--;
+                }
             }
 
             if (insertIndex < gData.startIndex) {
