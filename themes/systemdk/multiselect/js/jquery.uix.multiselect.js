@@ -971,6 +971,11 @@
             var g = this._groups.get(optGroup);
             var container = g.groupElement ? g.groupElement : this._widget.element;
             var prevElement;
+            //fix for jquery-ui > 1.10
+            $('.ui-state-default.option-element.ui-draggable-handle.option-selected.ui-state-hover.ui-sortable-helper').each(function(){
+                $(this).remove();
+            });
+            //fix end
             $('.option-element', g['selected'].listContainer).each(function() {
                 var currElement = e[$(this).data('element-index')].optionElement;
                 if (!prevElement) {
